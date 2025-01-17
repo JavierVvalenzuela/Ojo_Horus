@@ -28,7 +28,7 @@ export class BdServicioService {
   );`;
   
   tablaPregunta: string = `CREATE TABLE IF NOT EXISTS preguntas (
-    id_pregunta_seguridad INTEGER PRIMARY KEY,
+    id_pregunta_seguridad INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre_pregunta_seguridad VARCHAR(255) NOT NULL
   );`;
   
@@ -44,6 +44,16 @@ export class BdServicioService {
     razon_ban TEXT,
     id_rol INTEGER NOT NULL,
     FOREIGN KEY (id_rol) REFERENCES roles (id_rol)
+  );`;
+
+  tablaComunidad: string = `CREATE TABLE IF NOT EXISTS comunidad (
+    id_comunidad INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre_comunidad VARCHAR(100) NOT NULL,
+    id_usuario INTEGER NOT NULL,  -- Refleja al creador de la comunidad
+    descripcion_comunidad VARCHAR(250),
+    img_comunidad BLOB,  -- Imagen opcional
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,  -- Fecha de creación de la comunidad
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
   );`;
   
   tablaPost: string = `CREATE TABLE IF NOT EXISTS post (
@@ -70,24 +80,39 @@ export class BdServicioService {
     FOREIGN KEY (id_post) REFERENCES post (id_post),
     FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
   );`;
+
   tablaReportes:string= `CREATE TABLE IF NOT EXISTS reporte (
     id_reporte INTEGER PRIMARY KEY AUTOINCREMENT,
+    motivo TEXT NOT NULL,
+    fecha_reporte DATETIME DEFAULT CURRENT_TIMESTAMP,
+    estado_reporte VARCHAR(20) DEFAULT 'Pendiente',
     id_usuario INTEGER NOT NULL, 
     id_post INTEGER, 
     id_comunidad INTEGER,
     id_comentario INTEGER,
-    motivo TEXT NOT NULL,
-    fecha_reporte DATETIME DEFAULT CURRENT_TIMESTAMP,
-    estado_reporte VARCHAR(20) DEFAULT 'Pendiente',
     FOREIGN KEY (id_usuario) REFERENCES usuario (idusuario),
     FOREIGN KEY (id_post) REFERENCES post (id_post),
     FOREIGN KEY (id_comunidad) REFERENCES comunidad (id_comunidad),
     FOREIGN KEY (id_comentario) REFERENCES comentario (id_comentario)
   );`;
+  tablaRespuesta: string = `CREATE TABLE IF NOT EXISTS respuestas_pregunta_seguridad (
+    id_respuesta INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_usuario INTEGER NOT NULL,
+    id_pregunta_seguridad INTEGER NOT NULL,
+    respuesta TEXT NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario),
+    FOREIGN KEY (id_pregunta_seguridad) REFERENCES preguntas (id_pregunta_seguridad)
+  );`;
 
   //insert into en las tablas
-  registroRoles: string = "INSERT OR IGNORE INTO roles (id_rol, nombre_rol) VALUES (1, 'Admin'), (2, 'Usuario');";
+  registroRoles: string = `INSERT OR IGNORE INTO roles (id_rol, nombre_rol) VALUES (1, 'Admin'), (2, 'Usuario');`;
   registroEstado: string = `INSERT OR IGNORE INTO estado (id_estado, nombre_estado) VALUES (1, 'Cuenta Activa'), (2, 'Cuenta Baneada');`;
+  registroPregunta: string = `INSERT OR IGNORE INTO preguntas (id_pregunta_seguridad, nombre_pregunta_seguridad) 
+  VALUES(1, '¿Cuál es el nombre de tu primera mascota?'),
+  (2, '¿En qué ciudad naciste?'),
+  (3, '¿Cuál es tu comida favorita?'),
+  (4, '¿Cuál fue el nombre de tu escuela primaria?'),
+  (5, '¿Cuál es tu película favorita?');`;
 
 
     //observable del status de la BD
