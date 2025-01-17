@@ -107,6 +107,10 @@ const routes: Routes = [
     path: 'usuariosbaneados',
     loadChildren: () => import('./pages/usuariosbaneados/usuariosbaneados.module').then( m => m.UsuariosbaneadosPageModule)
   },
+  {
+    path: 'not-found',
+    loadChildren: () => import('./pages/not-found/not-found.module').then( m => m.NotFoundPageModule)
+  },
 ];
 
 @NgModule({
