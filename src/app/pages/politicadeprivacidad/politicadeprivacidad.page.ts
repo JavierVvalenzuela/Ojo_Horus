@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-politicadeprivacidad',
   templateUrl: './politicadeprivacidad.page.html',
   styleUrls: ['./politicadeprivacidad.page.scss'],
+  standalone: false,
 })
 export class PoliticadeprivacidadPage implements OnInit {
 

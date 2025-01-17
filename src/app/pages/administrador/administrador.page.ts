@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-administrador',
   templateUrl: './administrador.page.html',
   styleUrls: ['./administrador.page.scss'],
+  standalone: false,
 })
 export class AdministradorPage implements OnInit {
 

@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-politicadeusuario',
   templateUrl: './politicadeusuario.page.html',
   styleUrls: ['./politicadeusuario.page.scss'],
+  standalone: false,
 })
 export class PoliticadeusuarioPage implements OnInit {
 

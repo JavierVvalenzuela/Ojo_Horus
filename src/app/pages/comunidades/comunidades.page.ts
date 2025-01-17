@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-comunidades',
   templateUrl: './comunidades.page.html',
   styleUrls: ['./comunidades.page.scss'],
+  standalone: false,
 })
 export class ComunidadesPage implements OnInit {
 

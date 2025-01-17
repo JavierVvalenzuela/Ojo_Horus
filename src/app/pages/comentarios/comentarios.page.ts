@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-comentarios',
   templateUrl: './comentarios.page.html',
   styleUrls: ['./comentarios.page.scss'],
+  standalone: false,
 })
 export class ComentariosPage implements OnInit {
 

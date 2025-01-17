@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-cambiar-password',
   templateUrl: './cambiar-password.page.html',
   styleUrls: ['./cambiar-password.page.scss'],
+  standalone: false,
 })
 export class CambiarPasswordPage implements OnInit {
 
