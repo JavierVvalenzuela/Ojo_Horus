@@ -1,13 +1,59 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
     <ion-title>comentariosreport</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">comentariosreport</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <h1>Lista de comentarios Reportados</h1>
+
+  <!-- reporte 1 -->
+  <ion-card>
+    <p>motivo: Contenido ofensivo</p>
+
+    <ion-title [routerLink]="['/perfiles']">Usuario_extra1</ion-title>
+    <p>El pto bot negro este de mie*** no me sigue a ningun lugar</p>
+
+    <ion-button fill="outline" color="warning">Ignorar</ion-button>
+    <ion-button fill="outline" color="danger">Eliminar comentario</ion-button>
+  </ion-card>
+
+  <!-- reporte 2 -->
+  <ion-card>
+    <p>motivo: Acoso o intimidación</p>
+
+    <ion-title [routerLink]="['/perfiles']">Usuario_extra2</ion-title>
+    <p>Ya po profe y el 7 pa los cabros -u-</p>
+
+    <ion-button fill="outline" color="warning">Ignorar</ion-button>
+    <ion-button fill="outline" color="danger">Eliminar comentario</ion-button>
+  </ion-card>
+
+  <!-- reporte 3 -->
+  <ion-card>
+    <p>motivo: Infracción de normas de la comunidad</p>
+
+    <ion-title [routerLink]="['/perfiles']">Usuario_extra3</ion-title>
+    <p>pinche comunidad muerta llena de inbesiles</p>
+
+    <ion-button fill="outline" color="warning">Ignorar</ion-button>
+    <ion-button fill="outline" color="danger">Eliminar comentario</ion-button>
+  </ion-card>
+
+  <!-- reporte 4 -->
+  <ion-card>
+    <p>motivo: Violación de derechos de autor</p>
+
+    <ion-title [routerLink]="['/perfiles']">Usuario_extra4</ion-title>
+    <p>Hola soy tu amigo cristiano ronaldo y por solo 30 pesos, puedo ir a tu fiesta :D</p>
+
+    <ion-button fill="outline" color="warning">Ignorar</ion-button>
+    <ion-button fill="outline" color="danger">Eliminar comentario</ion-button>
+  </ion-card>
+
+
 </ion-content>

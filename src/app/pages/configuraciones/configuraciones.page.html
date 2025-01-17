@@ -1,13 +1,37 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
     <ion-title>configuraciones</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">configuraciones</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-icon name="notifications-outline"></ion-icon>
+      <ion-label>Notificaciones</ion-label>
+      <ion-toggle slot="end"></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="lock-closed-outline"></ion-icon>
+      <ion-label>Cambiar Contraseña</ion-label>
+      <ion-button fill="outline" color="warning" [routerLink]="['/cambiar-password']">Modificar</ion-button>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="shield-outline"></ion-icon>
+      <ion-label>Seguridad</ion-label>
+      <ion-button fill="outline" color="warning" [routerLink]="['/seguridad']">Configurar</ion-button>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <ion-label>Acerca de la App</ion-label>
+      <ion-button fill="outline" color="warning" [routerLink]="['/inicio']">Ver</ion-button>
+    </ion-item>
+  </ion-list>
 </ion-content>

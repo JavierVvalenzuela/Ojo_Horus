@@ -1,0 +1,100 @@
+ion-header {
+    background-color: #d4af37;
+    /* Fondo dorado */
+    color: #000000;
+    /* Texto negro */
+  
+    ion-toolbar {
+      --background: transparent;
+      /* Fondo transparente del toolbar para heredar el dorado */
+      color: #000;
+      /* Color del texto e iconos dentro del toolbar */
+  
+      ion-title,
+      ion-button {
+        color: #000;
+        /* Asegura que el texto e iconos sean negros */
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+    }
+  }
+  
+  .popri {
+    background-color: #000;
+    /* Fondo negro */
+    --background: transparent;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  
+    .content-wrapper {
+      margin: 15px;
+      /* Espaciado externo */
+      padding: 20px;
+      /* Espaciado interno */
+      border-radius: 8px;
+      /* Esquinas redondeadas */
+      box-shadow: 0 7px 9px rgb(245, 200, 0);
+      /* Sombra dorada */
+      --background: none;
+      background-color: black;
+      /* Fondo gris oscuro para destacar */
+  
+      h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #d4af37;
+        /* Dorado */
+        margin-bottom: 15px;
+        text-align: center;
+      }
+  
+      strong{
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        color: #d4af37;
+      }
+      
+      p {
+        line-height: 1.6;
+        margin-bottom: 15px;
+        color: white;
+      }
+  
+      h3 {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #d4af37;
+        /* Dorado */
+        margin-top: 20px;
+      }
+  
+      p+h3 {
+        margin-top: 30px;
+        padding-top: 10px;
+        border-top: 1px solid #ddd;
+        /* Línea divisoria */
+      }
+  
+      ul {
+        list-style-type: disc;
+        margin-left: 20px;
+  
+        li {
+          margin-bottom: 10px;
+          color: white;
+        }
+      }
+  
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 1.8rem;
+        }
+  
+        p {
+          font-size: 0.9rem;
+        }
+  
+        h3 {
+          font-size: 1.2rem;
+        }
+      }
+    }
+  }

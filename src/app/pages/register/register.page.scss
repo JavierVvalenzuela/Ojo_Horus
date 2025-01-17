@@ -1,0 +1,88 @@
+ion-header {
+    background-color: #d4af37;
+    /* Fondo dorado */
+    color: #000000;
+    /* Texto negro */
+  
+    ion-toolbar {
+      --background: transparent;
+      /* Fondo transparente del toolbar para heredar el dorado */
+      color: #000;
+      /* Color del texto e iconos dentro del toolbar */
+  
+      ion-title,
+      ion-button {
+        color: #000;
+        /* Asegura que el texto e iconos sean negros */
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+    }
+  }
+  
+  h1 {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-align: center;
+    padding-top: 5%;
+    font-size: 40px;
+    color: #d4af37;
+  }
+  
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    background-color: #000;
+    padding-top: 5%;
+  }
+  
+  .logo-img {
+    width: 150px;
+    height: auto;
+  }
+  
+  .formuser {
+    text-align: center;
+    padding-top: 5%;
+    padding-bottom: 5%;
+    margin-left: 15%;
+    margin-right: 15%;
+    margin-bottom: 10px;
+  }
+  
+  
+  ion-input {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    color: white;
+    border: 2px solid #d4af37;
+    text-align: start;
+  }
+  
+  .btns {
+    text-align: center;
+  }
+  
+  ion-button {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+  
+  ion-content {
+    --background: black;
+  }
+  
+  p.error {
+    color: red;
+    font-size: 14px;
+    margin: 5px 0 10px;
+    text-align: left;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 15px;
+    text-align: left;
+    margin-bottom: 6px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+  
+  .input-container {
+    margin-bottom: 15px;
+  }

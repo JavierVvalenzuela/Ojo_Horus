@@ -1,0 +1,99 @@
+ion-header {
+    background-color: #d4af37;
+    /* Fondo dorado */
+    color: #000000;
+    /* Texto negro */
+  
+    ion-toolbar {
+      --background: transparent;
+      /* Fondo transparente del toolbar para heredar el dorado */
+      color: #000;
+      /* Color del texto e iconos dentro del toolbar */
+  
+      ion-title,
+      ion-buttons,
+      ion-searchbar,
+      ion-button {
+        color: #000;
+        /* Asegura que el texto e iconos sean negros */
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+    }
+  }
+  
+  ion-content {
+    background-color: #000000;
+    /* Fondo negro */
+    color: #ffffff;
+    /* Color blanco para el texto en el contenido */
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    --background: transparent;
+  
+    .welcome-section {
+      text-align: center;
+      margin-bottom: 20px;
+  
+      h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #d4af37;
+        /* Color dorado para el título */
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+    }
+  
+    .welcome-image {
+      width: 100%;
+      height: auto;
+      border-radius: 50%;
+      /* Borde redondo */
+      border: 5px solid #d4af37;
+      /* Borde dorado */
+      margin-bottom: 20px;
+    }
+  
+    .about-section {
+  
+      h2,
+      h3 {
+        margin-bottom: 15px;
+        color: #d4af37;
+        /* Color dorado */
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+  
+      h2 {
+        font-size: 1.8rem;
+      }
+  
+      h3 {
+        margin-top: 20px;
+        font-size: 1.5rem;
+      }
+  
+      p,
+      ul {
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 15px;
+        color: #fff;
+        /* Color blanco para el texto */
+        padding: 0%;
+        border: 5px solid #d4af37;
+        /* Borde dorado */
+      }
+  
+      ul {
+        list-style-type: disc;
+        margin-left: 20px;
+      }
+    }
+  
+    .btns {
+      text-align: center;
+    }
+  
+    ion-button{
+      font-family: Georgia, 'Times New Roman', Times, serif;
+    }
+  }

@@ -1,0 +1,112 @@
+ion-header {
+    background-color: #d4af37;
+    /* Fondo dorado */
+    color: #000000;
+    /* Texto negro */
+  
+    ion-toolbar {
+      --background: transparent;
+      /* Fondo transparente del toolbar para heredar el dorado */
+      color: #000;
+      /* Color del texto e iconos dentro del toolbar */
+  
+      ion-title,
+      ion-button {
+        color: #000;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+    }
+  }
+  
+  .content {
+    background-color: black;
+    --background: transparent;
+  }
+  
+  h1 {
+    font-size: 20px;
+    padding-left: 3%;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+  
+  ion-title {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    padding-top: 10px;
+    color: #d4af37;
+    margin-right: 20%;
+  }
+  
+  p {
+    padding-left: 3%;
+    color: white;
+    font-size: 18px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+  
+  .card-custom {
+    border: 2px solid #d4af37;
+    /* Borde dorado */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    background-color: #000;
+  }
+  
+  ion-card-title {
+    color: #d4af37;
+    /* Texto dorado para el título */
+    margin-right: 20%;
+  }
+  
+  ion-card {
+    background-color: #000;
+    border-radius: 10px;
+    border: 2px solid #d4af37;
+    /* Borde dorado en imágenes */
+  }
+  
+  .btn-3puntos {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 0;
+    height: auto;
+    width: auto;
+    margin-bottom: 10%;
+  
+    img {
+      height: 25px;
+      width: 25px;
+      border: none;
+      border-radius: 0;
+    }
+  }
+  
+  .foot {
+    background-color: black;
+    --background: none;
+    padding-left: 2%;
+    padding-right: 2%;
+  }
+  
+  .com {
+    display: flex; /* Activa el diseño flexbox */
+    align-items: center; /* Alinea verticalmente el input y el botón */
+    justify-content: space-between; /* Distribuye el espacio: input a la izquierda, botón a la derecha */
+    gap: 10px; /* Espacio entre el input y el botón */
+  }
+  
+  .tucom {
+    flex: 1; /* El input ocupará todo el espacio disponible */
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    color: white;
+    background-color: black;
+    border: 2px solid #d4af37; /* Borde dorado */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 10px;
+  }
+  
+  .btn-enviar {
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 8px 16px; /* Tamaño del botón */
+  }

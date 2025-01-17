@@ -1,13 +1,36 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+      <ion-back-button></ion-back-button> <!--boton para retroceder-->
+    </ion-buttons>
     <ion-title>comunidades</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">comunidades</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="creacom">
+    <h1>¿Quieres crear tu propia comunidad de esport?</h1>
+    <ion-button class="crear" expand="block" fill="outline" color="warning" [routerLink]="['/crearcomunidad']">Crear
+      comunidad</ion-button>
+  </div>
+
+  <ion-card class="cardcom">
+    <p>Aguante el colo-colo</p>
+    <img src="assets/img/fifa.jpeg" alt="fifita">
+    <ion-button expand="block" fill="outline" color="warning" [routerLink]="['/comunidad']">Ver Comunidad</ion-button>
+  </ion-card>
+
+  <ion-card class="cardcom">
+    <p>Fifa de mano</p>
+    <img src="assets/img/nba.jpeg" alt="valito">
+    <ion-button expand="block" fill="outline" color="warning" [routerLink]="['/comunidad']">Ver Comunidad</ion-button>
+  </ion-card>
+
+  <ion-card class="cardcom">
+    <p>No sabia que tenia un juego, el juego</p>
+    <img src="assets/img/over.jpg" alt="ow">
+    <ion-button expand="block" fill="outline" color="warning" [routerLink]="['/comunidad']">Ver Comunidad</ion-button>
+  </ion-card>
+
 </ion-content>

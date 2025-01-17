@@ -1,0 +1,85 @@
+ion-toolbar {
+    background-color: #d4af37;
+    --background: transparent;
+    color: #000;
+  }
+  
+  .pous {
+    --background: none;
+    background-color: black;
+  
+    .content-wrapper {
+      margin: 15px;
+      /* Espaciado externo */
+      padding: 20px;
+      /* Espaciado interno */
+      border-radius: 8px;
+      /* Esquinas redondeadas */
+      box-shadow: 0 7px 9px rgb(245, 200, 0);
+      /* Sombra dorada */
+      --background: none;
+      background-color: black;
+      /* Fondo gris oscuro para destacar */
+    }
+  
+    h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      color: #d4af37;
+    }
+  
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #f7f7f7; // Texto blanco
+      margin-bottom: 15px;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+    }
+  
+    h3 {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #d4af37; // Dorado
+      margin-top: 20px;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+    }
+  
+    strong {
+      color: #d4af37; // Dorado
+      font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    }
+  
+    p+h3 {
+      margin-top: 30px;
+      padding-top: 10px;
+      border-top: 1px solid #ddd; // Línea divisoria
+    }
+  
+    ul {
+      list-style-type: disc;
+      margin-left: 20px;
+      font-size: 1rem;
+      color: #f7f7f7; // Texto blanco
+      font-family: Georgia, 'Times New Roman', Times, serif;
+  
+      li {
+        margin-bottom: 10px;
+      }
+    }
+  
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 1.8rem;
+      }
+  
+      p {
+        font-size: 0.9rem;
+      }
+  
+      h3 {
+        font-size: 1.2rem;
+      }
+    }
+  }

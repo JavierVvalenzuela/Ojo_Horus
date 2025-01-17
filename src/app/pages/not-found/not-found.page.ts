@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-not-found',
@@ -8,8 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NotFoundPage implements OnInit {
 
-  constructor() { }
 
+  constructor(private menuCtrl: MenuController) { }
+
+  ionViewWillEnter(){
+    //para desabilitar el menu deslizable
+    this.menuCtrl.enable(false);
+  }
+
+  ionViewWillLeave(){
+    //para habilitar el menu cuando salgamos del not found
+    this.menuCtrl.enable(true);
+  }
   ngOnInit() {
   }
 

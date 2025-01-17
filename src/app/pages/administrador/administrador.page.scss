@@ -1,0 +1,52 @@
+ion-header {
+    background-color: #d4af37;
+    color: #000000;
+  
+    ion-toolbar {
+      --background: transparent;
+      color: #000;
+  
+      ion-button {
+        color: #000;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+    }
+  }
+  
+  h1 {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 40px;
+    text-align: center;
+    padding-top: 40px;
+    color: #d4af37;
+  }
+  
+  ion-content {
+    --background: black;
+    background-color: black;
+  }
+  
+  div {
+    text-align: center;
+    padding-top: 15%;
+  }
+  
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    color: white;
+  }
+  
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    background-color: #000;
+    padding-bottom: 5%;
+  }
+  
+  .logo-img {
+    width: 150px;
+    height: auto;
+  }

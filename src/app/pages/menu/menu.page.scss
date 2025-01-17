@@ -1,0 +1,104 @@
+ion-header {
+    background-color: #d4af37;
+    /* Fondo dorado */
+    color: #000000;
+    /* Texto negro */
+  
+    ion-toolbar {
+      --background: transparent;
+      /* Fondo transparente del toolbar para heredar el dorado */
+      color: #000;
+      /* Color del texto e iconos dentro del toolbar */
+  
+      ion-title,
+      ion-button {
+        color: #000;
+        /* Asegura que el texto e iconos sean negros */
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+    }
+  }
+  
+  ion-content {
+    background-color: #000000;
+    /* Fondo negro */
+    --background: transparent;
+  }
+  
+  .post-item {
+    border: 2px solid #d4af37;
+    /* Borde dorado */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    background-color: #000;
+    --background: transparent;
+    margin-top: 15px;
+    /* Espaciado entre publicaciones */
+    margin-left: 3%;
+    margin-right: 3%;
+  }
+  
+  ion-input {
+    color: white;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    border: 2px solid #d4af37;
+    /* Borde dorado */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    margin-top: 5%;
+    border-left: 2%;
+    margin-bottom: 2%;
+  }
+  
+  .card-custom {
+    border: 2px solid #d4af37;
+    /* Borde dorado */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    background-color: #000;
+  
+    h1 {
+      padding-left: 5%;
+    }
+  
+    p {
+      color: #ffffff;
+      font-size: medium;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      padding-left: 5%;
+    }
+  
+    ion-card-title {
+      color: #d4af37;
+      /* Texto dorado para el título */
+      margin-right: 20%;
+    }
+  
+    img {
+      width: 100%;
+      border-radius: 10px;
+      border: 2px solid #d4af37;
+      /* Borde dorado en imágenes */
+    }
+  
+    .btnpub {
+      text-align: center;
+    }
+  }
+  
+  .btn-3puntos {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 0;
+    height: auto;
+    width: auto;
+  
+    img {
+      height: 35px;
+      width: 35px;
+      border: none;
+      border-radius: 0;
+    }
+  }

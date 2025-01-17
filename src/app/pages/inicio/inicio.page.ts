@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-inicio',
@@ -7,8 +8,15 @@ import { Component, OnInit } from '@angular/core';
   standalone: false,
 })
 export class InicioPage implements OnInit {
+  nickname:string = "";
 
-  constructor() { }
+  constructor(private router: Router, private activedroute: ActivatedRoute) {
+    this.activedroute.queryParams.subscribe(param =>{
+      if(this.router.getCurrentNavigation()?.extras.state){
+        this.nickname = this.router.getCurrentNavigation()?.extras?.state?.['nick'];
+      }
+    })
+   }
 
   ngOnInit() {
   }

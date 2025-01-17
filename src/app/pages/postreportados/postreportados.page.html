@@ -1,13 +1,72 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
     <ion-title>postreportados</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">postreportados</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <h1>Lista de posts Reportados</h1>
+
+  <!-- reporte 1 -->
+  <ion-card class="postrep">
+    <h2>Motivo: Spam</h2>
+    <ion-card class="postcard">
+      <ion-card-title>
+        <h5 [routerLink]="['/perfiles']">Nombre del usuario</h5>
+      </ion-card-title>
+      <p>Este es un ejemplo de mensaje.</p>
+
+      <ion-card-content>
+        <img src="assets/img/forza.jpg" alt="Publicación de usuario" style="width: 100%; margin-bottom: 8px;">
+      </ion-card-content>
+    </ion-card>
+    <div class="btns">
+      <ion-button fill="outline" color="warning">Ignorar</ion-button>
+      <ion-button fill="outline" color="danger">Eliminar publicación</ion-button>
+    </div>
+  </ion-card>
+
+  <!-- reporte 2 -->
+  <ion-card class="postrep2">
+    <h3>Motivo: Desinformación</h3>
+    <ion-card class="postcard2">
+      <ion-card-title>
+        <h6 [routerLink]="['/perfiles']">Nombre del usuario</h6>
+      </ion-card-title>
+      <p>Este es un ejemplo de mensaje.</p>
+
+      <ion-card-content>
+        <img src="assets/img/forza.jpg" alt="Publicación de usuario" style="width: 100%; margin-bottom: 8px;">
+      </ion-card-content>
+    </ion-card>
+
+    <div class="btns">
+      <ion-button fill="outline" color="warning">Ignorar</ion-button>
+      <ion-button fill="outline" color="danger">Eliminar publicación</ion-button>
+    </div>
+  </ion-card>
+
+  <!-- reporte3 -->
+  <ion-card class="postrep3">
+    <h4>Motivo: Contenido ilegal</h4>
+    <ion-card class="postcard3">
+      <ion-card-title>
+        <h7 [routerLink]="['/perfiles']">Nombre del usuario</h7>
+      </ion-card-title>
+      <p>Este es un ejemplo de mensaje.</p>
+
+      <ion-card-content>
+        <img src="assets/img/forza.jpg" alt="Publicación de usuario" style="width: 100%; margin-bottom: 8px;">
+      </ion-card-content>
+    </ion-card>
+
+    <div class="btns">
+      <ion-button fill="outline" color="warning">Ignorar</ion-button>
+      <ion-button fill="outline" color="danger">Eliminar publicación</ion-button>
+    </div>
+  </ion-card>
 </ion-content>

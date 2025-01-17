@@ -1,0 +1,84 @@
+ion-header {
+    background-color: #d4af37;
+    /* Fondo dorado */
+    color: #000000;
+    /* Texto negro */
+  
+    ion-toolbar {
+      --background: transparent;
+      /* Fondo transparente del toolbar para heredar el dorado */
+      color: #000;
+      /* Color del texto e iconos dentro del toolbar */
+  
+      ion-title,
+      ion-button {
+        color: #000;
+        /* Asegura que el texto e iconos sean negros */
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+    }
+  }
+  
+  h1 {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-align: center;
+    padding-top: 5%;
+    font-size: 40px;
+    color: #d4af37;
+  }
+  
+  .formuser {
+    padding-top: 5%;
+    padding-bottom: 5%;
+    margin-left: 15%;
+    margin-right: 15%;
+  }
+  
+  
+  ion-input {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    color: white;
+    background-color: #000;
+    border: 2px solid #d4af37;
+    /* Borde dorado */
+  }
+  
+  .i2 {
+    padding-top: 10px;
+  }
+  
+  .btns {
+    text-align: center;
+  }
+  
+  ion-button {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+  
+  ion-content {
+    --background: black;
+  }
+  
+  .forgot-password {
+    text-align: center;
+    margin-top: 10px;
+  
+    a {
+      color: rgb(65, 141, 255);
+      text-decoration: underline;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      font-size: 14px;
+    }
+  }
+  
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    background-color: #000;
+    padding-top: 5%;
+  }
+  
+  .logo-img {
+    width: 150px;
+    height: auto;
+  }

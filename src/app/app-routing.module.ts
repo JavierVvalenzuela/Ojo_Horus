@@ -8,7 +8,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'login',
     pathMatch: 'full'
   },
   {
@@ -108,9 +108,15 @@ const routes: Routes = [
     loadChildren: () => import('./pages/usuariosbaneados/usuariosbaneados.module').then( m => m.UsuariosbaneadosPageModule)
   },
   {
+    path: 'perfiles',
+    loadChildren: () => import('./pages/perfiles/perfiles.module').then( m => m.PerfilesPageModule)
+  },
+  {
     path: 'not-found',
     loadChildren: () => import('./pages/not-found/not-found.module').then( m => m.NotFoundPageModule)
   },
+
+
 ];
 
 @NgModule({

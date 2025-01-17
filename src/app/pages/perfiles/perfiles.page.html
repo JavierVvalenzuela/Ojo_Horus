@@ -1,0 +1,56 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>perfiles</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card-header class="card-header">
+    <div class="foto">
+      <ion-icon color="white" name="person-circle-outline"></ion-icon>
+    </div>
+
+    <ion-item class="cabe" lines="none">
+      <ion-label>
+        <h2 class="nombre">Nombre de usuario</h2>
+      </ion-label>
+
+      <ion-button fill="clear" [routerLink]="['/reportar-contenido']" class="btn-3puntos">
+        <img src="assets/icon/3puntos.png" alt="Reportar contenido" />
+      </ion-button>
+
+    </ion-item>
+  </ion-card-header>
+
+  <div class="content-wrapper">
+    <ion-card class="cardperfil">
+
+      <ion-card-content>
+        <!-- Nombre -->
+        <ion-item>
+          <ion-label class="d1">Nombre de usuario</ion-label>
+        </ion-item>
+
+        <!-- Correo Electrónico -->
+        <ion-item>
+          <ion-label class="d2">Usuario&#64;example.com</ion-label>
+        </ion-item>
+
+        <!-- Teléfono -->
+        <ion-item>
+          <ion-label class="d3">+56 9 1235 4852</ion-label>
+        </ion-item>
+
+        <!-- Dirección -->
+        <ion-item>
+          <ion-label class="d4">Su casa</ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

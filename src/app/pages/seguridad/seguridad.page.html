@@ -1,13 +1,54 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>seguridad</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">seguridad</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <form (ngSubmit)="guardarRespuesta()">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">Seguridad</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <div class="logo-container">
+      <img src="assets/img/ojo de horus.png" alt="Ojo de Horus" class="logo-img">
+    </div>
+
+    <div class="formuser">
+      <!-- Pregunta de Seguridad -->
+      <ion-item>
+        <ion-label position="floating">Pregunta de Seguridad</ion-label>
+        <ion-select [(ngModel)]="preguntaSeguridad" [ngModelOptions]="{standalone: true}" required>
+          <ion-select-option value="mascota">¿Cuál es el nombre de tu primera mascota?</ion-select-option>
+          <ion-select-option value="ciudad">¿En qué ciudad naciste?</ion-select-option>
+          <ion-select-option value="comida">¿Cuál es tu comida favorita?</ion-select-option>
+          <ion-select-option value="escuela">¿Cuál fue el nombre de tu escuela primaria?</ion-select-option>
+          <ion-select-option value="pelicula">¿Cuál es tu película favorita?</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <!-- Mensaje de error de Pregunta -->
+      <div *ngIf="errores.preguntaSeguridad" class="error-message">
+        <ion-text >{{ errores.preguntaSeguridad }}</ion-text>
+      </div>
+
+      <!-- Respuesta -->
+      <div class="i2">
+        <ion-input label="> Ingrese su respuesta" label-placement="floating" [(ngModel)]="respuestaSeguridad"
+          [ngModelOptions]="{standalone: true}" required></ion-input>
+      </div>
+      <!-- Mensaje de error de Respuesta -->
+      <div *ngIf="errores.respuestaSeguridad" class="error-message">
+        <ion-text >{{ errores.respuestaSeguridad }}</ion-text>
+      </div>
+      <div class="btns">
+        <ion-button fill="outline" Color="warning" type="submit">Guardar</ion-button>
+        <ion-button fill="outline" color="light" [routerLink]="['/configuraciones']">Cancelar</ion-button>
+      </div>
+    </div>
+  </form>
 </ion-content>

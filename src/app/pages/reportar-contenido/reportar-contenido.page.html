@@ -7,7 +7,31 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">reportarContenido</ion-title>
+      <ion-title size="large">Reportar Contenido</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <div class="report-options">
+    <ion-list>
+      <ion-radio-group [(ngModel)]="selectedMotivo">
+        <!-- Lista de 12 motivos -->
+        <ion-item *ngFor="let motivo of motivos">
+          <ion-label class="moti">{{ motivo }}</ion-label>
+          <ion-radio slot="start" [value]="motivo"></ion-radio>
+        </ion-item>
+
+        <!-- Motivo personalizado -->
+        <ion-item>
+          <ion-label class="moti2">Otro</ion-label>
+          <ion-radio slot="start" value="otro"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+  </div>
+
+  <!-- Botones de acción -->
+  <div class="action-buttons">
+    <ion-button fill="outline" color="warning" (click)="enviarReporte()">Enviar</ion-button>
+    <ion-button fill="outline" color="light" (click)="cancelarReporte()">Cancelar</ion-button>
+  </div>
 </ion-content>

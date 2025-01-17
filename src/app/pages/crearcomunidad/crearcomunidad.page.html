@@ -1,13 +1,95 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>crearcomunidad</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">crearcomunidad</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <form (submit)="validarFormulario($event)">
+    <!-- Campo para el nombre de la comunidad -->
+    <ion-item class="ion-item">
+      <ion-input
+        label="Nombre de la comunidad"
+        label-placement="floating"
+        type="text"
+        [(ngModel)]="nombreComunidad"
+        name="nombreComunidad"
+        required
+        maxlength="20"
+        (ngModelChange)="validarNombre()"
+      ></ion-input>
+    </ion-item>
+    <p *ngIf="errores.nombre" style="color: red; font-size: 12px">
+      {{ errores.nombre }}
+    </p>
+
+    <!-- Campo para la descripción -->
+    <ion-item class="ion-item">
+      <ion-textarea
+        label="Descripcion"
+        label-placement="floating"
+        [(ngModel)]="descripcionComunidad"
+        name="descripcionComunidad"
+        required
+        maxlength="250"
+        (ngModelChange)="validarDescripcion()"
+      ></ion-textarea>
+    </ion-item>
+    <p style="font-size: 12px">
+      Caracteres: {{ descripcionComunidad.length }}/250
+    </p>
+    <p *ngIf="errores.descripcion" style="color: red; font-size: 12px">
+      {{ errores.descripcion }}
+    </p>
+
+    <!-- Campo para seleccionar múltiples categorías -->
+    <ion-item class="ion-item">
+      <ion-label>Categorías</ion-label>
+      <ion-select
+        name="categorias"
+        [(ngModel)]="categoriasSeleccionadas"
+        multiple="true"
+        placeholder="Seleccionar categorías"
+        (ngModelChange)="validarCategorias()"
+      >
+        <ion-select-option value="fps"
+          >Disparo en primera persona</ion-select-option
+        >
+        <ion-select-option value="guerra">Acción</ion-select-option>
+        <ion-select-option value="cocina">Cocina</ion-select-option>
+        <ion-select-option value="aventura">Aventura</ion-select-option>
+        <ion-select-option value="rol">Rol</ion-select-option>
+        <ion-select-option value="deportes">Deportes</ion-select-option>
+        <ion-select-option value="otros">Otros</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <p *ngIf="errores.categorias" style="color: red; font-size: 12px">
+      {{ errores.categorias }}
+    </p>
+
+    <!-- Botón para subir una imagen -->
+    <div class="img">
+      <ion-item lines="none">
+        <label for="imagen">
+          <img src="assets/icon/camera.png" alt="Agregar imagen" />
+          <p>Subir Imagen</p>
+        </label>
+      </ion-item>
+    </div>
+
+    <!-- Botón para enviar el formulario y cancelar -->
+    <ion-button
+      fill="outline"
+      Color="warning"
+      type="submit"
+      [disabled]="!formValido()"
+      >Guardar</ion-button
+    >
+    <ion-button fill="outline" color="light" (click)="cancelar()"
+      >Cancelar</ion-button
+    >
+  </form>
 </ion-content>

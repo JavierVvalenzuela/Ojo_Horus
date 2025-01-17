@@ -1,0 +1,62 @@
+ion-header {
+    background-color: #d4af37;
+    color: #000000;
+  
+    ion-toolbar {
+      --background: transparent;
+      color: #000;
+  
+      ion-title,
+      ion-button {
+        color: #000;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+    }
+  }
+  
+  ion-content {
+    --background: black;
+    background-color: black;
+  }
+  
+  h1 {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-align: center;
+    padding-top: 5%;
+    color: white;
+  }
+  
+  .crear {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 18px;
+    padding-bottom: 5%;
+  }
+  
+  ion-card {
+    border: 2px solid #d4af37;
+    /* Borde dorado */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    background-color: black;
+  
+    p {
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      color: white;
+      font-size: 20px;
+      padding-left: 3%;
+    }
+  
+    img {
+      width: 100%;
+      padding-left: 3%;
+      padding-right: 3%;
+    }
+  
+    ion-button {
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      padding-top: 2%;
+      padding-bottom: 2%;
+      font-size: 15px;
+      font-weight: bolder;
+    }
+  }

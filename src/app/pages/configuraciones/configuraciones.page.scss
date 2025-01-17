@@ -1,0 +1,118 @@
+ion-header {
+    background-color: #d4af37;
+    /* Fondo dorado */
+    color: #000000;
+    /* Texto negro */
+  
+    ion-toolbar {
+      --background: transparent;
+      /* Fondo transparente del toolbar para heredar el dorado */
+      color: #000;
+      /* Color del texto e iconos dentro del toolbar */
+  
+      ion-title,
+      ion-button {
+        color: #000;
+        /* Asegura que el texto e iconos sean negros */
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+    }
+  }
+  
+  ion-content {
+    --background: none;
+    /* Fondo negro para el contenido */
+    background-color: black;
+  }
+  
+  ion-list {
+    margin-top: 10px;
+    --background: none;
+    /* Fondo negro para el contenido */
+    background-color: black;
+  }
+  
+  ion-item {
+    --background: #000000;
+    /* Fondo blanco para cada item */
+    --border-color: #d4af37;
+    /* Borde gris claro */
+    border: 2px solid #d4af37;
+    /* Borde dorado */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    margin-top: 2%;
+    margin-bottom: 5%;
+    margin-left: 2%;
+    margin-right: 2%;
+  
+    ion-icon {
+      color: #d4af37;
+      /* Iconos dorados */
+      margin-right: 10px;
+    }
+  
+    ion-label {
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      font-size: 16px;
+      color: #fdfdfd;
+      /* Color gris oscuro para las etiquetas */
+    }
+  
+    ion-button {
+      --background: #d4af37;
+      /* Fondo dorado para los botones */
+      --color: black;
+      /* Texto negro en los botones */
+      --border-radius: 5px;
+      font-size: 14px;
+  
+      &:hover {
+        --background: #c4952b;
+        /* Dorado más oscuro en hover */
+      }
+    }
+  
+    ion-toggle {
+      --handle-background: #d4af37;
+      /* Color dorado para el handle del toggle */
+    }
+  }
+  
+  ion-item:last-child {
+    margin-bottom: 0;
+    /* Sin margen en el último item */
+  }
+  
+  ion-back-button,
+  ion-menu-button {
+    --color: #000000;
+    /* Iconos de navegación negros */
+  }
+  
+  h1 {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-align: center;
+    padding-top: 5%;
+    font-size: 40px;
+    color: #d4af37;
+    /* Título dorado */
+  }
+  
+  .formuser {
+    text-align: center;
+    padding-top: 5%;
+    padding-bottom: 5%;
+    margin-left: 15%;
+    margin-right: 15%;
+  }
+  
+  ion-input {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    color: #d4af37;
+    /* Color dorado para el texto del input */
+  }
+  
+  .btns {
+    text-align: center;
+  }

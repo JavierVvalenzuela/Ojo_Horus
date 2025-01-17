@@ -5,9 +5,44 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">register</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <h1>Formulario de Registro</h1>
+
+  <div class="logo-container">
+    <img src="assets/img/ojo de horus.png" alt="Ojo de Horus" class="logo-img">
+  </div>
+
+  <div class="formuser">
+    <!-- Nickname -->
+    <div class="input-container">
+      <ion-input label="> Ingrese su NickName" label-placement="floating" [(ngModel)]="nickname" type="text"
+        [ngClass]="{'error': errores.nickname}"></ion-input>
+    </div>
+    <div *ngIf="errores.nickname" class="error-message">{{ errores.nickname }}</div>
+
+    <!-- Email -->
+    <div class="input-container">
+      <ion-input label="> Ingrese su Correo" label-placement="floating" [(ngModel)]="email" type="email"
+        [ngClass]="{'error': errores.email}"></ion-input>
+    </div>
+    <div *ngIf="errores.email" class="error-message">{{ errores.email }}</div>
+
+    <!-- Contraseña -->
+    <div class="input-container">
+      <ion-input label="> Ingrese su Contraseña" label-placement="floating" [(ngModel)]="clave" type="password"
+        [ngClass]="{'error': errores.clave}"></ion-input>
+    </div>
+    <div *ngIf="errores.clave" class="error-message">{{ errores.clave }}</div>
+
+    <!-- Confirmación de Contraseña -->
+    <div class="input-container">
+      <ion-input label="> Confirme su contraseña" label-placement="floating" [(ngModel)]="cclave" type="password"
+        [ngClass]="{'error': errores.cclave}"></ion-input>
+    </div>
+    <div *ngIf="errores.cclave" class="error-message">{{ errores.cclave }}</div>
+  </div>
+
+  <div class="btns">
+    <ion-button fill="outline" color="warning" (click)="validarCampos()">Registrar</ion-button>
+    <ion-button fill="outline" color="light" [routerLink]="['/login']">Cancelar</ion-button>
+  </div>
 </ion-content>

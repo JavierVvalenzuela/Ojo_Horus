@@ -1,13 +1,56 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>inicio</ion-title>
+    <ion-button slot="end" color="dark" routerLink="/login">Cerrar sesión</ion-button>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">inicio</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <!-- Saludo con el nombre del usuario -->
+  <div class="welcome-section">
+    <h1>¡Bienvenido {{ nickname }}!</h1>
+  </div>
+
+  <img src="assets/img/menu-logo.jpg" alt="Portada de bienvenida" class="welcome-image">
+
+  <!-- Sección "Sobre nosotros" -->
+  <div class="about-section">
+    <h2>Sobre nosotros</h2>
+    <p>
+      En Ojo de horus, somos una comunidad apasionada de entusiastas de los videojuegos de EA Sports. Nuestro objetivo
+      es proporcionar un espacio dinámico y vibrante donde jugadores de todas partes del mundo puedan conectarse,
+      compartir sus experiencias y disfrutar de discusiones apasionadas sobre los juegos que aman.
+
+      Desde los icónicos juegos de fútbol de FIFA hasta los intensos desafíos de la serie Madden NFL, nuestra
+      plataforma está diseñada para ser el lugar de referencia para todas las noticias, estrategias, y debates sobre
+      los títulos de EA Sports. Ya seas un jugador veterano o nuevo en la serie, encontrarás aquí una comunidad
+      acogedora y dispuesta a ayudar.
+    </p>
+
+    <h3>¿Qué Ofrecemos?</h3>
+
+    <p>Foros Activos: Participa en conversaciones sobre tácticas, jugadores, y eventos recientes.
+      Noticias y Actualizaciones: Mantente al tanto de las últimas noticias y actualizaciones.
+      Recursos y Guías: Accede a guías útiles, trucos y estrategias para mejorar tu juego.
+      Eventos y Torneos: Únete a nuestros eventos y torneos para competir con otros entusiastas.</p>
+
+
+    <p>
+      Tu voz y tus ideas son importantes para nosotros. En Ojo de horus, cada miembro tiene la oportunidad de
+      contribuir y hacer crecer nuestra comunidad. Ya sea que estés buscando consejos, quieras discutir las últimas
+      actualizaciones o simplemente desees conocer a otros jugadores, aquí encontrarás tu lugar.
+
+      ¡Gracias por ser parte de Ojo de horus! Estamos emocionados de tenerte con nosotros y esperamos que disfrutes de
+      tu experiencia en nuestra comunidad.
+    </p>
+  </div>
+
+  <div class="btns">
+    <ion-button fill="outline" color="warning" [routerLink]="['/menu']">Ir al menú</ion-button>
+    <ion-button *ngIf="nickname == 'Diego'" fill="outline" color="warning"
+      [routerLink]="['/administrador']">Administracion</ion-button>
+  </div>
 </ion-content>

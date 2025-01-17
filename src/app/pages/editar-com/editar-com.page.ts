@@ -7,10 +7,16 @@ import { Component, OnInit } from '@angular/core';
   standalone: false,
 })
 export class EditarComPage implements OnInit {
+  nombreComunidad: string = 'Los Pepitos';
+  descripcionComunidad: string = 'Somos una comunidad de jugadores de Ark apasionados por el diseño de bases, defensas y estrategias.';
+  imagenSeleccionada: string | null = 'assets/img/ArkLogo.jpg';
 
   constructor() { }
 
-  ngOnInit() {
-  }
 
+  seleccionarImagen() {
+    this.imagenSeleccionada = 'assets/img/ArkLogo.jpg';  
+  } 
+
+  ngOnInit() { }
 }

@@ -1,13 +1,39 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
     <ion-title>administrador</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">administrador</ion-title>
-    </ion-toolbar>
-  </ion-header>
+
+  <h1>Panel de administración</h1>
+  <div>
+    <h2>Usuarios Reportados</h2>
+    <ion-button expand="block" fill="outline" color="warning" [routerLink]="['/usuariosbaneados']">Aquí</ion-button>
+  </div>
+
+  <div>
+    <h3>Post Reportados</h3>
+    <ion-button expand="block" fill="outline" color="warning" [routerLink]="['/postreportados']">Aquí</ion-button>
+  </div>
+
+  <div>
+    <h4>Comentarios Reportados</h4>
+    <ion-button expand="block" fill="outline" color="warning" [routerLink]="['/comentariosreport']">Aquí</ion-button>
+  </div>
+
+  <div>
+    <h5>Usuarios Baneados</h5>
+    <ion-button expand="block" fill="outline" color="warning" [routerLink]="['/desbanearusuarios']">Aquí</ion-button>
+  </div>
 </ion-content>
+
+<ion-footer>
+  <div class="logo-container">
+    <img src="assets/img/ojo de horus.png" alt="Ojo de Horus" class="logo-img">
+  </div>
+</ion-footer>

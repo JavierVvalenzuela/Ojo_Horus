@@ -1,0 +1,111 @@
+ion-header {
+    background-color: #d4af37;
+    /* Fondo dorado */
+    color: #000000;
+    /* Texto negro */
+  
+    ion-toolbar {
+      --background: transparent;
+      /* Fondo transparente del toolbar para heredar el dorado */
+      color: #000;
+      /* Color del texto e iconos dentro del toolbar */
+  
+      ion-title,
+      ion-buttons,
+      ion-searchbar,
+      ion-button {
+        color: #000;
+        /* Asegura que el texto e iconos sean negros */
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+    }
+  }
+  
+  /* Aplica la fuente globalmente en el contenido */
+  ion-content {
+    --background: none;
+    background-color: black;
+  }
+  
+  .bordeDorado {
+    border: 2px solid #d4af37;
+    border: 2px solid #d4af37;
+    /* Borde dorado */
+    border-radius: 10px;
+    /* Bordes redondeados */
+  }
+  
+  /* Estilos para las tarjetas */
+  ion-card {
+    background-color: #000;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+  
+  ion-card-title {
+    background-color: black;
+    color: #d4af37;
+    font-size: 23px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: bolder;
+    text-align: center;
+  }
+  
+  /* Estilos para los elementos de input */
+  ion-item {
+    --background: none;
+    background-color: #000;
+    border: 2px solid #d4af37;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    padding-top: 3%;
+    padding-bottom: 5%;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+  
+  ion-label {
+    background-color: black;
+    color: #fff;
+    font-size: 1rem;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+  
+  .t1,
+  .t2 {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 17px;
+    color: white;
+  }
+  
+  ion-input,
+  ion-textarea {
+    margin-left: 5%;
+    background-color: #000;
+    border: 2px solid #d4af37;
+    background-color: black;
+    color: #fff;
+    border-radius: 8px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    padding-bottom: 5%;
+  }
+  
+  /* Estilos para las imágenes */
+  ion-img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .btns {
+    text-align: center;
+  }
+  
+  ion-button {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+  
+  .camim {
+    text-align: center;
+  }

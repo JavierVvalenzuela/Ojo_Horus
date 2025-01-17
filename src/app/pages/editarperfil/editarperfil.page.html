@@ -5,9 +5,55 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">editarperfil</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-card-header class="card-header">
+    <div class="foto">
+      <ion-icon color="white" name="person-circle-outline"></ion-icon>
+    </div>
+
+    <ion-item class="cabe" lines="none">
+      <ion-label>
+        <h2 class="nombre">Diego</h2>
+      </ion-label>
+    </ion-item>
+  </ion-card-header>
+
+  <div class="content-wrapper">
+    <ion-card class="cardperfil">
+      <ion-card-content>
+        <!-- Nombre -->
+        <ion-item>
+          <ion-input class="d1" placeholder="Nombre" [(ngModel)]="nombre" (ionInput)="errores.nombre = null">
+          </ion-input>
+        </ion-item>
+        <p *ngIf="errores.nombre" class="error">{{ errores.nombre }}</p>
+
+        <!-- Correo Electrónico -->
+        <ion-item>
+          <ion-input class="d2" placeholder="Correo" [(ngModel)]="email" (ionInput)="errores.email = null">
+          </ion-input>
+        </ion-item>
+        <p *ngIf="errores.email" class="error">{{ errores.email }}</p>
+
+        <!-- Teléfono -->
+        <ion-item>
+          <ion-input class="d3" placeholder="Teléfono" [(ngModel)]="telefono" type="tel" maxlength="8"
+            inputmode="numeric">
+          </ion-input>
+        </ion-item>
+        <p *ngIf="errores.telefono" class="error">{{ errores.telefono }}</p>
+
+        <!-- Dirección -->
+        <ion-item>
+          <ion-input class="d4" placeholder="Dirección" [(ngModel)]="direccion" (ionInput)="errores.direccion = null">
+          </ion-input>
+        </ion-item>
+        <p *ngIf="errores.direccion" class="error">{{ errores.direccion }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="btns">
+      <ion-button fill="outline" color="warning" (click)="guardarPerfil()">Guardar</ion-button>
+      <ion-button fill="outline" color="light" [routerLink]="['/perfilusuario']">Cancelar</ion-button>
+    </div>
+  </div>
 </ion-content>

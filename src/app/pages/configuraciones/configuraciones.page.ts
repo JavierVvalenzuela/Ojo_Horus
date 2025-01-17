@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-configuraciones',
@@ -8,9 +9,24 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ConfiguracionesPage implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
+  }
+
+  // Método para redirigir a la página de cambiar contraseña
+  goToCambiarContrasena() {
+    this.router.navigate(['/cambiar-password']);
+  }
+
+  // Método para redirigir a la página de seguridad
+  goToSeguridad() {
+    this.router.navigate(['/seguridad']);
+  }
+
+  // Método para redirigir a la página de inicio
+  goToInicio() {
+    this.router.navigate(['/inicio']);
   }
 
 }

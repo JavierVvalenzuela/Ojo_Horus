@@ -1,0 +1,88 @@
+//header
+ion-header {
+    background-color: #d4af37;
+    /* Fondo dorado */
+    color: #000000;
+    /* Texto negro */
+
+    ion-toolbar {
+        --background: transparent;
+        /* Fondo transparente del toolbar para heredar el dorado */
+        color: #000;
+        /* Color del texto e iconos dentro del toolbar */
+
+        ion-title,
+        ion-button {
+            color: #000;
+            /* Asegura que el texto e iconos sean negros */
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+    }
+}
+
+//color fondo
+ion-content {
+    background-color: #000000;
+    /* Fondo negro */
+    --background: transparent;
+}
+
+h1 {
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    color: #d4af37;
+    font-size: 27px;
+    padding-top: 3%;
+    padding-bottom: 5%;
+    font-weight: bolder;
+}
+
+//card general post
+.postrep,
+.postrep2,
+.postrep3 {
+    border: 2px solid #d4af37;
+    /* Borde dorado */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    background-color: black;
+    color: white;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    padding: 2%;
+}
+
+//card del reportado
+.postcard,
+.postcard2,
+.postcard3 {
+    border: 2px solid #d4af37;
+    /* Borde dorado */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    background-color: black;
+    color: white;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    padding: 2%;
+
+    h5,
+    h6,
+    h7 {
+        color: #d4af37;
+        font-size: 20px;
+        padding-top: 1px;
+    }
+
+    p {
+        font-size: 18px;
+    }
+}
+
+//botones
+.btns {
+    text-align: center;
+}
+
+//contenido boton
+ion-button {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
