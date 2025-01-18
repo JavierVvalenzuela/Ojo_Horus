@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { AlertController, Platform } from '@ionic/angular';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Usuarios } from './usuarios';
+
 
 @Injectable({
   providedIn: 'root',
@@ -29,12 +32,12 @@ export class BdServicioService {
   );`;
   //tabla de preguntas de seguridad para guardar las preguntas
   tablaPregunta: string = `CREATE TABLE IF NOT EXISTS preguntas (
-    id_pregunta_seguridad INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_pregunta_seguridad INTEGER PRIMARY KEY,
     nombre_pregunta_seguridad VARCHAR(255) NOT NULL
   );`;
 //tabla de usuario donde se contienen los datos de estos
   tablaUsuario: string = `CREATE TABLE IF NOT EXISTS usuario (
-    id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_usuario INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, 
     nombre_usuario VARCHAR(50) NOT NULL,
     nick_usuario VARCHAR(50) NOT NULL,
     correo_usuario VARCHAR(50) NOT NULL UNIQUE,
@@ -53,7 +56,6 @@ export class BdServicioService {
     id_usuario INTEGER NOT NULL,  -- Refleja al creador de la comunidad
     descripcion_comunidad VARCHAR(250),
     img_comunidad BLOB,  -- Imagen opcional
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,  -- Fecha de creación de la comunidad
     FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
   );`;
   //tabla de los post que pueden hacer los usuarios
@@ -85,13 +87,12 @@ export class BdServicioService {
   tablaReportes: string = `CREATE TABLE IF NOT EXISTS reporte (
     id_reporte INTEGER PRIMARY KEY AUTOINCREMENT,
     motivo TEXT NOT NULL,
-    fecha_reporte DATETIME DEFAULT CURRENT_TIMESTAMP,
     estado_reporte VARCHAR(20) DEFAULT 'Pendiente',
     id_usuario INTEGER NOT NULL, 
     id_post INTEGER, 
     id_comunidad INTEGER,
     id_comentario INTEGER,
-    FOREIGN KEY (id_usuario) REFERENCES usuario (idusuario),
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario),
     FOREIGN KEY (id_post) REFERENCES post (id_post),
     FOREIGN KEY (id_comunidad) REFERENCES comunidad (id_comunidad),
     FOREIGN KEY (id_comentario) REFERENCES comentario (id_comentario)
@@ -119,8 +120,10 @@ export class BdServicioService {
   //aqui ira el insert a las demas tablas
 
   //tabla para el usuario admin
-  registroUsuario: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario,contrasena_usuario,
-    estado_cuenta, razon_ban, id_rol) VALUES (1, 'Admin', 'Admin', 'Admin', 1, 'Actibo', 1); )`;
+  registroUsuario: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, contrasena_usuario, id_estado, id_rol) VALUES (1, 'Admin', 'Admin', 'Admin', 1, 1);`;
+
+  //observable para manipular los select de mi BD
+  listaUsuarios = new BehaviorSubject<Usuarios[]>([]);
 
   //observable del status de la BD
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -128,12 +131,96 @@ export class BdServicioService {
   constructor(
     private sqlite: SQLite,
     private platform: Platform,
-    private alertcontroller: AlertController
-  ) {}
+    private alertcontroller: AlertController,
+     private router: Router
+  ) {
+    this.crearBD();
+  }
   //funciones para poder acceder a cada observable que haya creado
   dbStatus() {
     return this.isDBReady.asObservable();
   }
+
+  fetchUsuarios(): Observable<Usuarios[]>{
+    return this.listaUsuarios.asObservable();
+  }
+
+  //funcion para crear la base de datos (en sqldeveloper seria crear nueva conexion)
+  crearBD(){
+    //Verificar si la plataforma esta lista
+    this.platform.ready().then(() => {
+      //crear una base de datos o abrirla
+      this.sqlite.create({
+        name: 'foro.db',
+        location: 'default',
+      }).then((db: SQLiteObject) => {
+        this.database = db;
+        //crear tablas
+        this.crearTablas();
+      }).catch((error) => {
+        this.presentAlert('Error', 'Error al crear la base de datos');
+    });
+    });
+  }
+  async crearTablas() {
+    try {
+      await this.database.executeSql(this.tablaRol, []);
+      await this.database.executeSql(this.registroRoles, []);
+  
+      await this.database.executeSql(this.tablaEstado, []);
+      await this.database.executeSql(this.registroEstado, []);
+  
+      await this.database.executeSql(this.tablaPregunta, []);
+      await this.database.executeSql(this.registroPregunta, []);
+  
+      await this.database.executeSql(this.tablaUsuario, []);
+      await this.database.executeSql(this.registroUsuario, []);
+  
+      await this.database.executeSql(this.tablaComunidad, []);
+      await this.database.executeSql(this.tablaPost, []);
+      await this.database.executeSql(this.tablaComentario, []);
+      await this.database.executeSql(this.tablaReportes, []);
+      await this.database.executeSql(this.tablaRespuesta, []);
+  
+      this.buscarUsuarios(); // Actualizar lista
+      this.isDBReady.next(true); // Notificar que la BD está lista
+    } catch (e) {
+      this.presentAlert('Error', `Error al crear las tablas: ${JSON.stringify(e)}`);
+    }
+  }
+
+//Función para buscar todos los registros de la tabla usuario 
+buscarUsuarios() {
+  // Retorno del SELECT de la BD en la tabla usuario
+  this.database.executeSql('SELECT * FROM usuario', []).then(res => {
+    // Creo una lista vacía para almacenar los registros
+    let items: Usuarios[] = [];
+    // Verificar si el cursor trae datos
+    if (res.rows.length > 0) {
+      // Ciclo for para recorrer el registro
+      for (let i = 0; i < res.rows.length; i++) {
+        // Agrego los registros a la lista
+        items.push({
+          id_usuario: res.rows.item(i).id_usuario,
+          nombre_usuario: res.rows.item(i).nombre_usuario,
+          nick_usuario: res.rows.item(i).nick_usuario,
+          correo_usuario: res.rows.item(i).correo_usuario,
+          telefono_usuario: res.rows.item(i).telefono_usuario,
+          contrasena_usuario: res.rows.item(i).contrasena_usuario,
+          img_perfil: res.rows.item(i).img_perfil,
+          estado_cuenta: res.rows.item(i).estado_cuenta,
+          razon_ban: res.rows.item(i).razon_ban,
+          id_rol: res.rows.item(i).id_rol
+        });
+      }
+    }
+    // Actualizar el observable con la lista de usuarios
+    this.listaUsuarios.next(items);
+  }).catch(e => {
+    this.presentAlert('Error al buscar los usuarios', JSON.stringify(e));
+  });
+}
+
   //alertas
   async presentAlert(titulo: string, msj: string) {
     const alert = await this.alertcontroller.create({
@@ -146,3 +233,5 @@ export class BdServicioService {
   }
 
 }
+
+
