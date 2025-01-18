@@ -28,10 +28,14 @@
       <ion-card-title>Imagen de la Comunidad</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-img [src]="imagenSeleccionada" alt="Imagen de la comunidad"></ion-img>
+      <div class="fotocom-container">
+        <ion-img class="fotocom" [src]="fotografia" alt="Sin Foto" *ngIf="fotografia"></ion-img>
+      </div>
 
       <!-- Botón visual para cambiar la imagen -->
-      <ion-button class="camim" fill="outline" color="warning" (click)="seleccionarImagen()">Cambiar Imagen</ion-button>
+       <div class="boton-container">
+      <ion-button class="camim" fill="outline" color="warning" (click)="takePicture()">Cambiar Imagen</ion-button>
+      </div>
     </ion-card-content>
   </ion-card>
 

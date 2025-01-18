@@ -7,7 +7,8 @@
 <ion-content [fullscreen]="true">
   <ion-card-header class="card-header">
     <div class="foto">
-      <ion-icon color="white" name="person-circle-outline"></ion-icon>
+      <ion-icon color="white" name="person-circle-outline" (click)="takePicture()" *ngIf ="!fotografia"></ion-icon>
+      <img class="fotoperfil" [src]="fotografia" alt="Sin foto" (click)="takePicture()" *ngIf="fotografia">
     </div>
 
     <ion-item class="cabe" lines="none">

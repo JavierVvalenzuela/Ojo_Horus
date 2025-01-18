@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-
+import { Camera, CameraResultType } from '@capacitor/camera';
 @Component({
   selector: 'app-editarperfil',
   templateUrl: './editarperfil.page.html',
@@ -25,6 +25,9 @@ export class EditarperfilPage implements OnInit {
     telefono: null,
     direccion: null,
   };
+
+  //variable para foto
+  fotografia: any;
 
   constructor(
     private alertController: AlertController,
@@ -90,4 +93,18 @@ export class EditarperfilPage implements OnInit {
       this.router.navigate(['/perfilusuario']);
     }
   }
+
+  takePicture = async () => {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: CameraResultType.Uri
+    });
+  
+    var imageUrl = image.webPath;
+  
+    // Can be set to the src of an image now
+    this.fotografia = imageUrl;
+  };
+
 }

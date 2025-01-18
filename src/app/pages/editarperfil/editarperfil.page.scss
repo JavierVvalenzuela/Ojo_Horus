@@ -76,6 +76,16 @@ ion-header {
     margin: 20px;
     margin-left: 38%;
   }
+
+  .fotoperfil{
+    font-size: 100px;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+  }
   
   /* Estilo de nombres y títulos */
   .nombre {

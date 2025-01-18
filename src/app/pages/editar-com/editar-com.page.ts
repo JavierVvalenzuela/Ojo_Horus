@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { Camera, CameraResultType } from '@capacitor/camera';
 @Component({
   selector: 'app-editar-com',
   templateUrl: './editar-com.page.html',
@@ -9,14 +9,22 @@ import { Component, OnInit } from '@angular/core';
 export class EditarComPage implements OnInit {
   nombreComunidad: string = 'Los Pepitos';
   descripcionComunidad: string = 'Somos una comunidad de jugadores de Ark apasionados por el diseño de bases, defensas y estrategias.';
-  imagenSeleccionada: string | null = 'assets/img/ArkLogo.jpg';
+  fotografia: any;
 
   constructor() { }
+  takePicture = async () => {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: CameraResultType.Uri
+    });
+  
+    var imageUrl = image.webPath;
+  
+    // Can be set to the src of an image now
+    this.fotografia = imageUrl;
+  };
 
-
-  seleccionarImagen() {
-    this.imagenSeleccionada = 'assets/img/ArkLogo.jpg';  
-  } 
 
   ngOnInit() { }
 }
