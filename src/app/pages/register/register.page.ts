@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { BdServicioService } from 'src/app/services/bd-servicio.service';
 
 @Component({
   selector: 'app-register',
@@ -22,7 +23,7 @@ export class RegisterPage implements OnInit {
     cclave: null
   };
 
-  constructor(private alertController: AlertController, private router: Router) { }
+  constructor(private bd: BdServicioService, private alertController: AlertController, private router: Router) { }
 
   async presentAlert(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
@@ -33,9 +34,9 @@ export class RegisterPage implements OnInit {
     await alert.present();
   }
 
-  validarCampos() {
+  validarCampos(): boolean {
     let correcto = true;
-  
+
     // Validación de nickname
     if (this.nickname.length < 3 || this.nickname.length > 25) {
       this.errores.nickname = 'El Nickname debe tener entre 3 y 25 caracteres.';
@@ -43,7 +44,7 @@ export class RegisterPage implements OnInit {
     } else {
       this.errores.nickname = null;
     }
-  
+
     // Validación de email
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (!emailRegex.test(this.email)) {
@@ -52,7 +53,7 @@ export class RegisterPage implements OnInit {
     } else {
       this.errores.email = null;
     }
-  
+
     // Validación de clave
     if (this.clave.length < 8 || this.clave.length > 20 || !/[A-Z]/.test(this.clave) || !/\d/.test(this.clave) || !/[-!@#$%^&*.]/.test(this.clave)) {
       this.errores.clave = 'La contraseña debe tener entre 8 y 20 caracteres, incluir una mayúscula, un número y un carácter especial.';
@@ -60,7 +61,7 @@ export class RegisterPage implements OnInit {
     } else {
       this.errores.clave = null;
     }
-  
+
     // Validación de confirmación de clave
     if (this.clave !== this.cclave) {
       this.errores.cclave = 'Las contraseñas no coinciden.';
@@ -68,12 +69,36 @@ export class RegisterPage implements OnInit {
     } else {
       this.errores.cclave = null;
     }
-  
-    // Si todo es correcto
-    if (correcto) {
-      this.presentAlert("Registro", "Has registrado un nuevo usuario correctamente.");
+
+    return correcto;
+  }
+
+  async registrar() {
+    if (!this.validarCampos()) {
+      return;
+    }
+
+    const usuario = {
+      id_usuario: 0, 
+      nombre_usuario: this.nickname,
+      nick_usuario: this.nickname,
+      correo_usuario: this.email,
+      telefono_usuario: null, 
+      contrasena_usuario: this.clave,
+      img_perfil: null, 
+      estado_cuenta: 1,
+      razon_ban: null,
+      id_rol: 2, 
+    };
+
+    try {
+      await this.bd.registrarUsuario(usuario);
+      this.presentAlert('Registro', 'Usuario registrado correctamente.');
       this.router.navigate(['/login']);
+    } catch (error) {
+      this.presentAlert('Error', `No se pudo registrar el usuario: ${(error as any).message || error}`);
     }
   }
+
   ngOnInit() { }
 }

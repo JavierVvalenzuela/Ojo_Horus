@@ -157,8 +157,8 @@ export class BdServicioService {
         this.database = db;
         //crear tablas
         this.crearTablas();
-      }).catch((error) => {
-        this.presentAlert('Error', 'Error al crear la base de datos');
+      }).catch(e => {
+        this.presentAlert('error crear BD', JSON.stringify(e));
     });
     });
   }
@@ -181,6 +181,12 @@ export class BdServicioService {
       await this.database.executeSql(this.tablaComentario, []);
       await this.database.executeSql(this.tablaReportes, []);
       await this.database.executeSql(this.tablaRespuesta, []);
+
+      await this.database.executeSql(this.registroRoles, []);
+      await this.database.executeSql(this.registroEstado, []);
+      await this.database.executeSql(this.registroPregunta, []);
+
+      await this.database.executeSql(this.registroUsuario, []);
   
       this.buscarUsuarios(); // Actualizar lista
       this.isDBReady.next(true); // Notificar que la BD está lista
@@ -219,6 +225,44 @@ buscarUsuarios() {
   }).catch(e => {
     this.presentAlert('Error al buscar los usuarios', JSON.stringify(e));
   });
+}
+// Función para registrar un usuario en la tabla usuario
+async registrarUsuario(usuario: Usuarios) {
+  try {
+    // Ejecuta la consulta de inserción
+    const result = await this.database.executeSql(
+      `INSERT INTO usuario 
+        (nombre_usuario, nick_usuario, correo_usuario, telefono_usuario, contrasena_usuario, img_perfil, estado_cuenta, razon_ban, id_rol) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+      [
+        usuario.nombre_usuario,
+        usuario.nick_usuario,
+        usuario.correo_usuario,
+        usuario.telefono_usuario,
+        usuario.contrasena_usuario,
+        usuario.img_perfil,
+        usuario.estado_cuenta,
+        usuario.razon_ban,
+        usuario.id_rol
+      ]
+    );
+
+    // Obtiene el último ID insertado
+    const lastId = result.insertId;
+    console.log('ID del usuario registrado:', lastId);
+
+    // Muestra una alerta de éxito
+    this.presentAlert('Registro', `Usuario registrado correctamente con ID: ${lastId}`);
+    
+    // Navega a la página de Login
+    this.router.navigate(['/Login']);
+    
+    // Opcional: Llama a buscarUsuarios si necesitas actualizar datos localmente
+    this.buscarUsuarios();
+  } catch (e) {
+    // Manejo de errores
+    this.presentAlert('Error al registrar el usuario', JSON.stringify(e));
+  }
 }
 
   //alertas
