@@ -2,14 +2,13 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
-      <ion-back-button></ion-back-button> <!--boton para retroceder-->
+      <ion-back-button></ion-back-button> <!-- Botón para retroceder -->
     </ion-buttons>
-    <ion-title>comentarios</ion-title>
+    <ion-title>Comentarios</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="content" [fullscreen]="true">
-
   <ion-card class="card-custom">
     <div>
       <ion-button fill="clear" [routerLink]="['/reportar-contenido']" class="btn-3puntos">
@@ -23,42 +22,30 @@
 
     <ion-card-content>
       <img src="assets/img/forza.jpg" alt="Publicación de usuario" style="width: 100%; margin-bottom: 8px;">
-
       <div class="btnpost">
         <ion-button fill="outline" color="warning">Me Gusta</ion-button>
       </div>
-
     </ion-card-content>
   </ion-card>
 
-
   <h1>Comentarios</h1>
 
-
-  <ion-card>
+  <!-- Comentarios con botones de Cámara y Compartir -->
+  <ion-card *ngFor="let comentario of comentarios">
     <ion-button fill="clear" [routerLink]="['/reportar-contenido']" class="btn-3puntos">
       <img src="assets/icon/3puntos.png" alt="Reportar contenido" />
     </ion-button>
-    <ion-title [routerLink]="['/perfiles']">Usuario_extra</ion-title>
-    <p>este mensaje es de prueba</p>
-  </ion-card>
+    <ion-title [routerLink]="['/perfiles']">{{ comentario.usuario }}</ion-title>
+    <p>{{ comentario.texto }}</p>
 
-  <ion-card>
-    <ion-button fill="clear" [routerLink]="['/reportar-contenido']" class="btn-3puntos">
-      <img src="assets/icon/3puntos.png" alt="Reportar contenido" />
-    </ion-button>
-    <ion-title [routerLink]="['/perfiles']">Usuario_extra2</ion-title>
-    <p>Yo creo sinceramente que estos alumnos se ganaron un 7 profe</p>
+    <div class="action-buttons">
+      <ion-button (click)="takePhoto(comentario.id)">Tomar Foto</ion-button>
+      <ion-button (click)="shareContent(comentario.id)">
+        <ion-icon slot="start" name="share-social"></ion-icon>
+        Compartir Contenido
+      </ion-button>
+    </div>
   </ion-card>
-
-  <ion-card>
-    <ion-button fill="clear" [routerLink]="['/reportar-contenido']" class="btn-3puntos">
-      <img src="assets/icon/3puntos.png" alt="Reportar contenido" />
-    </ion-button>
-    <ion-title [routerLink]="['/perfiles']">Usuario_extra3</ion-title>
-    <p>Estoy de acuerdo con el usuario extra 2 profe, 7 y aprueban esta materia</p>
-  </ion-card>
-
 </ion-content>
 
 <ion-footer class="foot">
