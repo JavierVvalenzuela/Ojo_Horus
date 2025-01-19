@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { AlertController } from '@ionic/angular';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
 
@@ -11,19 +12,19 @@ import { BdServicioService } from 'src/app/services/bd-servicio.service';
 })
 export class RegisterPage implements OnInit {
 
-  nickname: string = '';
-  email: string = '';
-  clave: string = '';
+  nick_usuario: string = '';
+  correo_usuario: string = '';
+  contrasena_usuario: string = '';
   cclave: string = '';
 
-  errores: { nickname: string | null; email: string | null; clave: string | null; cclave: string | null } = {
-    nickname: null,
-    email: null,
-    clave: null,
+  errores: { nick_usuario: string | null; correo_usuario: string | null; contrasena_usuario: string | null; cclave: string | null } = {
+    nick_usuario: null,
+    correo_usuario: null,
+    contrasena_usuario: null,
     cclave: null
   };
 
-  constructor(private bd: BdServicioService, private alertController: AlertController, private router: Router) { }
+  constructor(private bd: BdServicioService, private alertController: AlertController, private router: Router, private nativestorage: NativeStorage) { }
 
   async presentAlert(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
@@ -38,32 +39,32 @@ export class RegisterPage implements OnInit {
     let correcto = true;
 
     // Validación de nickname
-    if (this.nickname.length < 3 || this.nickname.length > 25) {
-      this.errores.nickname = 'El Nickname debe tener entre 3 y 25 caracteres.';
+    if (this.nick_usuario.length < 3 || this.nick_usuario.length > 25) {
+      this.errores.nick_usuario = 'El Nickname debe tener entre 3 y 25 caracteres.';
       correcto = false;
     } else {
-      this.errores.nickname = null;
+      this.errores.nick_usuario = null;
     }
 
     // Validación de email
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    if (!emailRegex.test(this.email)) {
-      this.errores.email = 'Ingrese un correo electrónico válido.';
+    if (!emailRegex.test(this.correo_usuario)) {
+      this.errores.correo_usuario = 'Ingrese un correo electrónico válido.';
       correcto = false;
     } else {
-      this.errores.email = null;
+      this.errores.correo_usuario = null;
     }
 
     // Validación de clave
-    if (this.clave.length < 8 || this.clave.length > 20 || !/[A-Z]/.test(this.clave) || !/\d/.test(this.clave) || !/[-!@#$%^&*.]/.test(this.clave)) {
-      this.errores.clave = 'La contraseña debe tener entre 8 y 20 caracteres, incluir una mayúscula, un número y un carácter especial.';
+    if (this.contrasena_usuario.length < 8 || this.contrasena_usuario.length > 20 || !/[A-Z]/.test(this.contrasena_usuario) || !/\d/.test(this.contrasena_usuario) || !/[-!@#$%^&*.]/.test(this.contrasena_usuario)) {
+      this.errores.contrasena_usuario = 'La contraseña debe tener entre 8 y 20 caracteres, incluir una mayúscula, un número y un carácter especial.';
       correcto = false;
     } else {
-      this.errores.clave = null;
+      this.errores.contrasena_usuario = null;
     }
 
     // Validación de confirmación de clave
-    if (this.clave !== this.cclave) {
+    if (this.contrasena_usuario !== this.cclave) {
       this.errores.cclave = 'Las contraseñas no coinciden.';
       correcto = false;
     } else {
@@ -74,32 +75,17 @@ export class RegisterPage implements OnInit {
   }
 
   async registrar() {
-    if (!this.validarCampos()) {
-      return;
-    }
-  
-    // Creación del usuario con valores predeterminados
-    const usuario = {
-      id_usuario: 0,  
-      nombre_usuario: this.nickname,
-      nick_usuario: this.nickname,
-      correo_usuario: this.email,
-      telefono_usuario: null, 
-      contrasena_usuario: this.clave,
-      img_perfil: null, 
-      estado_cuenta: 1,
-      razon_ban: null,
-      id_rol: 2,  
-      id_estado: 1, 
-    };
-  
-    try {
-      this.bd.agregarUsuario(usuario);  
-      this.presentAlert('Registro', 'Usuario registrado correctamente.');
-      this.router.navigate(['/login']);
-    } catch (error) {
-      this.presentAlert('Error', `No se pudo registrar el usuario: ${(error as any).message || error}`);
-    }
+    //obtener y mostrar la variable de storage
+    this.nativestorage.getItem('prueba').then(data=>{
+      //almacenar en una variable propia del ts o la muestro por pantalla si lo necesito
+      this.bd.presentAlert("Storage", data)
+    })
+    this.bd.agregarUsuario(
+      this.nick_usuario,
+      this.correo_usuario,
+      this.contrasena_usuario
+    );
+    
   }
 
   ngOnInit() { }

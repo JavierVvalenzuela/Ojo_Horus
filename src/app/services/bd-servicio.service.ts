@@ -237,25 +237,26 @@ export class BdServicioService {
         }
       }
       // Actualizar lista en el BehaviorSubject
-      this.listaUsuarios.next(items);
+      this.listaUsuarios.next(items as any);
+
     }).catch(e => {
       this.presentAlert('Error', `Error al buscar usuarios: ${JSON.stringify(e)}`);
-    });
+    })
   }
   // Función para agregar un usuario (registrar)
-  agregarUsuario(usuario: Usuarios): Observable<any> {
-    return new Observable(observer => {
-      this.database.executeSql(`INSERT INTO usuario (nombre_usuario, correo_usuario, contrasena_usuario) VALUES (?, ?, ?)`, [usuario.nombre_usuario, usuario.correo_usuario, usuario.contrasena_usuario])
-        .then((res: any) => {
-          observer.next(res);
-          observer.complete();
-        })
-        .catch((error: any) => {
-          this.presentAlert('Error', `Error al agregar usuario: ${JSON.stringify(error)}`);
-          observer.error(error);
-        });
-    });
-  }
+  agregarUsuario(nick_usuario: string, correo_usuario: string, contrasena_usuario: string){
+    //retorna el insert en la tabla
+    this.database.executeSql('INSERT INTO usuario(nick_usuario, correo_usuario, contrasena_usuario) VALUES(?,?,?)',[nick_usuario, correo_usuario, contrasena_usuario]).then(res=>{
+      //mostrar un msj indicando un registro completo
+      this.presentAlert('Registro','Usuario registrado correctamente');
+      //actualizar el observable
+      this.buscarUsuarios();
+      this.router.navigate(['/login']);
+    }).catch(e=>{
+      this.presentAlert('error agregarUsuario', JSON.stringify(e));
+    })
+  } 
+
 
   // Función para actualizar un usuario
   actualizarUsuario(usuario: Usuarios): Observable<any> {

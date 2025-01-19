@@ -17,40 +17,40 @@
       <ion-input 
         label="> Ingrese su NickName" 
         label-placement="floating" 
-        [(ngModel)]="nickname" 
+        [(ngModel)]="nick_usuario" 
         name="nickname" 
         type="text" 
         maxlength="25" 
-        [ngClass]="{'error': errores.nickname}">
+        [ngClass]="{'error': errores.nick_usuario}">
       </ion-input>
     </div>
-    <div *ngIf="errores.nickname" class="error-message">{{ errores.nickname }}</div>
+    <div *ngIf="errores.nick_usuario" class="error-message">{{ errores.nick_usuario }}</div>
 
     <!-- Email -->
     <div class="input-container">
       <ion-input 
         label="> Ingrese su Correo" 
         label-placement="floating" 
-        [(ngModel)]="email" 
+        [(ngModel)]="correo_usuario" 
         name="email" 
         type="email" 
-        [ngClass]="{'error': errores.email}">
+        [ngClass]="{'error': errores.correo_usuario}">
       </ion-input>
     </div>
-    <div *ngIf="errores.email" class="error-message">{{ errores.email }}</div>
+    <div *ngIf="errores.correo_usuario" class="error-message">{{ errores.correo_usuario }}</div>
 
     <!-- Contraseña -->
     <div class="input-container">
       <ion-input 
         label="> Ingrese su Contraseña" 
         label-placement="floating" 
-        [(ngModel)]="clave" 
+        [(ngModel)]="contrasena_usuario" 
         name="clave" 
         type="password" 
-        [ngClass]="{'error': errores.clave}">
+        [ngClass]="{'error': errores.contrasena_usuario}">
       </ion-input>
     </div>
-    <div *ngIf="errores.clave" class="error-message">{{ errores.clave }}</div>
+    <div *ngIf="errores.contrasena_usuario" class="error-message">{{ errores.contrasena_usuario }}</div>
 
     <!-- Confirmación de Contraseña -->
     <div class="input-container">
