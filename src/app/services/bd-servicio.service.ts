@@ -39,8 +39,8 @@ export class BdServicioService {
   tablaUsuario: string = `CREATE TABLE IF NOT EXISTS usuario (
     id_usuario INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, 
     nombre_usuario VARCHAR(50) NOT NULL,
-    nick_usuario VARCHAR(50) NOT NULL,
-    correo_usuario VARCHAR(50) NOT NULL UNIQUE,
+    nick_usuario VARCHAR(50) UNIQUE NOT NULL,
+    correo_usuario VARCHAR(50) UNIQUE NOT NULL,
     telefono_usuario VARCHAR(15),
     contrasena_usuario VARCHAR(16) NOT NULL,
     img_perfil BLOB,
@@ -119,8 +119,20 @@ export class BdServicioService {
 
   //aqui ira el insert a las demas tablas
 
-  //tabla para el usuario admin
-  registroUsuario: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, contrasena_usuario, id_estado, id_rol) VALUES (1, 'Admin', 'Admin', 'Admin', 1, 1);`;
+  //tablas usuarios
+  registroUsuario: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES (1, 'Admin', 'Admin', 'Admin@gmail.com' 'Admin.01', 1, 1);`;
+  registroDiego: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES (2, 'Diego', 'Goto', 'Goto@gmail.com' 'Diego.170', 1, 2);`;
+  registroJavier: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES (3, 'Javier', 'Red', 'Red@gmail.com' 'Javier.170', 1, 2);`;
+
+  //tablas post
+  post1: string = `INSERT OR IGNORE INTO post (id_post, titulo_post, contenido_post, likes_post, id_usuario, id_estado) VALUES (1, 'Gaming', 'Contenido Gaming', 100, 1, 1);`;
+  post2: string = `INSERT OR IGNORE INTO post (id_post, titulo_post, contenido_post, likes_post, id_usuario, id_estado) VALUES (2, 'Gaming2', 'Contenido Gaming2', 1000, 2, 1);`;
+  post3: string = `INSERT OR IGNORE INTO post (id_post, titulo_post, contenido_post, likes_post, id_usuario, id_estado) VALUES (3, 'Gaming3', 'Contenido Gaming3', 10000, 3, 1);`;
+
+  //tablas comentarios
+  comentario1: string = `INSERT OR IGNORE INTO comentario (id_comentario, contenido_comentario, likes_comentario, id_estado, id_post, id_usuario) VALUES (1, 'Este es el primer comentario', 100, 1, 1, 1);`;
+  comentario2: string = `INSERT OR IGNORE INTO comentario (id_comentario, contenido_comentario, likes_comentario, id_estado, id_post, id_usuario) VALUES (2, 'Este es el segundo comentario', 200, 1, 2, 2);`;
+  comentario3: string = `INSERT OR IGNORE INTO comentario (id_comentario, contenido_comentario, likes_comentario, id_estado, id_post, id_usuario) VALUES (3, 'Este es el tercer comentario', 300, 1, 3, 3);`;
 
   //observable para manipular los select de mi BD
   listaUsuarios = new BehaviorSubject<Usuarios[]>([]);
