@@ -6,7 +6,7 @@ export class Usuarios {
     telefono_usuario: string | null = null;  
     contrasena_usuario: string = ''; 
     img_perfil: any |null = null;   
-    estado_cuenta: number = 1;        
     razon_ban: string | null = null;  
     id_rol: number = 2; 
+    id_estado: number = 1;     
 }

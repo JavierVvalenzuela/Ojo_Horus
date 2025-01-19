@@ -77,9 +77,10 @@ export class RegisterPage implements OnInit {
     if (!this.validarCampos()) {
       return;
     }
-
+  
+    // Creación del usuario con valores predeterminados
     const usuario = {
-      id_usuario: 0, 
+      id_usuario: 0,  
       nombre_usuario: this.nickname,
       nick_usuario: this.nickname,
       correo_usuario: this.email,
@@ -88,11 +89,12 @@ export class RegisterPage implements OnInit {
       img_perfil: null, 
       estado_cuenta: 1,
       razon_ban: null,
-      id_rol: 2, 
+      id_rol: 2,  
+      id_estado: 1, 
     };
-
+  
     try {
-      await this.bd.registrarUsuario(usuario);
+      this.bd.agregarUsuario(usuario);  
       this.presentAlert('Registro', 'Usuario registrado correctamente.');
       this.router.navigate(['/login']);
     } catch (error) {

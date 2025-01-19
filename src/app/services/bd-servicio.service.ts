@@ -44,10 +44,11 @@ export class BdServicioService {
     telefono_usuario VARCHAR(15),
     contrasena_usuario VARCHAR(16) NOT NULL,
     img_perfil BLOB,
-    estado_cuenta INTEGER NOT NULL,
     razon_ban TEXT,
     id_rol INTEGER NOT NULL,
+    id_estado INTEGER NOT NULL,
     FOREIGN KEY (id_rol) REFERENCES roles (id_rol)
+    FOREIGN KEY (id_estado) REFERENCES estado (id_estado)
   );`;
 //tabla de comunidades
   tablaComunidad: string = `CREATE TABLE IF NOT EXISTS comunidad (
@@ -118,8 +119,7 @@ export class BdServicioService {
   (5, '¿Cuál es tu película favorita?');`;
 
   //aqui ira el insert a las demas tablas
-
-  //tablas usuarios
+    //tablas usuarios
   registroUsuario: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES (1, 'Admin', 'Admin', 'Admin@gmail.com' 'Admin.01', 1, 1);`;
   registroDiego: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES (2, 'Diego', 'Goto', 'Goto@gmail.com' 'Diego.170', 1, 2);`;
   registroJavier: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES (3, 'Javier', 'Red', 'Red@gmail.com' 'Javier.170', 1, 2);`;
@@ -144,7 +144,7 @@ export class BdServicioService {
     private sqlite: SQLite,
     private platform: Platform,
     private alertcontroller: AlertController,
-     private router: Router
+    private router: Router
   ) {
     this.crearBD();
   }
@@ -199,6 +199,16 @@ export class BdServicioService {
       await this.database.executeSql(this.registroPregunta, []);
 
       await this.database.executeSql(this.registroUsuario, []);
+      await this.database.executeSql(this.registroDiego, []);
+      await this.database.executeSql(this.registroJavier, []);
+
+      await this.database.executeSql(this.post1, []);
+      await this.database.executeSql(this.post2, []);
+      await this.database.executeSql(this.post3, []);
+
+      await this.database.executeSql(this.comentario1, []);
+      await this.database.executeSql(this.comentario2, []);
+      await this.database.executeSql(this.comentario3, []);
   
       this.buscarUsuarios(); // Actualizar lista
       this.isDBReady.next(true); // Notificar que la BD está lista
@@ -207,76 +217,77 @@ export class BdServicioService {
     }
   }
 
-//Función para buscar todos los registros de la tabla usuario 
-buscarUsuarios() {
-  // Retorno del SELECT de la BD en la tabla usuario
-  this.database.executeSql('SELECT * FROM usuario', []).then(res => {
-    // Creo una lista vacía para almacenar los registros
-    let items: Usuarios[] = [];
-    // Verificar si el cursor trae datos
-    if (res.rows.length > 0) {
-      // Ciclo for para recorrer el registro
-      for (let i = 0; i < res.rows.length; i++) {
-        // Agrego los registros a la lista
-        items.push({
-          id_usuario: res.rows.item(i).id_usuario,
-          nombre_usuario: res.rows.item(i).nombre_usuario,
-          nick_usuario: res.rows.item(i).nick_usuario,
-          correo_usuario: res.rows.item(i).correo_usuario,
-          telefono_usuario: res.rows.item(i).telefono_usuario,
-          contrasena_usuario: res.rows.item(i).contrasena_usuario,
-          img_perfil: res.rows.item(i).img_perfil,
-          estado_cuenta: res.rows.item(i).estado_cuenta,
-          razon_ban: res.rows.item(i).razon_ban,
-          id_rol: res.rows.item(i).id_rol
-        });
+  buscarUsuarios() {
+    this.database.executeSql('SELECT * FROM usuario', []).then(res => {
+      let items: Usuarios[] = [];
+      if (res.rows.length > 0) {
+        for (let i = 0; i < res.rows.length; i++) {
+          items.push({
+            id_usuario: res.rows.item(i).id_usuario,
+            nombre_usuario: res.rows.item(i).nombre_usuario,
+            nick_usuario: res.rows.item(i).nick_usuario,
+            correo_usuario: res.rows.item(i).correo_usuario,
+            telefono_usuario: res.rows.item(i).telefono_usuario,
+            contrasena_usuario: res.rows.item(i).contrasena_usuario,
+            img_perfil: res.rows.item(i).img_perfil,
+            id_estado: res.rows.item(i).id_estado,
+            razon_ban: res.rows.item(i).razon_ban,
+            id_rol: 0
+          });
+        }
       }
-    }
-    // Actualizar el observable con la lista de usuarios
-    this.listaUsuarios.next(items);
-  }).catch(e => {
-    this.presentAlert('Error al buscar los usuarios', JSON.stringify(e));
-  });
-}
-// Función para registrar un usuario en la tabla usuario
-async registrarUsuario(usuario: Usuarios) {
-  try {
-    // Ejecuta la consulta de inserción
-    const result = await this.database.executeSql(
-      `INSERT INTO usuario 
-        (nombre_usuario, nick_usuario, correo_usuario, telefono_usuario, contrasena_usuario, img_perfil, estado_cuenta, razon_ban, id_rol) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-      [
-        usuario.nombre_usuario,
-        usuario.nick_usuario,
-        usuario.correo_usuario,
-        usuario.telefono_usuario,
-        usuario.contrasena_usuario,
-        usuario.img_perfil,
-        usuario.estado_cuenta,
-        usuario.razon_ban,
-        usuario.id_rol
-      ]
-    );
-
-    // Obtiene el último ID insertado
-    const lastId = result.insertId;
-    console.log('ID del usuario registrado:', lastId);
-
-    // Muestra una alerta de éxito
-    this.presentAlert('Registro', `Usuario registrado correctamente con ID: ${lastId}`);
-    
-    // Navega a la página de Login
-    this.router.navigate(['/Login']);
-    
-    // Opcional: Llama a buscarUsuarios si necesitas actualizar datos localmente
-    this.buscarUsuarios();
-  } catch (e) {
-    // Manejo de errores
-    this.presentAlert('Error al registrar el usuario', JSON.stringify(e));
+      // Actualizar lista en el BehaviorSubject
+      this.listaUsuarios.next(items);
+    }).catch(e => {
+      this.presentAlert('Error', `Error al buscar usuarios: ${JSON.stringify(e)}`);
+    });
   }
-}
+  // Función para agregar un usuario (registrar)
+  agregarUsuario(usuario: Usuarios): Observable<any> {
+    return new Observable(observer => {
+      this.database.executeSql(`INSERT INTO usuario (nombre_usuario, correo_usuario, contrasena_usuario) VALUES (?, ?, ?)`, [usuario.nombre_usuario, usuario.correo_usuario, usuario.contrasena_usuario])
+        .then((res: any) => {
+          observer.next(res);
+          observer.complete();
+        })
+        .catch((error: any) => {
+          this.presentAlert('Error', `Error al agregar usuario: ${JSON.stringify(error)}`);
+          observer.error(error);
+        });
+    });
+  }
 
+  // Función para actualizar un usuario
+  actualizarUsuario(usuario: Usuarios): Observable<any> {
+    return new Observable(observer => {
+      this.database.executeSql(`UPDATE usuario SET nombre_usuario = ?, correo_usuario = ?, contrasena_usuario = ? WHERE id_usuario = ?`, 
+        [usuario.nombre_usuario, usuario.correo_usuario, usuario.contrasena_usuario, usuario.id_usuario])
+        .then((res: any) => {
+          observer.next(res);
+          observer.complete();
+        })
+        .catch((error: any) => {
+          this.presentAlert('Error', `Error al actualizar usuario: ${JSON.stringify(error)}`);
+          observer.error(error);
+        });
+    });
+  }
+
+  // Función para eliminar un usuario
+  eliminarUsuario(id: number): Observable<any> {
+    return new Observable(observer => {
+      this.database.executeSql(`DELETE FROM usuario WHERE id_usuario = ?`, [id])
+        .then((res: any) => {
+          observer.next(res);
+          observer.complete();
+        })
+        .catch((error: any) => {
+          this.presentAlert('Error', `Error al eliminar usuario: ${JSON.stringify(error)}`);
+          observer.error(error);
+        });
+    });
+  }
+  
   //alertas
   async presentAlert(titulo: string, msj: string) {
     const alert = await this.alertcontroller.create({
