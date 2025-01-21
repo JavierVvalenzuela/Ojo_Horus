@@ -75,11 +75,7 @@ export class RegisterPage implements OnInit {
   }
 
   async registrar() {
-    //obtener y mostrar la variable de storage
-    this.nativestorage.getItem('prueba').then(data=>{
-      //almacenar en una variable propia del ts o la muestro por pantalla si lo necesito
-      this.bd.presentAlert("Storage", data)
-    })
+
     this.bd.agregarUsuario(
       this.nick_usuario,
       this.correo_usuario,

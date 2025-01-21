@@ -4,6 +4,7 @@ import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { AlertController, Platform } from '@ionic/angular';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Usuarios } from './usuarios';
+import { ImgdefaultService } from './imgdefault.service';
 
 
 @Injectable({
@@ -13,15 +14,18 @@ export class BdServicioService {
   //variable para almacenar la conexion a la base de datos
   public database!: SQLiteObject;
 
+  //droptablausuario: string = `DROP TABLE IF EXISTS usuario;`;
+
+
   //Tablas del foro
   //Tabla de roles admin o user
   tablaRol: string = `CREATE TABLE IF NOT EXISTS roles (
-    id_rol INTEGER PRIMARY KEY,
+    id_rol INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre_rol VARCHAR(50) NOT NULL
   );`;
   //tabla de categorias
   tablaCategoria: string = `CREATE TABLE IF NOT EXISTS categoria (
-    id_categoria INTEGER PRIMARY KEY,
+    id_categoria INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre_cat VARCHAR(50) NOT NULL
   );`;
 
@@ -32,17 +36,18 @@ export class BdServicioService {
   );`;
   //tabla de preguntas de seguridad para guardar las preguntas
   tablaPregunta: string = `CREATE TABLE IF NOT EXISTS preguntas (
-    id_pregunta_seguridad INTEGER PRIMARY KEY,
+    id_pregunta_seguridad INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre_pregunta_seguridad VARCHAR(255) NOT NULL
   );`;
-//tabla de usuario donde se contienen los datos de estos
+
+  //tabla de usuario donde se contienen los datos de estos
   tablaUsuario: string = `CREATE TABLE IF NOT EXISTS usuario (
     id_usuario INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, 
-    nombre_usuario VARCHAR(50) NOT NULL,
+    nombre_usuario VARCHAR(50),
     nick_usuario VARCHAR(50) UNIQUE NOT NULL,
     correo_usuario VARCHAR(50) UNIQUE NOT NULL,
-    telefono_usuario VARCHAR(15),
-    contrasena_usuario VARCHAR(16) NOT NULL,
+    telefono_usuario VARCHAR(9),
+    contrasena_usuario VARCHAR(25) NOT NULL,
     img_perfil BLOB,
     razon_ban TEXT,
     id_rol INTEGER NOT NULL,
@@ -50,7 +55,7 @@ export class BdServicioService {
     FOREIGN KEY (id_rol) REFERENCES roles (id_rol)
     FOREIGN KEY (id_estado) REFERENCES estado (id_estado)
   );`;
-//tabla de comunidades
+  //tabla de comunidades
   tablaComunidad: string = `CREATE TABLE IF NOT EXISTS comunidad (
     id_comunidad INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre_comunidad VARCHAR(100) NOT NULL,
@@ -71,7 +76,7 @@ export class BdServicioService {
     FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario),
     FOREIGN KEY (id_estado) REFERENCES estado (id_estado)
   );`;
-//tabla de los comentarios que se pueden hacer en los post
+  //tabla de los comentarios que se pueden hacer en los post
   tablaComentario: string = `CREATE TABLE IF NOT EXISTS comentario (
     id_comentario INTEGER PRIMARY KEY AUTOINCREMENT,
     contenido_comentario TEXT NOT NULL,
@@ -84,7 +89,7 @@ export class BdServicioService {
     FOREIGN KEY (id_post) REFERENCES post (id_post),
     FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
   );`;
-//tabla de los reportes que se hacen a los post, comentarios y comunidad
+  //tabla de los reportes que se hacen a los post, comentarios y comunidad
   tablaReportes: string = `CREATE TABLE IF NOT EXISTS reporte (
     id_reporte INTEGER PRIMARY KEY AUTOINCREMENT,
     motivo TEXT NOT NULL,
@@ -119,10 +124,11 @@ export class BdServicioService {
   (5, '¿Cuál es tu película favorita?');`;
 
   //aqui ira el insert a las demas tablas
-    //tablas usuarios
-  registroUsuario: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES (1, 'Admin', 'Admin', 'Admin@gmail.com' 'Admin.01', 1, 1);`;
-  registroDiego: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES (2, 'Diego', 'Goto', 'Goto@gmail.com' 'Diego.170', 1, 2);`;
-  registroJavier: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES (3, 'Javier', 'Red', 'Red@gmail.com' 'Javier.170', 1, 2);`;
+  //tablas usuarios
+  registroUsuario: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES 
+  (1, 'Administrador', 'Admin', 'Admin@gmail.com', 'Admin.01', 1, 1),
+  (2, 'Usuario Goto', 'Goto', 'Goto@gmail.com', 'Diego.170', 1, 2),
+  (3, 'Usuario Red', 'Red', 'Red@gmail.com', 'Javier.170', 1, 2);`;
 
   //tablas post
   post1: string = `INSERT OR IGNORE INTO post (id_post, titulo_post, contenido_post, likes_post, id_usuario, id_estado) VALUES (1, 'Gaming', 'Contenido Gaming', 100, 1, 1);`;
@@ -144,7 +150,8 @@ export class BdServicioService {
     private sqlite: SQLite,
     private platform: Platform,
     private alertcontroller: AlertController,
-    private router: Router
+    private router: Router,
+    private api: ImgdefaultService
   ) {
     this.crearBD();
   }
@@ -153,12 +160,12 @@ export class BdServicioService {
     return this.isDBReady.asObservable();
   }
 
-  fetchUsuarios(): Observable<Usuarios[]>{
+  fetchUsuarios(): Observable<Usuarios[]> {
     return this.listaUsuarios.asObservable();
   }
 
   //funcion para crear la base de datos (en sqldeveloper seria crear nueva conexion)
-  crearBD(){
+  crearBD() {
     //Verificar si la plataforma esta lista
     this.platform.ready().then(() => {
       //crear una base de datos o abrirla
@@ -171,36 +178,30 @@ export class BdServicioService {
         this.crearTablas();
       }).catch(e => {
         this.presentAlert('error crear BD', JSON.stringify(e));
-    });
+      });
     });
   }
   async crearTablas() {
     try {
+      //await this.database.executeSql(this.droptablausuario, []);
+
       await this.database.executeSql(this.tablaRol, []);
       await this.database.executeSql(this.registroRoles, []);
-  
+
       await this.database.executeSql(this.tablaEstado, []);
       await this.database.executeSql(this.registroEstado, []);
-  
+
       await this.database.executeSql(this.tablaPregunta, []);
       await this.database.executeSql(this.registroPregunta, []);
-  
+
       await this.database.executeSql(this.tablaUsuario, []);
       await this.database.executeSql(this.registroUsuario, []);
-  
+
       await this.database.executeSql(this.tablaComunidad, []);
       await this.database.executeSql(this.tablaPost, []);
       await this.database.executeSql(this.tablaComentario, []);
       await this.database.executeSql(this.tablaReportes, []);
       await this.database.executeSql(this.tablaRespuesta, []);
-
-      await this.database.executeSql(this.registroRoles, []);
-      await this.database.executeSql(this.registroEstado, []);
-      await this.database.executeSql(this.registroPregunta, []);
-
-      await this.database.executeSql(this.registroUsuario, []);
-      await this.database.executeSql(this.registroDiego, []);
-      await this.database.executeSql(this.registroJavier, []);
 
       await this.database.executeSql(this.post1, []);
       await this.database.executeSql(this.post2, []);
@@ -209,7 +210,7 @@ export class BdServicioService {
       await this.database.executeSql(this.comentario1, []);
       await this.database.executeSql(this.comentario2, []);
       await this.database.executeSql(this.comentario3, []);
-  
+
       this.buscarUsuarios(); // Actualizar lista
       this.isDBReady.next(true); // Notificar que la BD está lista
     } catch (e) {
@@ -221,7 +222,7 @@ export class BdServicioService {
     this.database.executeSql('SELECT * FROM usuario', []).then(res => {
       let items: Usuarios[] = [];
       if (res.rows.length > 0) {
-        for (let i = 0; i < res.rows.length; i++) {
+        for (var i = 0; i < res.rows.length; i++) {
           items.push({
             id_usuario: res.rows.item(i).id_usuario,
             nombre_usuario: res.rows.item(i).nombre_usuario,
@@ -243,25 +244,27 @@ export class BdServicioService {
       this.presentAlert('Error', `Error al buscar usuarios: ${JSON.stringify(e)}`);
     })
   }
+
+
   // Función para agregar un usuario (registrar)
-  agregarUsuario(nick_usuario: string, correo_usuario: string, contrasena_usuario: string){
-    //retorna el insert en la tabla
-    this.database.executeSql('INSERT INTO usuario(nick_usuario, correo_usuario, contrasena_usuario) VALUES(?,?,?)',[nick_usuario, correo_usuario, contrasena_usuario]).then(res=>{
+  agregarUsuario(nick_usuario: string, correo_usuario: string, contrasena_usuario: string) {
+    //retorna el insert en la tabla 
+    this.database.executeSql('INSERT INTO usuario(nick_usuario, correo_usuario, contrasena_usuario, id_rol, id_estado, img_perfil) VALUES(?,?,?,?,?,?)', [nick_usuario, correo_usuario, contrasena_usuario, 2, 1, this.api.obtenerImg(nick_usuario)]).then(res=> {
       //mostrar un msj indicando un registro completo
-      this.presentAlert('Registro','Usuario registrado correctamente');
+      this.presentAlert('Registro', 'Usuario registrado correctamente');
       //actualizar el observable
       this.buscarUsuarios();
       this.router.navigate(['/login']);
-    }).catch(e=>{
+    }).catch(e => {
       this.presentAlert('error agregarUsuario', JSON.stringify(e));
     })
-  } 
+  }
 
 
   // Función para actualizar un usuario
   actualizarUsuario(usuario: Usuarios): Observable<any> {
     return new Observable(observer => {
-      this.database.executeSql(`UPDATE usuario SET nombre_usuario = ?, correo_usuario = ?, contrasena_usuario = ? WHERE id_usuario = ?`, 
+      this.database.executeSql(`UPDATE usuario SET nombre_usuario = ?, correo_usuario = ?, contrasena_usuario = ? WHERE id_usuario = ?`,
         [usuario.nombre_usuario, usuario.correo_usuario, usuario.contrasena_usuario, usuario.id_usuario])
         .then((res: any) => {
           observer.next(res);
@@ -288,7 +291,7 @@ export class BdServicioService {
         });
     });
   }
-  
+
   //alertas
   async presentAlert(titulo: string, msj: string) {
     const alert = await this.alertcontroller.create({

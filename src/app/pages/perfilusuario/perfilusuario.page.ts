@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ImgdefaultService } from 'src/app/services/imgdefault.service';
 
 @Component({
   selector: 'app-perfilusuario',
@@ -8,9 +9,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PerfilusuarioPage implements OnInit {
 
-  constructor() { }
+  constructor(private api: ImgdefaultService) { }
 
   ngOnInit() {
+    //this.api.obtenerImg("nombre usuario cuando se termine la bd")
   }
+
 
 }
