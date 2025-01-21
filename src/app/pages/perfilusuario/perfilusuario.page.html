@@ -12,7 +12,8 @@
 
   <ion-card-header class="card-header">
     <div class="foto">
-      <ion-icon color="white" name="person-circle-outline"></ion-icon> 
+      <!-- Aquí mostramos la imagen obtenida de la API en lugar del ícono -->
+      <img *ngIf="imgSrc" [src]="imgSrc" alt="Avatar" class="avatar-img"/>
     </div>
 
     <ion-item class="cabe" lines="none">

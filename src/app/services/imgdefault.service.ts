@@ -14,12 +14,13 @@ export class ImgdefaultService {
       })
   }
 
-  apiUrl: string= "https://ui-avatars.com/api/?"
+  apiUrl: string = "https://ui-avatars.com/api/?";
 
   constructor(private http: HttpClient) { }
 
-  obtenerImg(nombreusuario: string): Observable<any>{
-
-    return this.http.get(this.apiUrl + 'name='+ nombreusuario, {responseType: "blob"})
+  // Esta función obtiene la imagen desde la API y devuelve la URL
+  obtenerImg(nombreusuario: string): Observable<Blob> {
+    const url = `${this.apiUrl}name=${nombreusuario}`;
+    return this.http.get(url, { responseType: 'blob' });
   }
 }
