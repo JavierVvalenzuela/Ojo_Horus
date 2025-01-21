@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>inicio de sesion</ion-title>
+    <ion-title>Inicio de sesión</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -22,11 +22,14 @@
         [(ngModel)]="clave"></ion-input>
     </div>
   </div>
+
+  <!-- Botón de ingresar -->
   <div class="btns">
-    <ion-button fill="outline" color="warning" (click)="validarCampos()">Ingresar {{ nickname }}</ion-button>
+    <ion-button fill="outline" color="warning" (click)="validarCampos()">Ingresar</ion-button>
     <ion-button fill="outline" color="light" [routerLink]="['/register']">Crear una cuenta</ion-button>
   </div>
 
+  <!-- Enlace para recuperar la contraseña -->
   <div class="forgot-password">
     <a routerLink="/recuperar-password">Olvidé mi contraseña</a>
   </div>

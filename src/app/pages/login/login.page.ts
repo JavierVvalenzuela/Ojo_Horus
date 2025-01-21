@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { BdServicioService } from 'src/app/services/bd-servicio.service';
+
 
 @Component({
   selector: 'app-login',
@@ -12,7 +14,11 @@ export class LoginPage implements OnInit {
   nickname: string = "";
   clave: string = "";
 
-  constructor(private alertController: AlertController, private router: Router) { }
+  constructor(
+    private alertController: AlertController, 
+    private router: Router,
+    private databaseService: BdServicioService // Inyectamos el servicio de base de datos
+  ) { }
 
   async presentAlert(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
@@ -49,18 +55,34 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    // Si todo es correcto
-    this.presentAlert("Correcto", "Inicio de sesión correctamente.");
+    // Si los campos son válidos, intentamos hacer login
+    this.loginUsuario(this.nickname, this.clave);
+  }
 
-    // Creando un diccionario de datos para enviar a inicio
-    let navigationextras: NavigationExtras = {
-      state: {
-        nick: this.nickname
+  // Función para loguear al usuario
+  loginUsuario(nick_usuario: string, contrasena_usuario: string) {
+    // Realiza la consulta para buscar al usuario por el nick y la contraseña
+    this.databaseService.database.executeSql('SELECT * FROM usuario WHERE nick_usuario = ? AND contrasena_usuario = ?', [nick_usuario, contrasena_usuario]).then(res => {
+      if (res.rows.length > 0) {
+        // Si el usuario existe, mostramos un mensaje de éxito
+        this.presentAlert('Login', 'Usuario logueado correctamente');
+        
+        // Aquí podrías guardar la información del usuario en un servicio global o en el almacenamiento local
+        let navigationextras: NavigationExtras = {
+          state: {
+            nick: this.nickname
+          }
+        };
+
+        // Redirigir al usuario a la página principal
+        this.router.navigate(['/inicio'], navigationextras);
+      } else {
+        // Si no se encuentra al usuario, mostramos un mensaje de error
+        this.presentAlert('Error', 'Usuario o contraseña incorrectos');
       }
-    };
-
-    // Redireccionar
-    this.router.navigate(['/inicio'], navigationextras);
+    }).catch(e => {
+      this.presentAlert('Error loginUsuario', JSON.stringify(e));
+    });
   }
 
   ngOnInit() {

@@ -260,6 +260,24 @@ export class BdServicioService {
     })
   }
 
+  //funcion para loguear usuario
+  loginUsuario(nick_usuario: string, contrasena_usuario: string) {
+    // Realiza la consulta para buscar al usuario por el nick y la contraseña
+    this.database.executeSql('SELECT * FROM usuario WHERE nick_usuario = ? AND contrasena_usuario = ?', [nick_usuario, contrasena_usuario]).then(res => {
+      if (res.rows.length > 0) {
+        // Si el usuario existe, mostramos un mensaje de éxito
+        this.presentAlert('Login', 'Usuario logueado correctamente');
+        // Aquí podrías guardar la información del usuario en un servicio global o en el almacenamiento local
+        this.router.navigate(['/inicio']); // Redirigir al usuario a la página principal
+      } else {
+        // Si no se encuentra al usuario, mostramos un mensaje de error
+        this.presentAlert('Error', 'Usuario o contraseña incorrectos');
+      }
+    }).catch(e => {
+      this.presentAlert('Error loginUsuario', JSON.stringify(e));
+    });
+  }
+  
 
   // Función para actualizar un usuario
   actualizarUsuario(usuario: Usuarios): Observable<any> {
