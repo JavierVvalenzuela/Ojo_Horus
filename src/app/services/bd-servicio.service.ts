@@ -39,7 +39,12 @@ export class BdServicioService {
     id_pregunta_seguridad INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre_pregunta_seguridad VARCHAR(255) NOT NULL
   );`;
-
+  //tabla que guarda el motivo del reporte
+  tablaMotivo: string = `CREATE TABLE IF NOT EXISTS motivo (
+    id_motivo INTEGER PRIMARY KEY AUTOINCREMENT,
+    descripcion_motivo VARCHAR(255) NOT NULL
+  );`;
+  
   //tabla de usuario donde se contienen los datos de estos
   tablaUsuario: string = `CREATE TABLE IF NOT EXISTS usuario (
     id_usuario INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, 
@@ -92,16 +97,17 @@ export class BdServicioService {
   //tabla de los reportes que se hacen a los post, comentarios y comunidad
   tablaReportes: string = `CREATE TABLE IF NOT EXISTS reporte (
     id_reporte INTEGER PRIMARY KEY AUTOINCREMENT,
-    motivo TEXT NOT NULL,
     estado_reporte VARCHAR(20) DEFAULT 'Pendiente',
     id_usuario INTEGER NOT NULL, 
     id_post INTEGER, 
     id_comunidad INTEGER,
     id_comentario INTEGER,
+    id_motivo INTEGER NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario),
     FOREIGN KEY (id_post) REFERENCES post (id_post),
     FOREIGN KEY (id_comunidad) REFERENCES comunidad (id_comunidad),
-    FOREIGN KEY (id_comentario) REFERENCES comentario (id_comentario)
+    FOREIGN KEY (id_comentario) REFERENCES comentario (id_comentario),
+    FOREIGN KEY (id_motivo) REFERENCES motivo (id_motivo)
   );`;
   //tabla donde se guarda la respuesta de seguridad y el usuario que respuesta y pregunta tiene
   tablaRespuesta: string = `CREATE TABLE IF NOT EXISTS respuestas_pregunta_seguridad (
@@ -114,14 +120,22 @@ export class BdServicioService {
   );`;
 
   //insert into en las tablas Staticas o que no tiene cambios
+  //registro de roles
   registroRoles: string = `INSERT OR IGNORE INTO roles (id_rol, nombre_rol) VALUES (1, 'Admin'), (2, 'Usuario');`;
+  //registro de estados
   registroEstado: string = `INSERT OR IGNORE INTO estado (id_estado, nombre_estado) VALUES (1, 'Cuenta Activa'), (2, 'Cuenta Baneada');`;
+  //registro de preguntas de seguridad
   registroPregunta: string = `INSERT OR IGNORE INTO preguntas (id_pregunta_seguridad, nombre_pregunta_seguridad) 
   VALUES(1, '¿Cuál es el nombre de tu primera mascota?'),
   (2, '¿En qué ciudad naciste?'),
   (3, '¿Cuál es tu comida favorita?'),
   (4, '¿Cuál fue el nombre de tu escuela primaria?'),
   (5, '¿Cuál es tu película favorita?');`;
+  //registro de motivos de reporte
+  registroMotivo: string = `INSERT OR IGNORE INTO motivo (id_motivo, descripcion_motivo) VALUES (1, 'Contenido ofensivo'),
+  (2, 'Spam'),(3, 'Contenido engañoso'),(4, 'Violación de derechos de autor'),(5, 'Incitación al odio'),
+  (6, 'Desinformación'),(7, 'Lenguaje inapropiado'),(8, 'Violencia gráfica'),(9, 'Contenido sexual explícito'),
+  (10, 'Acoso o intimidación'),(11, 'Contenido ilegal'),(12, 'Infracción de normas de la comunidad');`;
 
   //aqui ira el insert a las demas tablas
   //tablas usuarios
@@ -131,14 +145,20 @@ export class BdServicioService {
   (3, 'Usuario Red', 'Red', 'Red@gmail.com', 'Javier.170', 1, 2);`;
 
   //tablas post
-  post1: string = `INSERT OR IGNORE INTO post (id_post, titulo_post, contenido_post, likes_post, id_usuario, id_estado) VALUES (1, 'Gaming', 'Contenido Gaming', 100, 1, 1);`;
-  post2: string = `INSERT OR IGNORE INTO post (id_post, titulo_post, contenido_post, likes_post, id_usuario, id_estado) VALUES (2, 'Gaming2', 'Contenido Gaming2', 1000, 2, 1);`;
-  post3: string = `INSERT OR IGNORE INTO post (id_post, titulo_post, contenido_post, likes_post, id_usuario, id_estado) VALUES (3, 'Gaming3', 'Contenido Gaming3', 10000, 3, 1);`;
+  registroPost: string = `
+  INSERT OR IGNORE INTO post (id_post, titulo_post, contenido_post, likes_post, id_usuario, id_estado) 
+  VALUES 
+    (1, 'Gaming', 'Contenido Gaming', 100, 1, 1),
+    (2, 'Gaming2', 'Contenido Gaming2', 1000, 2, 1),
+    (3, 'Gaming3', 'Contenido Gaming3', 10000, 3, 1);`;
 
   //tablas comentarios
-  comentario1: string = `INSERT OR IGNORE INTO comentario (id_comentario, contenido_comentario, likes_comentario, id_estado, id_post, id_usuario) VALUES (1, 'Este es el primer comentario', 100, 1, 1, 1);`;
-  comentario2: string = `INSERT OR IGNORE INTO comentario (id_comentario, contenido_comentario, likes_comentario, id_estado, id_post, id_usuario) VALUES (2, 'Este es el segundo comentario', 200, 1, 2, 2);`;
-  comentario3: string = `INSERT OR IGNORE INTO comentario (id_comentario, contenido_comentario, likes_comentario, id_estado, id_post, id_usuario) VALUES (3, 'Este es el tercer comentario', 300, 1, 3, 3);`;
+  registroComentario: string = `
+  INSERT OR IGNORE INTO comentario (id_comentario, contenido_comentario, likes_comentario, id_estado, id_post, id_usuario) 
+  VALUES 
+    (1, 'Este es el primer comentario', 100, 1, 1, 1),
+    (2, 'Este es el segundo comentario', 200, 1, 2, 2),
+    (3, 'Este es el tercer comentario', 300, 1, 3, 3);`;
 
   //observable para manipular los select de mi BD
   listaUsuarios = new BehaviorSubject<Usuarios[]>([]);
@@ -194,6 +214,9 @@ export class BdServicioService {
       await this.database.executeSql(this.tablaPregunta, []);
       await this.database.executeSql(this.registroPregunta, []);
 
+      await this.database.executeSql(this.tablaMotivo, []);
+      await this.database.executeSql(this.registroMotivo, []);
+
       await this.database.executeSql(this.tablaUsuario, []);
       await this.database.executeSql(this.registroUsuario, []);
 
@@ -203,13 +226,8 @@ export class BdServicioService {
       await this.database.executeSql(this.tablaReportes, []);
       await this.database.executeSql(this.tablaRespuesta, []);
 
-      await this.database.executeSql(this.post1, []);
-      await this.database.executeSql(this.post2, []);
-      await this.database.executeSql(this.post3, []);
-
-      await this.database.executeSql(this.comentario1, []);
-      await this.database.executeSql(this.comentario2, []);
-      await this.database.executeSql(this.comentario3, []);
+      await this.database.executeSql(this.registroComentario, []);
+      await this.database.executeSql(this.registroPost, []);
 
       this.buscarUsuarios(); // Actualizar lista
       this.isDBReady.next(true); // Notificar que la BD está lista
