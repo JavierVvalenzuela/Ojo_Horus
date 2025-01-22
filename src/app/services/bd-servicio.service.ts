@@ -6,6 +6,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Usuarios } from './usuarios';
 import { Post } from './post';
 import { ImgdefaultService } from './imgdefault.service';
+import { from } from 'rxjs';
 
 
 @Injectable({
@@ -297,16 +298,24 @@ export class BdServicioService {
 
   // Función para agregar un usuario (registrar)
   agregarUsuario(nick_usuario: string, correo_usuario: string, contrasena_usuario: string) {
-    //retorna el insert en la tabla 
-    this.database.executeSql('INSERT INTO usuario(nick_usuario, correo_usuario, contrasena_usuario, id_rol, id_estado, img_perfil) VALUES(?,?,?,?,?,?)', [nick_usuario, correo_usuario, contrasena_usuario, 2, 1, this.api.obtenerImg(nick_usuario)]).then(res=> {
-      //mostrar un msj indicando un registro completo
-      this.presentAlert('Registro', 'Usuario registrado correctamente');
-      //actualizar el observable
-      this.buscarUsuarios();
-      this.router.navigate(['/login']);
+    // Primero, comprobar si el usuario ya existe
+    this.database.executeSql('SELECT * FROM usuario WHERE nick_usuario = ? OR correo_usuario = ?', [nick_usuario, correo_usuario]).then(res => {
+      if (res.rows.length > 0) {
+        // Si el usuario ya existe, mostrar un mensaje de error
+        this.presentAlert('Error', 'Error al crear usuario, este usuario ya existe');
+      } else {
+        // Si no existe, agregar el nuevo usuario
+        this.database.executeSql('INSERT INTO usuario(nick_usuario, correo_usuario, contrasena_usuario, id_rol, id_estado, img_perfil) VALUES(?,?,?,?,?,?)', [nick_usuario, correo_usuario, contrasena_usuario, 2, 1, this.api.obtenerImg(nick_usuario)]).then(res => {
+          this.presentAlert('Registro', 'Usuario registrado correctamente');
+          this.buscarUsuarios();
+          this.router.navigate(['/login']);
+        }).catch(e => {
+          this.presentAlert('Error agregarUsuario', JSON.stringify(e));
+        });
+      }
     }).catch(e => {
-      this.presentAlert('error agregarUsuario', JSON.stringify(e));
-    })
+      this.presentAlert('Error al comprobar usuario', JSON.stringify(e));
+    });
   }
 
   //funcion para agregar un post
@@ -336,6 +345,7 @@ export class BdServicioService {
       this.presentAlert('Error loginUsuario', JSON.stringify(e));
     });
   }
+
   
   // Función para actualizar un usuario
   actualizarUsuario(usuario: Usuarios): Observable<any> {
@@ -364,6 +374,95 @@ export class BdServicioService {
     await alert.present();
   }
 
+    // Función para guardar la respuesta de la pregunta de seguridad en la base de datos
+    guardarRespuestaSeguridad(id_usuario: number, id_pregunta_seguridad: number, respuesta: string): Observable<any> {
+      return new Observable((observer) => {
+        // Verificar si el usuario ya tiene una respuesta registrada
+        this.database.executeSql(
+          'SELECT id_respuesta FROM respuestas_pregunta_seguridad WHERE id_usuario = ?',
+          [id_usuario]
+        ).then((res) => {
+          // Si la consulta devuelve un resultado, significa que ya hay una respuesta registrada
+          if (res.rows.length > 0) {
+            const id_respuesta = res.rows.item(0).id_respuesta;
+            // Actualizar la respuesta y la pregunta de seguridad
+            this.database.executeSql(
+              'UPDATE respuestas_pregunta_seguridad SET id_pregunta_seguridad = ?, respuesta = ? WHERE id_respuesta = ?',
+              [id_pregunta_seguridad, respuesta, id_respuesta]
+            ).then(() => {
+              observer.next({ mensaje: 'Pregunta de seguridad y respuesta actualizadas correctamente' });
+              observer.complete();
+            }).catch((error) => {
+              observer.error({ error: 'Error al actualizar la respuesta: ' + error });
+            });
+          } else {
+            // Si no existe la respuesta, insertamos una nueva
+            this.database.executeSql(
+              'INSERT INTO respuestas_pregunta_seguridad (id_usuario, id_pregunta_seguridad, respuesta) VALUES (?, ?, ?)',
+              [id_usuario, id_pregunta_seguridad, respuesta]
+            ).then(() => {
+              observer.next({ mensaje: 'Respuesta guardada correctamente' });
+              observer.complete();
+            }).catch((error) => {
+              observer.error({ error: 'Error al guardar la respuesta: ' + error });
+            });
+          }
+        }).catch((error) => {
+          observer.error({ error: 'Error al verificar la respuesta: ' + error });
+        });
+      });
+    }
+  
+    // Función para obtener las preguntas de seguridad disponibles
+    obtenerPreguntasSeguridad(): Observable<any> {
+      return new Observable(observer => {
+        this.database.executeSql('SELECT * FROM preguntas', []).then(res => {
+          let preguntas = [];
+          for (let i = 0; i < res.rows.length; i++) {
+            preguntas.push(res.rows.item(i));
+          }
+          observer.next(preguntas);
+          observer.complete();
+        }).catch(e => {
+          observer.error('Error al obtener las preguntas: ' + JSON.stringify(e));
+        });
+      });
+    }
+
+    verificarPreguntaRespuesta(nickname: string, idPregunta: number, respuesta: string): Observable<boolean> {
+      const query = `SELECT * FROM usuarios u 
+                     INNER JOIN respuestas r ON u.id_usuario = r.id_usuario 
+                     WHERE u.nickname = ? AND r.id_pregunta_seguridad = ? AND r.respuesta = ?`;
+      console.log('Ejecutando consulta:', query, nickname, idPregunta, respuesta); // Agregar log para depuración
+    
+      return from(
+        this.database.executeSql(query, [nickname, idPregunta, respuesta])
+          .then((res) => {
+            console.log('Resultado de la consulta:', res.rows.length); // Verificar la longitud de los resultados
+            return res.rows.length > 0;
+          })
+          .catch((error) => {
+            console.error('Error al ejecutar consulta:', error);
+            throw error;
+          })
+      );
+    }
+    
+    actualizarContrasena(nickname: string, nuevaClave: string): Observable<void> {
+      const query = `UPDATE usuarios SET contrasena_usuario = ? WHERE nickname = ?`;
+    
+      return from(
+        this.database.executeSql(query, [nuevaClave, nickname])
+          .then(() => {
+            console.log('Contraseña actualizada correctamente');
+          })
+          .catch((error) => {
+            console.error('Error al actualizar contraseña:', error);
+            throw error;
+          })
+      );
+    }
+  
 }
 
 

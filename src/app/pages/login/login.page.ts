@@ -69,9 +69,9 @@ export class LoginPage implements OnInit {
         let id_usuario = usuario.id_usuario;
         let nick = usuario.nick_usuario;
   
-        // Almacenamos el id_usuario en el almacenamiento local o en una variable
+        // Almacenamos el id_usuario y nick_usuario en el almacenamiento local o en una variable
         localStorage.setItem('id_usuario', id_usuario.toString());
-        localStorage.setItem('nick_usuario', nick);  // Guardamos el nick_usuario también
+        localStorage.setItem('nick_usuario', nick);
   
         this.presentAlert('Login', 'Usuario logueado correctamente');
         
@@ -86,9 +86,6 @@ export class LoginPage implements OnInit {
     });
   }
   
-
-
-
   ngOnInit() {
   }
 }

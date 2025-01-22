@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { BdServicioService } from 'src/app/services/bd-servicio.service';
 
 @Component({
   selector: 'app-cambiar-password',
@@ -9,85 +10,119 @@ import { AlertController } from '@ionic/angular';
   standalone: false,
 })
 export class CambiarPasswordPage implements OnInit {
-  preguntaSeguridad: string = '';
-  clave: string = '';
-  confirmarClave: string = '';
+  nickname: string = '';
+  idPreguntaSeguridad: number = 0; // Ahora es un número
   respuestaSeguridad: string = '';
+  nuevaClave: string = '';
+  confirmarClave: string = '';
 
-  errores: { preguntaSeguridad: string | null; clave: string | null; confirmarClave: string | null; respuestaSeguridad: string | null } = {
-    preguntaSeguridad: null,
-    clave: null,
+  errores: {
+    nickname: string | null;
+    idPreguntaSeguridad: string | null;
+    respuestaSeguridad: string | null;
+    nuevaClave: string | null;
+    confirmarClave: string | null;
+  } = {
+    nickname: null,
+    idPreguntaSeguridad: null,
+    respuestaSeguridad: null,
+    nuevaClave: null,
     confirmarClave: null,
-    respuestaSeguridad: null 
   };
 
-  constructor(private alertController: AlertController, private router: Router) {}
+  preguntas: any[] = []; // Lista de preguntas de seguridad
 
-  ngOnInit() {}
+  constructor(
+    private router: Router,
+    private bdServicio: BdServicioService // Servicio de la base de datos
+  ) {}
 
-  cambiarContrasena() {
-    this.limpiarErrores(); // Limpiar los errores previos antes de validar
+  ngOnInit() {
+    // Obtener preguntas de seguridad desde la base de datos
+    this.bdServicio.obtenerPreguntasSeguridad().subscribe(
+      (preguntas) => {
+        this.preguntas = preguntas;
+      },
+      (error) => {
+        console.error('Error al obtener las preguntas de seguridad:', error);
+      }
+    );
+  }
 
-    let valido = true;
-
-    // Validación de la pregunta de seguridad
-    if (!this.preguntaSeguridad) {
-      this.errores.preguntaSeguridad = 'La pregunta de seguridad es requerida';
-      valido = false;
+  validarCampos() {
+    let correcto = true;
+  
+    // Validación de pregunta de seguridad
+    if (!this.idPreguntaSeguridad) {
+      this.errores.idPreguntaSeguridad = 'Debe seleccionar una pregunta de seguridad.';
+      correcto = false;
+    } else {
+      this.errores.idPreguntaSeguridad = null;
     }
-
-    // Validación de la respuesta de la pregunta de seguridad
-    if (!this.respuestaSeguridad) {
-      this.errores.respuestaSeguridad = 'La respuesta es requerida';
-      valido = false;
+  
+    // Validación de respuesta de seguridad
+    if (!this.respuestaSeguridad?.trim()) {
+      this.errores.respuestaSeguridad = 'Debe ingresar la respuesta a la pregunta de seguridad.';
+      correcto = false;
+    } else {
+      this.errores.respuestaSeguridad = null;
     }
-
-    // Validación de la contraseña
-    if (this.clave !== this.confirmarClave) {
-      this.errores.clave = 'Las contraseñas no coinciden';
-      this.errores.confirmarClave = 'Las contraseñas no coinciden';
-      valido = false;
+  
+    // Validación de nueva contraseña
+    if (
+      this.nuevaClave.length < 8 ||
+      !/[A-Z]/.test(this.nuevaClave) ||
+      !/\d/.test(this.nuevaClave) ||
+      !/[-!@#$%^&*.]/.test(this.nuevaClave)
+    ) {
+      this.errores.nuevaClave = 'La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, un número y un carácter especial.';
+      correcto = false;
+    } else {
+      this.errores.nuevaClave = null;
     }
-
-    // Validaciones adicionales de la contraseña
-    if (this.clave.length < 8 || this.clave.length > 20) {
-      this.errores.clave = 'La contraseña debe tener entre 8 y 20 caracteres';
-      valido = false;
+  
+    // Validación de confirmación de clave
+    if (this.nuevaClave !== this.confirmarClave) {
+      this.errores.confirmarClave = 'Las contraseñas no coinciden.';
+      correcto = false;
+    } else {
+      this.errores.confirmarClave = null;
     }
-    if (!/[A-Z]/.test(this.clave)) {
-      this.errores.clave = 'La contraseña debe contener al menos una mayúscula';
-      valido = false;
-    }
-    if (!/\d/.test(this.clave)) {
-      this.errores.clave = 'La contraseña debe contener al menos un número';
-      valido = false;
-    }
-    if (!/[-!@#$%^&*.]/.test(this.clave)) {
-      this.errores.clave = 'La contraseña debe contener al menos un carácter especial';
-      valido = false;
-    }
-
-    if (valido) {
-      // Si todo es correcto, redirigir al login
-      this.router.navigate(['/login']);
+  
+    return correcto;
+  }
+  
+  actualizarContrasena() {
+    console.log('Botón Ingresar presionado');  // Verificar si la función se llama
+    if (this.validarCampos()) {
+      // Verificar pregunta y respuesta de seguridad
+      this.bdServicio.verificarPreguntaRespuesta(this.nickname, this.idPreguntaSeguridad, this.respuestaSeguridad).subscribe(
+        (valido: boolean) => {
+          console.log('Respuesta de seguridad válida:', valido);  // Verificar si la verificación pasa
+          if (valido) {
+            // Actualizar la contraseña del usuario
+            this.bdServicio.actualizarContrasena(this.nickname, this.nuevaClave).subscribe(
+              () => {
+                console.log('Contraseña actualizada correctamente.');
+                this.router.navigate(['/login']);
+                console.log('Redirigiendo a login');
+              },
+              (error) => {
+                console.error('Error al actualizar la contraseña:', error);
+              }
+            );
+          } else {
+            this.errores.respuestaSeguridad = 'La pregunta o respuesta de seguridad no coincide.';
+          }
+        },
+        (error) => {
+          console.error('Error al verificar la pregunta y respuesta de seguridad:', error);
+        }
+      );
     }
   }
 
-  limpiarErrores() {
-    // Limpiar los mensajes de error
-    this.errores.preguntaSeguridad = null;
-    this.errores.clave = null;
-    this.errores.confirmarClave = null;
-    this.errores.respuestaSeguridad = null;  
-  }
-
-  async mostrarMensaje() {
-    const alert = await this.alertController.create({
-      header: 'Próximamente',
-      message: 'Esta funcionalidad estará disponible pronto.',
-      buttons: ['OK']
-    });
-
-    await alert.present();
+  cancelar() {
+    this.router.navigate(['/configuraciones']);
   }
 }
