@@ -5,6 +5,7 @@ import { AlertController, Platform } from '@ionic/angular';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Usuarios } from './usuarios';
 import { Post } from './post';
+import { Comentarios } from './comentarios';
 import { ImgdefaultService } from './imgdefault.service';
 import { from } from 'rxjs';
 
@@ -166,12 +167,14 @@ export class BdServicioService {
   //observable para manipular los select de mi BD
   listaUsuarios = new BehaviorSubject<Usuarios[]>([]);
   listaPost = new BehaviorSubject<any[]>([]);
+  listaCOmentarios = new BehaviorSubject<any[]>([]);
   //observable del status de la BD
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  // Property to store posts
+  // Variables para almacenar los datos de la BD
   public Post: Post[] = [];
   public Usuarios: Usuarios[] = [];
+  public Comentarios: any[] = [];
 
   constructor(
     private sqlite: SQLite,
@@ -193,6 +196,10 @@ export class BdServicioService {
 
   fetchPost(): Observable<any[]> {
     return this.listaPost.asObservable();
+  }
+
+  fetchComentarios(): Observable<any[]> {
+    return this.listaCOmentarios.asObservable();
   }
 
   //funcion para crear la base de datos (en sqldeveloper seria crear nueva conexion)
@@ -241,6 +248,8 @@ export class BdServicioService {
       await this.database.executeSql(this.registroPost, []);
 
       this.buscarUsuarios(); // Actualizar lista
+      this.buscarPost(); // Actualizar lista
+      this.buscarComentarios(); // Actualizar lista
       this.isDBReady.next(true); // Notificar que la BD está lista
     } catch (e) {
       this.presentAlert('Error', `Error al crear las tablas: ${JSON.stringify(e)}`);
@@ -297,6 +306,29 @@ export class BdServicioService {
       this.presentAlert('Error al buscar posts', `Error: ${JSON.stringify(e)}`);
     });
   }
+  //funcion para buscar los comentarios
+  buscarComentarios() {
+    this.database.executeSql('SELECT * FROM comentario', []).then(res =>{
+      let items: Comentarios[] = [];
+      if (res.rows.length > 0){
+        for (var i = 0; i < res.rows.length; i++){
+          items.push({
+            id_comentario: res.rows.item(i).id_comentario,
+            contenido_comentario: res.rows.item(i).contenido_comentario,
+            likes_comentario: res.rows.item(i).likes_comentario,
+            img_comentario: res.rows.item(i).img_comentario,
+            id_estado: res.rows.item(i).id_estado,
+            id_post: res.rows.item(i).id_post,
+            id_usuario: res.rows.item(i).id_usuario
+          });
+        }
+      }
+      this.Comentarios = items;
+      this.listaCOmentarios.next(items as any);
+    }).catch(e =>{
+      this.presentAlert('Error al buscar comentarios', `Error: ${JSON.stringify(e)}`);
+    })
+  }
 
   // Función para agregar un usuario (registrar)
   agregarUsuario(nick_usuario: string, correo_usuario: string, contrasena_usuario: string) {
@@ -328,6 +360,16 @@ export class BdServicioService {
     }).catch((e: any) => {
       this.presentAlert('Error al agregar post', JSON.stringify(e));
     });
+  }
+
+  //funcion para agregar un comentario
+  agregarComentario(contenido_comentario: string, img_comentario: any , id_estado: number, id_post: number, id_usuario: number){
+    this.database.executeSql('INSERT INTO comentario(contenido_comentario, img_comentario, id_estado, id_post, id_usuario) VALUES(?,?,?,?,?)', [contenido_comentario, img_comentario, id_estado, id_post, id_usuario]).then(res=>{
+      this.presentAlert('Registro', 'Comentario registrado correctamente');
+      this.buscarComentarios(); // Actualiza la lista de comentarios
+    }).catch((e: any)=>{
+      this.presentAlert('Error al agregar comentario', JSON.stringify(e));
+    })
   }
 
   //funcion para loguear usuario
