@@ -166,15 +166,15 @@ export class BdServicioService {
 
   //observable para manipular los select de mi BD
   listaUsuarios = new BehaviorSubject<Usuarios[]>([]);
-  listaPost = new BehaviorSubject<any[]>([]);
-  listaCOmentarios = new BehaviorSubject<any[]>([]);
+  listaPost = new BehaviorSubject<Post[]>([]);
+  listaComentarios = new BehaviorSubject<Comentarios[]>([]);
   //observable del status de la BD
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   // Variables para almacenar los datos de la BD
   public Post: Post[] = [];
   public Usuarios: Usuarios[] = [];
-  public Comentarios: any[] = [];
+  public Comentarios: Comentarios[] = [];
 
   constructor(
     private sqlite: SQLite,
@@ -194,12 +194,13 @@ export class BdServicioService {
     return this.listaUsuarios.asObservable();
   }
 
-  fetchPost(): Observable<any[]> {
+  fetchPost(): Observable<Post[]> {
     return this.listaPost.asObservable();
   }
 
-  fetchComentarios(): Observable<any[]> {
-    return this.listaCOmentarios.asObservable();
+  fetchComentarios(): Observable<Comentarios[]> {
+    return this.listaComentarios.asObservable();
+  
   }
 
   //funcion para crear la base de datos (en sqldeveloper seria crear nueva conexion)
@@ -324,7 +325,7 @@ export class BdServicioService {
         }
       }
       this.Comentarios = items;
-      this.listaCOmentarios.next(items as any);
+      this.listaComentarios.next(items as any);
     }).catch(e =>{
       this.presentAlert('Error al buscar comentarios', `Error: ${JSON.stringify(e)}`);
     })
