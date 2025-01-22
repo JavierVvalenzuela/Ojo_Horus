@@ -28,8 +28,8 @@
     </ion-label>
   </ion-item>
 
-  <ion-card *ngFor="let post of arreglopost">
-    <ion-card-title>
+  <ion-card class="card-custom" *ngFor="let post of arreglopost">
+    <ion-card-title class="ion-car-title">
       <h1 [routerLink]="['/perfiles', post.id_usuario]">{{ post.titulo_post }}</h1>
     </ion-card-title>
     <p>{{ post.contenido_post }}</p>
