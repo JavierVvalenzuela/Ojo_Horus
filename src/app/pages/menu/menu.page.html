@@ -30,16 +30,16 @@
 
   <ion-card *ngFor="let post of arreglopost">
     <ion-card-title>
-      <h1 [routerLink]="['/perfiles', arreglopost.id_usuario]">{{ arreglopost.titulo_post }}</h1>
+      <h1 [routerLink]="['/perfiles', post.id_usuario]">{{ post.titulo_post }}</h1>
     </ion-card-title>
-    <p>{{ arreglopost.contenido_post }}</p>
+    <p>{{ post.contenido_post }}</p>
   
     <ion-card-content>
-      <img *ngIf="arreglopost.img_post" [src]="arreglopost.img_post" alt="Publicación de usuario" style="width: 100%; margin-bottom: 8px;">
+      <img *ngIf="post.img_post" [src]="post.img_post" alt="Publicación de usuario" style="width: 100%; margin-bottom: 8px;">
   
       <div class="btnpost">
         <ion-button fill="outline" color="warning">Me Gusta</ion-button>
-        <ion-button fill="outline" color="warning" [routerLink]="['/comentarios', arreglopost.id_post]">Comentar</ion-button>
+        <ion-button fill="outline" color="warning" [routerLink]="['/comentarios', post.id_post]">Comentar</ion-button>
       </div>
     </ion-card-content>
   </ion-card>

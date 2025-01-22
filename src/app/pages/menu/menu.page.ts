@@ -8,14 +8,7 @@ import { BdServicioService } from 'src/app/services/bd-servicio.service';
   standalone: false,
 })
 export class MenuPage implements OnInit {
-  arreglopost: any = [
-    {
-      idpost : 0,
-      titulo: '',
-      contenido: '',
-      imgpost: '',
-    }
-  ];
+  arreglopost: any;
 
   constructor(private bd :BdServicioService) {
    }
@@ -26,6 +19,7 @@ export class MenuPage implements OnInit {
   }
 
   ngOnInit() {
+    this.bd.buscarPost();
     this.bd.fetchPost().subscribe(posts => {
       this.arreglopost = posts;
     });
