@@ -4,6 +4,7 @@ import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { AlertController, Platform } from '@ionic/angular';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Usuarios } from './usuarios';
+import { Post } from './post';
 import { ImgdefaultService } from './imgdefault.service';
 
 
@@ -11,6 +12,7 @@ import { ImgdefaultService } from './imgdefault.service';
   providedIn: 'root',
 })
 export class BdServicioService {
+  [x: string]: any;
   //variable para almacenar la conexion a la base de datos
   public database!: SQLiteObject;
 
@@ -64,15 +66,15 @@ export class BdServicioService {
   tablaComunidad: string = `CREATE TABLE IF NOT EXISTS comunidad (
     id_comunidad INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre_comunidad VARCHAR(100) NOT NULL,
-    id_usuario INTEGER NOT NULL,  -- Refleja al creador de la comunidad
     descripcion_comunidad VARCHAR(250),
     img_comunidad BLOB,  -- Imagen opcional
+    id_usuario INTEGER NOT NULL,  -- Refleja al creador de la comunidad
     FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
   );`;
   //tabla de los post que pueden hacer los usuarios
   tablaPost: string = `CREATE TABLE IF NOT EXISTS post (
     id_post INTEGER PRIMARY KEY AUTOINCREMENT,
-    titulo_post VARCHAR(255) NOT NULL,
+    titulo_post VARCHAR(55) NOT NULL,
     contenido_post TEXT NOT NULL,
     likes_post INTEGER DEFAULT 0,
     img_post BLOB,
@@ -162,9 +164,12 @@ export class BdServicioService {
 
   //observable para manipular los select de mi BD
   listaUsuarios = new BehaviorSubject<Usuarios[]>([]);
-
+  listaPost = new BehaviorSubject<any[]>([]);
   //observable del status de la BD
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+  // Property to store posts
+  public Post: Post[] = [];
 
   constructor(
     private sqlite: SQLite,
@@ -182,6 +187,10 @@ export class BdServicioService {
 
   fetchUsuarios(): Observable<Usuarios[]> {
     return this.listaUsuarios.asObservable();
+  }
+
+  fetchPost(): Observable<any[]> {
+    return this.listaPost.asObservable();
   }
 
   //funcion para crear la base de datos (en sqldeveloper seria crear nueva conexion)
@@ -251,7 +260,7 @@ export class BdServicioService {
             img_perfil: res.rows.item(i).img_perfil,
             id_estado: res.rows.item(i).id_estado,
             razon_ban: res.rows.item(i).razon_ban,
-            id_rol: 0
+            id_rol: res.rows.item(i).id_rol
           });
         }
       }
@@ -263,6 +272,28 @@ export class BdServicioService {
     })
   }
 
+  //funcion para buscar los post
+  buscarPost() {
+    this.database.executeSql('SELECT * FROM post', []).then(res => {
+      let items: Post[] = [];
+      if (res.rows.length > 0) {
+        for (var i = 0; i < res.rows.length; i++) {
+          items.push({
+            id_post: res.rows.item(i).id_post,
+            titulo_post: res.rows.item(i).titulo_post,
+            contenido_post: res.rows.item(i).contenido_post,
+            likes_post: res.rows.item(i).likes_post,
+            img_post: res.rows.item(i).img_post,
+            id_usuario: res.rows.item(i).id_usuario,
+            id_estado: res.rows.item(i).id_estado
+          });
+        }
+      }
+      this.Post = items; 
+    }).catch(e => {
+      this.presentAlert('Error al buscar posts', `Error: ${JSON.stringify(e)}`);
+    });
+  }
 
   // Función para agregar un usuario (registrar)
   agregarUsuario(nick_usuario: string, correo_usuario: string, contrasena_usuario: string) {
@@ -276,6 +307,16 @@ export class BdServicioService {
     }).catch(e => {
       this.presentAlert('error agregarUsuario', JSON.stringify(e));
     })
+  }
+
+  //funcion para agregar un post
+  agregarPost(titulo_post: string, contenido_post: string, img_post: any, id_usuario: number) {
+    this.database.executeSql('INSERT INTO post(titulo_post, contenido_post, img_post, id_usuario, id_estado) VALUES(?,?,?,?,?)', [titulo_post, contenido_post, img_post, id_usuario, 1]).then(res => {
+      this.presentAlert('Registro', 'Post registrado correctamente');
+      this.buscarPost(); // Actualiza la lista de posts
+    }).catch((e: any) => {
+      this.presentAlert('Error al agregar post', JSON.stringify(e));
+    });
   }
 
   //funcion para loguear usuario
@@ -296,7 +337,6 @@ export class BdServicioService {
     });
   }
   
-
   // Función para actualizar un usuario
   actualizarUsuario(usuario: Usuarios): Observable<any> {
     return new Observable(observer => {
@@ -308,21 +348,6 @@ export class BdServicioService {
         })
         .catch((error: any) => {
           this.presentAlert('Error', `Error al actualizar usuario: ${JSON.stringify(error)}`);
-          observer.error(error);
-        });
-    });
-  }
-
-  // Función para eliminar un usuario
-  eliminarUsuario(id: number): Observable<any> {
-    return new Observable(observer => {
-      this.database.executeSql(`DELETE FROM usuario WHERE id_usuario = ?`, [id])
-        .then((res: any) => {
-          observer.next(res);
-          observer.complete();
-        })
-        .catch((error: any) => {
-          this.presentAlert('Error', `Error al eliminar usuario: ${JSON.stringify(error)}`);
           observer.error(error);
         });
     });
