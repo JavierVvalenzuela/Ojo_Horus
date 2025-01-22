@@ -101,7 +101,7 @@ export class CambiarPasswordPage implements OnInit {
           console.log('Respuesta de seguridad válida:', valido);  // Verificar si la verificación pasa
           if (valido) {
             // Actualizar la contraseña del usuario
-            this.bdServicio.actualizarContrasena(this.nickname, this.nuevaClave).subscribe(
+            this.bdServicio.actualizarContrasena(this.nickname, this.nuevaClave).subscribe( //quitar suscribe por then catch
               () => {
                 console.log('Contraseña actualizada correctamente.');
                 this.router.navigate(['/login']);

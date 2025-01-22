@@ -17,8 +17,8 @@
     </div>
 
     <ion-item class="cabe" lines="none">
-      <ion-label>
-        <h2 class="nombre">Diego</h2>
+      <ion-label *ngFord="let Usuarios of Pusuario">
+        <h2 class="nombre">{{ Usuarios.nick_usuario }}</h2>
       </ion-label>
 
       <!-- Botón de editar perfil -->
@@ -30,28 +30,24 @@
   </ion-card-header>
 
   <div class="content-wrapper">
-    <ion-card class="cardperfil">
+    <ion-card *ngFord="let Usuarios of Pusuario" class="cardperfil">
 
       <ion-card-content>
         <!-- Nombre -->
         <ion-item>
-          <ion-label class="d1">Diego Mellado</ion-label>
+          <ion-label class="d1">- {{ Usuarios.nombre_usuario }} -</ion-label>
         </ion-item>
 
         <!-- Correo Electrónico -->
         <ion-item>
-          <ion-label class="d2">Diego&#64;example.com</ion-label>
+          <ion-label class="d2"> -{{ Usuarios.correo_usuario }} -</ion-label>
         </ion-item>
 
         <!-- Teléfono -->
         <ion-item>
-          <ion-label class="d3">+56 9 4534 4532</ion-label>
+          <ion-label class="d3">-{{ Usuarios.telefono_usuario}}-</ion-label>
         </ion-item>
 
-        <!-- Dirección -->
-        <ion-item>
-          <ion-label class="d4">Mi casa</ion-label>
-        </ion-item>
       </ion-card-content>
     </ion-card>
   </div>

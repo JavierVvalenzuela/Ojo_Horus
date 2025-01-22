@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { BdServicioService } from 'src/app/services/bd-servicio.service';
 import { ImgdefaultService } from 'src/app/services/imgdefault.service';
+import { Usuarios } from 'src/app/services/usuarios';
 
 
 @Component({
@@ -11,8 +13,9 @@ import { ImgdefaultService } from 'src/app/services/imgdefault.service';
 export class PerfilusuarioPage implements OnInit {
   imgSrc: string = '';  // Variable para la imagen del usuario
   nick_usuario: string = '';  // Almacenará el nick del usuario logueado
+  Pusuario: any;
 
-  constructor(private api: ImgdefaultService) { }
+  constructor(private api: ImgdefaultService, private bd: BdServicioService) { }
 
   ngOnInit() {
     // Obtener el nick_usuario desde el almacenamiento local
@@ -29,6 +32,12 @@ export class PerfilusuarioPage implements OnInit {
           console.log("Error al obtener la imagen: ", error);
         }
       );
+
+      this.bd.buscarUsuarios();
+      this.bd.fetchUsuarios().subscribe(Usuarios =>{
+        this.Pusuario = Usuarios;
+      })
+
     }
   }
 }

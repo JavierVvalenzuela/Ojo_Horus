@@ -171,6 +171,7 @@ export class BdServicioService {
 
   // Property to store posts
   public Post: Post[] = [];
+  public Usuarios: Usuarios[] = [];
 
   constructor(
     private sqlite: SQLite,
@@ -267,7 +268,7 @@ export class BdServicioService {
       }
       // Actualizar lista en el BehaviorSubject
       this.listaUsuarios.next(items as any);
-
+      this.Usuarios = items;
     }).catch(e => {
       this.presentAlert('Error', `Error al buscar usuarios: ${JSON.stringify(e)}`);
     })
@@ -458,7 +459,7 @@ export class BdServicioService {
           console.log('Contraseña actualizada correctamente');
         })
         .catch((error) => {
-          console.error('Error al actualizar contraseña:', error);
+          console.error('Error al actualizar contraseña:', error);  //quitar return, y que contenga then , catch 
           throw error;
         })
     );
