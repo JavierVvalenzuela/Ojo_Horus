@@ -61,17 +61,19 @@ export class LoginPage implements OnInit {
 
   // Función para loguear al usuario
   loginUsuario(nick_usuario: string, contrasena_usuario: string) {
-    // Realiza la consulta para obtener el id_usuario de acuerdo al nick_usuario y la contraseña
-    this.databaseService.database.executeSql('SELECT id_usuario, nick_usuario FROM usuario WHERE nick_usuario = ? AND contrasena_usuario = ?', [nick_usuario, contrasena_usuario]).then(res => {
+    // Realiza la consulta para obtener el id_usuario, id_rol y nick_usuario
+    this.databaseService.database.executeSql('SELECT id_usuario, nick_usuario, id_rol FROM usuario WHERE nick_usuario = ? AND contrasena_usuario = ?', [nick_usuario, contrasena_usuario]).then(res => {
       if (res.rows.length > 0) {
-        // Si el usuario existe, obtenemos el id_usuario y lo almacenamos
+        // Si el usuario existe, obtenemos los datos y los almacenamos
         let usuario = res.rows.item(0);
         let id_usuario = usuario.id_usuario;
         let nick = usuario.nick_usuario;
+        let id_rol = usuario.id_rol;  // Obtener el id_rol
   
-        // Almacenamos el id_usuario y nick_usuario en el almacenamiento local o en una variable
+        // Almacenamos el id_usuario, nick_usuario y id_rol en el almacenamiento local
         localStorage.setItem('id_usuario', id_usuario.toString());
         localStorage.setItem('nick_usuario', nick);
+        localStorage.setItem('id_rol', id_rol.toString());
   
         this.presentAlert('Login', 'Usuario logueado correctamente');
         

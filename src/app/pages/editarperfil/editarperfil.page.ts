@@ -12,18 +12,16 @@ export class EditarperfilPage implements OnInit {
   nombre: string = '';
   email: string = '';
   telefono: string = '';
-  direccion: string = '';
 
   errores: {
     nombre: string | null;
     email: string | null;
     telefono: string | null;
-    direccion: string | null;
+
   } = {
     nombre: null,
     email: null,
     telefono: null,
-    direccion: null,
   };
 
   //variable para foto
@@ -74,14 +72,6 @@ export class EditarperfilPage implements OnInit {
       correcto = false;
     } else {
       this.errores.telefono = null;
-    }
-
-    // Validación de dirección
-    if (this.direccion.length < 5) {
-      this.errores.direccion = 'La dirección debe tener al menos 5 caracteres.';
-      correcto = false;
-    } else {
-      this.errores.direccion = null;
     }
 
     // Si todo es correcto
