@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
+import { CameraService } from 'src/app/services/camera.service';
+import { ShareService } from 'src/app/services/share.service';
 
 @Component({
   selector: 'app-menu',
@@ -10,22 +12,34 @@ import { BdServicioService } from 'src/app/services/bd-servicio.service';
 })
 export class MenuPage implements OnInit {
   arreglopost: any;
+  fotografia: any;
 
-  constructor(private bd :BdServicioService, private router: Router) {
-   }
-
+  constructor(private bd: BdServicioService, private router: Router, private cameraService: CameraService, private share: ShareService) { }
 
   logout() {
     console.log('Cerrar sesión');
   }
 
+  public async takePhoto() {
+    try {
+      this.fotografia = await this.cameraService.capturePhoto();  // Llamamos al servicio para capturar la foto
+    } catch (error) {
+      console.error('Error al tomar la foto:', error);
+    }
+  }
+  
+  public async shareContent(title: string, message: string, url: string) {
+    try {
+      await this.share.shareContent(title, message, url || '');  // Usar una URL válida o vacía si no hay URL
+    } catch (error) {
+      console.error('Error al compartir el contenido:', error);
+    }
+  }
   ngOnInit() {
     this.bd.buscarPost();
-    this.bd.fetchPost().subscribe(posts => {
+    this.bd.fetchPost().subscribe((posts: any) => {
       this.arreglopost = posts;
     });
-
-    this.bd.buscarPost();
   }
 
   irAComentarios(post: any) {
@@ -41,6 +55,4 @@ export class MenuPage implements OnInit {
     // Navega a la página de comentarios con el ID del post.
     this.router.navigate(['/comentarios', post.id_post]);
   }
-
-  
 }

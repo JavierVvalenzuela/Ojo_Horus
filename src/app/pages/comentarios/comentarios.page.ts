@@ -85,4 +85,5 @@ export class ComentariosPage implements OnInit {
     // Limpiar el campo de texto del comentario
     this.nuevoComentario = '';
   }
+  
 }
