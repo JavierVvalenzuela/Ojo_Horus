@@ -9,46 +9,43 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-
   <ion-card-header class="card-header">
     <div class="foto">
-      <!-- Aquí mostramos la imagen obtenida de la API en lugar del ícono -->
+      <!-- Mostrar la imagen de perfil si está disponible -->
       <img *ngIf="imgSrc" [src]="imgSrc" alt="Avatar" class="avatar-img"/>
     </div>
 
     <ion-item class="cabe" lines="none">
-      <ion-label *ngFord="let Usuarios of Pusuario">
-        <h2 class="nombre">{{ Usuarios.nick_usuario }}</h2>
+      <ion-label *ngIf="Pusuario">
+        <h2 class="nombre">{{ Pusuario.nick_usuario }}</h2>
       </ion-label>
 
       <!-- Botón de editar perfil -->
       <ion-button fill="outline" color="dark" slot="end" [routerLink]="['/editarperfil']">
         <ion-icon color="black" name="pencil"></ion-icon>
       </ion-button>
-
     </ion-item>
   </ion-card-header>
 
   <div class="content-wrapper">
-    <ion-card *ngFord="let Usuarios of Pusuario" class="cardperfil">
-
+    <ion-card *ngIf="Pusuario" class="cardperfil">
       <ion-card-content>
         <!-- Nombre -->
         <ion-item>
-          <ion-label class="d1">- {{ Usuarios.nombre_usuario }} -</ion-label>
+          <ion-label class="d1">Nombre: {{ Pusuario.nombre_usuario }}</ion-label>
         </ion-item>
 
         <!-- Correo Electrónico -->
         <ion-item>
-          <ion-label class="d2"> -{{ Usuarios.correo_usuario }} -</ion-label>
+          <ion-label class="d2">Correo: {{ Pusuario.correo_usuario }}</ion-label>
         </ion-item>
 
         <!-- Teléfono -->
         <ion-item>
-          <ion-label class="d3">-{{ Usuarios.telefono_usuario}}-</ion-label>
+          <ion-label class="d3">Telefono: {{ Pusuario.telefono_usuario }}</ion-label>
         </ion-item>
-
       </ion-card-content>
     </ion-card>
   </div>
 </ion-content>
+

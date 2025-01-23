@@ -18,7 +18,7 @@ export class BdServicioService {
   //variable para almacenar la conexion a la base de datos
   public database!: SQLiteObject;
 
-  //droptablausuario: string = `DROP TABLE IF EXISTS usuario;`;
+  droptablausuario: string = `DROP TABLE IF EXISTS usuario;`;
 
 
   //Tablas del foro
@@ -145,8 +145,8 @@ export class BdServicioService {
   //tablas usuarios
   registroUsuario: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES 
   (1, 'Administrador', 'Admin', 'Admin@gmail.com', 'Admin.01', 1, 1),
-  (2, 'Usuario Goto', 'Goto', 'Goto@gmail.com', 'Diego.170', 1, 2),
-  (3, 'Usuario Red', 'Red', 'Red@gmail.com', 'Javier.170', 1, 2);`;
+  (2, 'Diego Mellado', 'Goto', 'Goto@gmail.com', 'Diego.170', 1, 2),
+  (3, 'Javier Valenzuela', 'Red', 'Red@gmail.com', 'Javier.170', 1, 2);`;
 
   //tablas post
   registroPost: string = `
@@ -222,7 +222,7 @@ export class BdServicioService {
   }
   async crearTablas() {
     try {
-      //await this.database.executeSql(this.droptablausuario, []);
+      await this.database.executeSql(this.droptablausuario, []);
 
       await this.database.executeSql(this.tablaRol, []);
       await this.database.executeSql(this.registroRoles, []);
