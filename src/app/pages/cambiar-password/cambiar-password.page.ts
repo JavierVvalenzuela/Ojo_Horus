@@ -96,31 +96,37 @@ export class CambiarPasswordPage implements OnInit {
     console.log('Botón Ingresar presionado');  // Verificar si la función se llama
     if (this.validarCampos()) {
       // Verificar pregunta y respuesta de seguridad
-      this.bdServicio.verificarPreguntaRespuesta(this.nickname, this.idPreguntaSeguridad, this.respuestaSeguridad).subscribe(
-        (valido: boolean) => {
+      this.bdServicio.verificarPreguntaRespuesta(this.nickname, this.idPreguntaSeguridad, this.respuestaSeguridad)
+        .toPromise()  // Convierte el Observable a Promesa
+        .then((valido: boolean | undefined) => {
+          if (valido === undefined) {
+            console.error('Error: la respuesta de seguridad no es válida');
+            return;
+          }
+  
           console.log('Respuesta de seguridad válida:', valido);  // Verificar si la verificación pasa
           if (valido) {
             // Actualizar la contraseña del usuario
-            this.bdServicio.actualizarContrasena(this.nickname, this.nuevaClave).subscribe( //quitar suscribe por then catch
-              () => {
+            this.bdServicio.actualizarContrasena(this.nickname, this.nuevaClave)
+              .toPromise()  // Convierte el Observable a Promesa
+              .then(() => {
                 console.log('Contraseña actualizada correctamente.');
                 this.router.navigate(['/login']);
                 console.log('Redirigiendo a login');
-              },
-              (error) => {
+              })
+              .catch((error) => {
                 console.error('Error al actualizar la contraseña:', error);
-              }
-            );
+              });
           } else {
             this.errores.respuestaSeguridad = 'La pregunta o respuesta de seguridad no coincide.';
           }
-        },
-        (error) => {
+        })
+        .catch((error) => {
           console.error('Error al verificar la pregunta y respuesta de seguridad:', error);
-        }
-      );
+        });
     }
   }
+  
 
   cancelar() {
     this.router.navigate(['/configuraciones']);

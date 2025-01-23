@@ -500,11 +500,13 @@ export class BdServicioService {
   }
 
   verificarPreguntaRespuesta(nickname: string, idPregunta: number, respuesta: string): Observable<boolean> {
-    const query = `SELECT * FROM usuarios u 
-                     INNER JOIN respuestas r ON u.id_usuario = r.id_usuario 
-                     WHERE u.nickname = ? AND r.id_pregunta_seguridad = ? AND r.respuesta = ?`;
+    const query = `SELECT * FROM usuario u 
+                   INNER JOIN respuestas_pregunta_seguridad r ON u.id_usuario = r.id_usuario 
+                   INNER JOIN preguntas p ON r.id_pregunta_seguridad = p.id_pregunta_seguridad
+                   WHERE u.nick_usuario = ? AND r.id_pregunta_seguridad = ? AND r.respuesta = ?`;
+  
     console.log('Ejecutando consulta:', query, nickname, idPregunta, respuesta); // Agregar log para depuración
-
+  
     return from(
       this.database.executeSql(query, [nickname, idPregunta, respuesta])
         .then((res) => {
@@ -517,6 +519,7 @@ export class BdServicioService {
         })
     );
   }
+  
 
   actualizarContrasena(nickname: string, nuevaClave: string): Observable<void> {
     const query = `UPDATE usuarios SET contrasena_usuario = ? WHERE nickname = ?`;
@@ -527,7 +530,7 @@ export class BdServicioService {
           console.log('Contraseña actualizada correctamente');
         })
         .catch((error) => {
-          console.error('Error al actualizar contraseña:', error);  //quitar return, y que contenga then , catch 
+          console.error('Error al actualizar contraseña:', error);
           throw error;
         })
     );
