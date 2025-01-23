@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-inicio',
@@ -8,17 +7,17 @@ import { ActivatedRoute, Router } from '@angular/router';
   standalone: false,
 })
 export class InicioPage implements OnInit {
-  nickname:string = "";
 
-  constructor(private router: Router, private activedroute: ActivatedRoute) {
-    this.activedroute.queryParams.subscribe(param =>{
-      if(this.router.getCurrentNavigation()?.extras.state){
-        this.nickname = this.router.getCurrentNavigation()?.extras?.state?.['nick'];
-      }
-    })
-   }
+  isAdmin: boolean = false;
 
   ngOnInit() {
+    // Obtener los datos del usuario desde localStorage
+    const id_rol = localStorage.getItem('id_rol');
+
+    // Si el id_rol es 1 (admin), mostramos el botón de administración
+    if (id_rol && parseInt(id_rol) === 1) {
+      this.isAdmin = true;
+    }
   }
 
 }
