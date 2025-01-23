@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { CameraService } from '../../services/camera.service';
-import { ShareService } from '../../services/share.service';
+import { BdServicioService } from 'src/app/services/bd-servicio.service';
+import { ActivatedRoute } from '@angular/router';
+import { AlertController } from '@ionic/angular';  
 
 @Component({
   selector: 'app-comentarios',
@@ -9,34 +10,79 @@ import { ShareService } from '../../services/share.service';
   standalone: false,
 })
 export class ComentariosPage implements OnInit {
-  comentarios = [
-    { id: 1, usuario: 'Usuario_extra', texto: 'Este mensaje es de prueba', foto: null as string | null },
-    { id: 2, usuario: 'Usuario_extra2', texto: 'Yo creo sinceramente que estos alumnos se ganaron un 7 profe', foto: null as string | null },
-    { id: 3, usuario: 'Usuario_extra3', texto: 'Estoy de acuerdo con el usuario extra 2 profe, 7 y aprueban esta materia', foto: null as string | null },
-  ];
+  arregloComentarios: any;
+  postSeleccionado: any;
+  idUsuario: number | null = null;
+  nuevoComentario: any;
 
   constructor(
-    private cameraService: CameraService,
-    private shareService: ShareService
+    private bd: BdServicioService,
+    private router: ActivatedRoute,
+    private alertController: AlertController  
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Obtener el id del post seleccionado desde la URL
+    this.router.params.subscribe(params => {
+      this.postSeleccionado = params['id'];
+    });
 
-  async takePhoto(comentarioId: number) {
-    const comentario = this.comentarios.find((c) => c.id === comentarioId);
-    if (comentario) {
-      comentario.foto = await this.cameraService.capturePhoto();
+    // Obtener el ID del usuario logueado desde localStorage
+    const idUsuario = localStorage.getItem('id_usuario');
+    if (idUsuario) {
+      this.idUsuario = parseInt(idUsuario, 10);
     }
+
+    // Si el post seleccionado está en localStorage, lo recuperamos
+    const postData: string | null = localStorage.getItem('postSeleccionado');
+    if (postData) {
+      this.postSeleccionado = JSON.parse(postData);
+    }
+
+    // Obtener los comentarios asociados a este post desde la base de datos
+    // Llamar a BuscarComentarioID con el id_post del post seleccionado
+    this.bd.BuscarComentarioID(this.postSeleccionado.id_post);
+
+    // Escuchar los comentarios desde el servicio
+    this.bd.fetchComentarios().subscribe((comentarios: any) => {
+      this.arregloComentarios = comentarios;
+    });
   }
 
-  async shareContent(comentarioId: number) {
-    const comentario = this.comentarios.find((c) => c.id === comentarioId);
-    if (comentario && comentario.foto) {
-      await this.shareService.shareContent(
-        'Foto de Comentario',
-        `Mira esta foto tomada por ${comentario.usuario}`,
-        comentario.foto
-      );
+  // Función para enviar el comentario
+  async enviarComentario(): Promise<void> {
+    if (!this.nuevoComentario) {
+      const alert = await this.alertController.create({
+        header: 'Error',
+        message: 'Por favor, ingresa un comentario',
+        buttons: ['OK']
+      });
+
+      await alert.present();
+      return;
     }
+
+    // Crear el objeto del comentario
+    const comentario = {
+      id_usuario: this.idUsuario,  // ID del usuario logueado
+      contenido_comentario: this.nuevoComentario,
+      id_post: this.postSeleccionado.id_post  // ID del post al que corresponde el comentario
+    };
+
+    // Llamar al servicio para guardar el comentario
+    this.bd.guardarComentario(comentario).subscribe({
+      next: () => {
+        // Después de guardar el comentario, buscar y actualizar los comentarios asociados
+        this.bd.fetchComentarios().subscribe((comentarios: any) => {
+          this.arregloComentarios = comentarios;
+        });
+      },
+      error: (error: any) => {
+        console.error('Error al enviar comentario:', error);
+      }
+    });
+
+    // Limpiar el campo de texto del comentario
+    this.nuevoComentario = '';
   }
 }

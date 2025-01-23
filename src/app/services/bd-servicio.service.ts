@@ -331,6 +331,31 @@ export class BdServicioService {
     })
   }
 
+  //funcion que busca un comenatrio por su id
+  BuscarComentarioID( id_post: number){
+    this.database.executeSql('SELECT * FROM comentario WHERE id_post = ? ',[id_post]).then(res=>{
+      let items: Comentarios[] = [];
+      if (res.rows.length > 0){
+        for (var i= 0; i < res.rows.length; i++){
+          items.push({
+            id_comentario: res.rows.item(i).id_comentario,
+            contenido_comentario: res.rows.item(i).contenido_comentario,
+            likes_comentario: res.rows.item(i).likes_comentario,
+            img_comentario: res.rows.item(i).img_comentario,
+            id_estado: res.rows.item(i).id_estado,
+            id_post: res.rows.item(i).id_post,
+            id_usuario: res.rows.item(i).id_usuario
+          })
+        }
+      }
+      this.Comentarios = items;
+      this.listaComentarios.next(items as any);
+    }).catch(e =>{
+      this.presentAlert('Error al buscar comentario por id', `Error: ${JSON.stringify(e)}`);
+    })
+  }
+
+
   // Función para agregar un usuario (registrar)
   agregarUsuario(nick_usuario: string, correo_usuario: string, contrasena_usuario: string) {
     // Primero, comprobar si el usuario ya existe
@@ -508,6 +533,18 @@ export class BdServicioService {
     );
   }
 
+  //funcion para guardar un comentario
+  guardarComentario(comentario: any): Observable<any> {
+    return new Observable(observer => {
+      this.database.executeSql(
+        'INSERT INTO comentario (id_usuario, contenido_comentario, id_post) VALUES (?, ?, ?)',
+        [comentario.id_usuario, comentario.contenido_comentario, comentario.id_post]
+      ).then((res) => {
+        observer.next(res);
+        observer.complete();
+      }).catch((error) => {
+        observer.error(error);
+      });
+    });
+  } 
 }
-
-
