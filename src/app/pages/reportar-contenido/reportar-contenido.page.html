@@ -14,10 +14,10 @@
   <div class="report-options">
     <ion-list>
       <ion-radio-group [(ngModel)]="selectedMotivo">
-        <!-- Lista de 12 motivos -->
+        <!-- Lista de motivos cargados desde la base de datos -->
         <ion-item *ngFor="let motivo of motivos">
-          <ion-label class="moti">{{ motivo }}</ion-label>
-          <ion-radio slot="start" [value]="motivo"></ion-radio>
+          <ion-label class="moti">{{ motivo.descripcion_motivo }}</ion-label>
+          <ion-radio slot="start" [value]="motivo.descripcion_motivo"></ion-radio>
         </ion-item>
 
         <!-- Motivo personalizado -->

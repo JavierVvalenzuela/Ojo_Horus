@@ -6,6 +6,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Usuarios } from './usuarios';
 import { Post } from './post';
 import { Comentarios } from './comentarios';
+import { Report} from './report';
+import { Motivo } from './motivo';
 import { ImgdefaultService } from './imgdefault.service';
 import { from } from 'rxjs';
 
@@ -101,7 +103,7 @@ export class BdServicioService {
   //tabla de los reportes que se hacen a los post, comentarios y comunidad
   tablaReportes: string = `CREATE TABLE IF NOT EXISTS reporte (
     id_reporte INTEGER PRIMARY KEY AUTOINCREMENT,
-    estado_reporte VARCHAR(20) DEFAULT 'Pendiente',
+    estado_reporte VARCHAR(20),
     id_usuario INTEGER NOT NULL, 
     id_post INTEGER, 
     id_comunidad INTEGER,
@@ -146,7 +148,8 @@ export class BdServicioService {
   registroUsuario: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES 
   (1, 'Administrador', 'Admin', 'Admin@gmail.com', 'Admin.01', 1, 1),
   (2, 'Diego Mellado', 'Goto', 'Goto@gmail.com', 'Diego.170', 1, 2),
-  (3, 'Javier Valenzuela', 'Red', 'Red@gmail.com', 'Javier.170', 1, 2);`;
+  (3, 'Javier Valenzuela', 'Red', 'Red@gmail.com', 'Javier.170', 1, 2),
+  (4, 'Reportado Uno', 'Rep', 'Rep@gmail.com', 'Repor.170',1,2);`;
 
   //tablas post
   registroPost: string = `
@@ -164,17 +167,25 @@ export class BdServicioService {
     (2, 'Este es el segundo comentario', 200, 1, 2, 2),
     (3, 'Este es el tercer comentario', 300, 1, 3, 3);`;
 
+   //tabla de reportes
+   registroReporte: string = `INSERT or IGNORE INTO reporte (id_reporte, estado_reporte, id_usuario, id_motivo) VALUES (1,'Pendiente',4,2);`; 
+
   //observable para manipular los select de mi BD
   listaUsuarios = new BehaviorSubject<Usuarios[]>([]);
   listaPost = new BehaviorSubject<Post[]>([]);
   listaComentarios = new BehaviorSubject<Comentarios[]>([]);
+  listaReportes = new BehaviorSubject<Report[]>([]);
+  listaMotivos = new BehaviorSubject<Motivo[]>([]);
+
   //observable del status de la BD
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   // Variables para almacenar los datos de la BD
   public Post: Post[] = [];
   public Usuarios: Usuarios[] = [];
-  public Comentarios: Comentarios[] = [];
+  public Comentarios: Comentarios [] = [];
+  public Report: Report [] = [];
+  public Motivo: Motivo [] = [];
 
   constructor(
     private sqlite: SQLite,
@@ -201,6 +212,14 @@ export class BdServicioService {
   fetchComentarios(): Observable<Comentarios[]> {
     return this.listaComentarios.asObservable();
   
+  }
+
+  fetchReportes():Observable<Report[]>{
+    return this.listaReportes.asObservable();
+  }
+
+  fetchMotivos(): Observable<Motivo[]> {
+    return this.listaMotivos.asObservable();
   }
 
   //funcion para crear la base de datos (en sqldeveloper seria crear nueva conexion)
@@ -247,10 +266,13 @@ export class BdServicioService {
 
       await this.database.executeSql(this.registroComentario, []);
       await this.database.executeSql(this.registroPost, []);
+      await this.database.executeSql(this.registroReporte, []);
 
       this.buscarUsuarios(); // Actualizar lista
       this.buscarPost(); // Actualizar lista
       this.buscarComentarios(); // Actualizar lista
+      this.buscarReportes(); // Actualizar lista
+      this.buscarMotivos(); // Actualizar lista
       this.isDBReady.next(true); // Notificar que la BD está lista
     } catch (e) {
       this.presentAlert('Error', `Error al crear las tablas: ${JSON.stringify(e)}`);
@@ -355,6 +377,46 @@ export class BdServicioService {
     })
   }
 
+  buscarReportes() {
+    this.database.executeSql(`SELECT reporte.*, motivo.descripcion_motivo FROM reporte LEFT JOIN motivo ON reporte.id_motivo = motivo.id_motivo  WHERE reporte.estado_reporte = 'Pendiente' ORDER BY reporte.id_reporte ASC`, []).then(res => {
+      let items: Report[] = [];
+      if (res.rows.length > 0) {
+        for (var i = 0; i < res.rows.length; i++) {
+          items.push({
+            id_reporte: res.rows.item(i).id_reporte,
+            estado_reporte: res.rows.item(i).estado_reporte,
+            id_usuario: res.rows.item(i).id_usuario,
+            id_post: res.rows.item(i).id_post,
+            id_comunidad: res.rows.item(i).id_comunidad,
+            id_comentario: res.rows.item(i).id_comentario,
+            id_motivo: res.rows.item(i).id_motivo,
+            descripcion_motivo: res.rows.item(i).descripcion_motivo 
+          });
+        }
+      }
+      this.listaReportes.next(items as any);
+    }).catch((e: any) => {
+      this.presentAlert('Error al buscar reportes', `Error: ${JSON.stringify(e)}`);
+    });
+  }
+  //buscar motivo para llamrlo en reportar_conteido
+  buscarMotivos() {
+    this.database.executeSql('SELECT * FROM motivo', []).then(res => {
+      let items: Motivo[] = [];
+      if (res.rows.length > 0) {
+        for (var i = 0; i < res.rows.length; i++) {
+          items.push({
+          id_motivo: res.rows.item(i).id_motivo,
+          descripcion_motivo: res.rows.item(i).descripcion_motivo
+          });
+        }
+      }
+      this.listaMotivos.next(items as any);
+    }).catch(e => {
+      this.presentAlert('Error al cargar motivos', `Error: ${JSON.stringify(e)}`);
+      return [];
+    });
+  }
 
   // Función para agregar un usuario (registrar)
   agregarUsuario(nick_usuario: string, correo_usuario: string, contrasena_usuario: string) {
@@ -397,6 +459,30 @@ export class BdServicioService {
       this.presentAlert('Error al agregar comentario', JSON.stringify(e));
     })
   }
+
+  agregarReporte(estado_reporte: string, id_usuario: number, id_post: number, id_comunidad: number, id_comentario: number, id_motivo: number) {
+    // Verifica que el motivo existe en la tabla motivo antes de insertar
+    this.database.executeSql('SELECT * FROM motivo WHERE id_motivo = ?', [id_motivo]).then(res => {
+      if (res.rows.length > 0) {
+        // El motivo existe, procede con el INSERT
+        this.database.executeSql('INSERT INTO reporte(estado_reporte, id_usuario, id_post, id_comunidad, id_comentario, id_motivo) VALUES(?,?,?,?,?,?)', 
+          [estado_reporte, id_usuario, id_post, id_comunidad, id_comentario, id_motivo]
+        ).then(() => {
+          this.presentAlert('Registro', 'Reporte registrado correctamente');
+          this.buscarReportes(); // Actualiza la lista de reportes
+        }).catch((e: any) => {
+          this.presentAlert('Error al agregar reporte', JSON.stringify(e));
+        });
+      } else {
+        // El motivo no existe
+        this.presentAlert('Error', 'El motivo especificado no existe');
+      }
+    }).catch((e: any) => {
+      this.presentAlert('Error al verificar motivo', JSON.stringify(e));
+    });
+  }
+
+  
 
   //funcion para loguear usuario
   loginUsuario(nick_usuario: string, contrasena_usuario: string) {
