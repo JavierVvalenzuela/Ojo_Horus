@@ -35,6 +35,7 @@ export class MenuPage implements OnInit {
       console.error('Error al compartir el contenido:', error);
     }
   }
+  //cambiar por metodo de suscribe
   ngOnInit() {
     this.bd.buscarPost();
     this.bd.fetchPost().subscribe((posts: any) => {

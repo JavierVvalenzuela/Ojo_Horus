@@ -21,6 +21,7 @@ export class ComentariosPage implements OnInit {
     private alertController: AlertController  
   ) {}
 
+  //cambira por metodo de suscribe
   ngOnInit() {
     // Obtener el id del post seleccionado desde la URL
     this.router.params.subscribe(params => {
