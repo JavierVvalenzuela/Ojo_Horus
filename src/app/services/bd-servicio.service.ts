@@ -20,7 +20,7 @@ export class BdServicioService {
   //variable para almacenar la conexion a la base de datos
   public database!: SQLiteObject;
 
-  droptablausuario: string = `DROP TABLE IF EXISTS reporte;`;
+  //droptablausuario: string = `DROP TABLE IF EXISTS reporte;`;
 
 
   //Tablas del foro
@@ -241,7 +241,7 @@ export class BdServicioService {
   }
   async crearTablas() {
     try {
-      await this.database.executeSql(this.droptablausuario, []);
+      //await this.database.executeSql(this.droptablausuario, []);
 
       await this.database.executeSql(this.tablaRol, []);
       await this.database.executeSql(this.registroRoles, []);
