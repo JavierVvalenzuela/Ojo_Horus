@@ -1,19 +1,22 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>editarperfil</ion-title>
+    <ion-title>Editar Perfil</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-card-header class="card-header">
     <div class="foto">
-      <ion-icon color="white" name="person-circle-outline" (click)="takePicture()" *ngIf ="!fotografia"></ion-icon>
-      <img class="fotoperfil" [src]="fotografia" alt="Sin foto" (click)="takePicture()" *ngIf="fotografia">
+      <img 
+        [src]="fotografia ? fotografia : imgSrc" 
+        alt="Avatar" 
+        class="avatar-img" 
+        (click)="takePicture()">
     </div>
 
     <ion-item class="cabe" lines="none">
       <ion-label>
-        <h2 class="nombre">Diego</h2>
+        <h2 class="nombre"> {{ Pusuario.nick_usuario }} </h2>
       </ion-label>
     </ion-item>
   </ion-card-header>
@@ -23,31 +26,48 @@
       <ion-card-content>
         <!-- Nombre -->
         <ion-item>
-          <ion-input class="d1" placeholder="Nombre" [(ngModel)]="nombre" (ionInput)="errores.nombre = null">
+          <ion-label position="stacked">Nombre</ion-label>
+          <ion-input 
+            class="d1" 
+            [(ngModel)]="nombre" 
+            (ionInput)="errores.nombre = null">
           </ion-input>
         </ion-item>
         <p *ngIf="errores.nombre" class="error">{{ errores.nombre }}</p>
 
         <!-- Correo Electrónico -->
         <ion-item>
-          <ion-input class="d2" placeholder="Correo" [(ngModel)]="email" (ionInput)="errores.email = null">
+          <ion-label position="stacked">Correo Electrónico</ion-label>
+          <ion-input 
+            class="d2" 
+            [(ngModel)]="email" 
+            (ionInput)="errores.email = null">
           </ion-input>
         </ion-item>
         <p *ngIf="errores.email" class="error">{{ errores.email }}</p>
 
         <!-- Teléfono -->
         <ion-item>
-          <ion-input class="d3" placeholder="Teléfono" [(ngModel)]="telefono" type="tel" maxlength="8"
-            inputmode="numeric">
+          <ion-label position="stacked">Teléfono</ion-label>
+          <ion-input 
+            class="d3" 
+            [(ngModel)]="telefono" 
+            type="tel" 
+            maxlength="9" 
+            inputmode="numeric" 
+            (ionInput)="errores.telefono = null">
           </ion-input>
         </ion-item>
         <p *ngIf="errores.telefono" class="error">{{ errores.telefono }}</p>
-        
       </ion-card-content>
     </ion-card>
 
     <div class="btns">
-      <ion-button fill="outline" color="warning" (click)="guardarPerfil()">Guardar</ion-button>
+      <ion-button 
+        fill="outline" 
+        color="warning" 
+        [disabled]="!nombre || !email || !telefono || errores.nombre || errores.email || errores.telefono" 
+        (click)="guardarPerfil()">Guardar</ion-button>
       <ion-button fill="outline" color="light" [routerLink]="['/perfilusuario']">Cancelar</ion-button>
     </div>
   </div>

@@ -20,7 +20,7 @@ export class BdServicioService {
   //variable para almacenar la conexion a la base de datos
   public database!: SQLiteObject;
 
-  //droptablausuario: string = `DROP TABLE IF EXISTS usuario;`;
+  droptablausuario: string = `DROP TABLE IF EXISTS reporte;`;
 
 
   //Tablas del foro
@@ -241,7 +241,7 @@ export class BdServicioService {
   }
   async crearTablas() {
     try {
-      //await this.database.executeSql(this.droptablausuario, []);
+      await this.database.executeSql(this.droptablausuario, []);
 
       await this.database.executeSql(this.tablaRol, []);
       await this.database.executeSql(this.registroRoles, []);
@@ -440,6 +440,53 @@ export class BdServicioService {
     });
   }
 
+  modificarUsuario(id_usuario: number, nombre: string, email: string, telefono: string, imagen: string | null): Promise<void> {
+    return new Promise((resolve, reject) => {
+      let query = `
+        UPDATE usuario 
+        SET nombre_usuario = ?, correo_usuario = ?, telefono_usuario = ?
+      `;
+      
+      const params = [nombre, email, telefono];
+  
+      // Si la imagen no es null, también la actualizamos
+      if (imagen) {
+        query += `, img_perfil = ?`; // Suponiendo que la columna para la imagen en la base de datos es 'img_perfil'
+        params.push(imagen);
+      }
+  
+      query += ` WHERE id_usuario = ?`;
+      params.push(id_usuario.toString()); // Convertimos el id_usuario a string
+  
+      this.database.executeSql(query, params).then(() => {
+        console.log('Usuario modificado exitosamente');
+        resolve(); // Operación completada
+      }).catch((error) => {
+        console.error('Error al modificar usuario:', error);
+        reject(error); // Error en la operación
+      });
+    });
+  }
+
+  actualizarImagenPerfil(nick_usuario: string, imagen: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const query = `
+        UPDATE usuario 
+        SET imagen_usuario = ? 
+        WHERE nick_usuario = ?
+      `;
+  
+      this.database.executeSql(query, [imagen, nick_usuario]).then(() => {
+        console.log('Imagen de perfil actualizada');
+        resolve();
+      }).catch((error) => {
+        console.error('Error al actualizar imagen de perfil:', error);
+        reject(error);
+      });
+    });
+  }
+  
+  
   //funcion para agregar un post
   agregarPost(titulo_post: string, contenido_post: string, img_post: any, id_usuario: number) {
     this.database.executeSql('INSERT INTO post(titulo_post, contenido_post, img_post, id_usuario, id_estado) VALUES(?,?,?,?,?)', [titulo_post, contenido_post, img_post, id_usuario, 1]).then(res => {
