@@ -25,6 +25,7 @@ ion-header {
     padding-top: 5%;
     font-size: 40px;
     color: #d4af37;
+    font-weight: bolder;
   }
   
   .formuser {
@@ -39,8 +40,8 @@ ion-header {
     font-family: Georgia, 'Times New Roman', Times, serif;
     color: white;
     background-color: #000;
-    border: 2px solid #d4af37;
-    /* Borde dorado */
+    border: 3px solid #d4af37;
+    border-radius: 10px;
   }
   
   .i2 {

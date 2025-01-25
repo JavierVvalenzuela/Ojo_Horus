@@ -20,7 +20,7 @@ export class BdServicioService {
   //variable para almacenar la conexion a la base de datos
   public database!: SQLiteObject;
 
-  //droptablausuario: string = `DROP TABLE IF EXISTS reporte;`;
+  //droptablausuario: string = `DROP TABLE IF EXISTS post;`;
 
 
   //Tablas del foro
@@ -155,9 +155,9 @@ export class BdServicioService {
   registroPost: string = `
   INSERT OR IGNORE INTO post (id_post, titulo_post, contenido_post, likes_post, id_usuario, id_estado) 
   VALUES 
-    (1, 'Gaming', 'Contenido Gaming', 100, 1, 1),
-    (2, 'Gaming2', 'Contenido Gaming2', 1000, 2, 1),
-    (3, 'Gaming3', 'Contenido Gaming3', 10000, 3, 1);`;
+    (1, 'Usuario1', 'Contenido Gaming', 100, 1, 1),
+    (2, 'Usuario2', 'Contenido Gaming2', 1000, 2, 1),
+    (3, 'Usuario3', 'Contenido Gaming3', 10000, 3, 1);`;
 
   //tablas comentarios
   registroComentario: string = `

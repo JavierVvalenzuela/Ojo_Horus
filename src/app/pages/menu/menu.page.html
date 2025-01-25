@@ -10,44 +10,37 @@
 
 <ion-content class="content">
   <!-- Input de publicación y botones -->
-  <ion-item class="post-item">
-    <ion-label>
+  <ion-card class="post-item">
       <ion-input placeholder="¿En qué estás pensando hoy?"></ion-input>
-    </ion-label>
 
     <div class="btnpub">
       <ion-button fill="outline" color="warning">Publicar</ion-button>
-    </div>
-
-    <!-- Botón para tomar una foto -->
-    <div class="btnpub">
       <ion-button class="cam" fill="outline" color="warning" (click)="takePhoto()">
-        <ion-icon name="camera"></ion-icon> Tomar una Foto
-      </ion-button>
-      <img [src]="fotografia" alt="Sin Foto" *ngIf="fotografia" class="foto-preview" />
+        <ion-icon name="camera"></ion-icon></ion-button>
+
+        <div class="fotocom-container">
+          <img [src]="fotografia" alt="Sin Foto" *ngIf="fotografia" class="foto-preview" />
+        </div>
     </div>
-  </ion-item>
+  </ion-card>
 
   <!-- Mostrando los posts obtenidos de la base de datos -->
   <ion-card class="card-custom" *ngFor="let post of arreglopost" (click)="irAComentarios(post)">
-    <ion-card-title class="ion-car-title">
-      <h1>{{ post.titulo_post }}</h1>
-    </ion-card-title>
-    <p>{{ post.contenido_post }}</p>
 
-    <!-- Botón de compartir contenido para cada post -->
-    <div class="btnpub">
-      <ion-button fill="outline" color="warning" (click)="shareContent(post.titulo_post, post.contenido_post, post.img_post)">
-        <ion-icon name="share-social"></ion-icon> Compartir
+    <div>
+      <ion-button fill="clear" [routerLink]="['/reportar-contenido']" class="btn-3puntos">
+        <img src="assets/icon/3puntos.png" alt="Reportar contenido" />
       </ion-button>
     </div>
 
-    <ion-card-content>
+      <h1 class="nicku" [routerLink]="['/perfiles']">{{ post.titulo_post }}</h1>
+      <p class="conten">{{ post.contenido_post }}</p>
       <img *ngIf="post.img_post" [src]="post.img_post" alt="Publicación de usuario" style="width: 100%; margin-bottom: 8px;">
+      
       <div class="btnpost">
         <ion-button fill="outline" color="warning">Me Gusta</ion-button>
         <ion-button fill="outline" color="warning" routerLink="/comentarios">Comentar</ion-button>
+        <ion-button fill="outline" color="warning" (click)="shareContent(post.titulo_post, post.contenido_post, post.img_post)">Compartir</ion-button>
       </div>
-    </ion-card-content>
   </ion-card>
 </ion-content>

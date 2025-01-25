@@ -5,29 +5,23 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Editar Nombre y Descripción de la comunidad</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
+  <ion-card class="card">
+      <h1>Editar Nombre y Descripción de la comunidad</h1>
       <ion-item>
         <ion-label class="t1">Nombre de la Comunidad</ion-label>
-        <ion-input [(ngModel)]="nombreComunidad"></ion-input>
+        <ion-input class="i1" [(ngModel)]="nombreComunidad"></ion-input>
       </ion-item>
 
-      <ion-item class="bordeDorado">
+      <ion-item>
         <ion-label class="t2">Descripción</ion-label>
-        <ion-textarea [(ngModel)]="descripcionComunidad"></ion-textarea>
+        <ion-textarea class="i2" [(ngModel)]="descripcionComunidad"></ion-textarea>
       </ion-item>
-    </ion-card-content>
   </ion-card>
 
   <!-- Imagen de la comunidad -->
-  <ion-card class="bordeDorado">
-    <ion-card-header>
-      <ion-card-title>Imagen de la Comunidad</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
+  <ion-card class="card2">
+      <h2>Imagen de la Comunidad</h2>
+      <ion-item>
       <div class="fotocom-container">
         <ion-img class="fotocom" [src]="fotografia" alt="Sin Foto" *ngIf="fotografia"></ion-img>
       </div>
@@ -36,7 +30,7 @@
        <div class="boton-container">
       <ion-button class="camim" fill="outline" color="warning" (click)="takePicture()">Cambiar Imagen</ion-button>
       </div>
-    </ion-card-content>
+    </ion-item>
   </ion-card>
 
   <!-- Botones para guardar o cancelar -->

@@ -25,78 +25,57 @@ ion-header {
   ion-content {
     --background: none;
     background-color: black;
-  }
-  
-  .bordeDorado {
-    border: 2px solid #d4af37;
-    border: 2px solid #d4af37;
-    /* Borde dorado */
-    border-radius: 10px;
-    /* Bordes redondeados */
-  }
-  
-  /* Estilos para las tarjetas */
-  ion-card {
-    background-color: #000;
-    margin-bottom: 16px;
-    border-radius: 8px;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-  }
-  
-  ion-card-title {
-    background-color: black;
-    color: #d4af37;
-    font-size: 23px;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    font-weight: bolder;
-    text-align: center;
-  }
-  
-  /* Estilos para los elementos de input */
-  ion-item {
-    --background: none;
-    background-color: #000;
-    border: 2px solid #d4af37;
-    margin-bottom: 16px;
-    border-radius: 8px;
-    padding-top: 3%;
-    padding-bottom: 5%;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-  }
-  
-  ion-label {
-    background-color: black;
-    color: #fff;
-    font-size: 1rem;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-  }
-  
-  .t1,
-  .t2 {
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    font-size: 17px;
-    color: white;
-  }
-  
-  ion-input,
-  ion-textarea {
-    margin-left: 5%;
-    background-color: #000;
-    border: 2px solid #d4af37;
-    background-color: black;
-    color: #fff;
-    border-radius: 8px;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    padding-bottom: 5%;
-  }
-  
-  /* Estilos para las imágenes */
+
+    .card{
+      background-color: black;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+
+      h1{
+        background-color: black;
+        color: #d4af37;
+        font-size: 23px;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        font-weight: bolder;
+        text-align: center;
+      }
+
+      .t1, .t2 {
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        font-size: 17px;
+        color: white;
+        padding-right: 2%;
+      }
+    
+      .i1, .i2{
+        border: 3px solid #d4af37;
+        border-radius: 10px;
+        color: white;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
+    }
+
+    .card2{
+      background-color: black;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+
+      h2{
+        background-color: black;
+        color: #d4af37;
+        font-size: 23px;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        font-weight: bolder;
+        text-align: center;
+      }
+
+        /* Estilos para las imágenes */
   .fotocom-container {
     width: 100px;
     height: 100px;
     border-radius: 50%;
     overflow: hidden;
     margin: 0 auto;
+    border: 3px solid #d4af37;
+    border-radius: 10px;
   }
   
   .fotocom {
@@ -109,6 +88,22 @@ ion-header {
     padding-top: 5%;
     text-align: center;
   }
+
+}
+  
+  /* Estilos para los elementos de input */
+  ion-item {
+    --background: none;
+    background-color: #000;
+    border: 3px solid #d4af37;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    padding-top: 3%;
+    padding-bottom: 5%;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+
   
   .btns {
     text-align: center;
@@ -121,3 +116,5 @@ ion-header {
   .camim {
     text-align: center;
   }
+}
+  

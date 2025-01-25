@@ -19,11 +19,11 @@ ion-header {
     }
   }
   
-  ion-content {
+  .content {
     background-color: #000000;
     /* Fondo negro */
     --background: transparent;
-  }
+
   
   .post-item {
     border: 2px solid #d4af37;
@@ -71,10 +71,15 @@ ion-header {
       padding-left: 5%;
     }
   
-    .ion-card-title {
+    .nicku {
       color: #d4af37;
-      /* Texto dorado para el título */
       margin-right: 20%;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      margin-right: 50%;
+    }
+    .conten{
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      color: white;
     }
   
     img {
@@ -83,10 +88,21 @@ ion-header {
       border: 2px solid #d4af37;
       /* Borde dorado en imágenes */
     }
+        .foto-preview{
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+    
+        .fotocom-container {
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          overflow: hidden;
+          margin: 0 auto;
+          border-radius: 10px;
+        }
   
-    .btnpub {
-      text-align: center;
-    }
   }
   
   .btn-3puntos {
@@ -104,3 +120,4 @@ ion-header {
       border-radius: 0;
     }
   }
+}
