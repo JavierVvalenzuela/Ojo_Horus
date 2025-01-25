@@ -13,7 +13,7 @@ export class AppComponent {
   constructor(private router: Router) {
     //sirve para desabilitar el menu deslizable en ciertas paginas
     this.router.events.subscribe(() => {
-      const disabledRoutes = ['/login', '/register', '/recuperar-password', '/reportar-contenido', '/editarperfil', '/editar-com'] //las rutas donde quiero que no aparezca el menu
+      const disabledRoutes = ['/login', '/register', '/recuperar-password', '/reportar-contenido', '/editarperfil', '/editar-com', '/cambiar-password'] //las rutas donde quiero que no aparezca el menu
       this.menuDisabled = disabledRoutes.includes(this.router.url);
     });
   }

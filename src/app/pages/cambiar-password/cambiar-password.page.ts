@@ -10,8 +10,9 @@ import { BdServicioService } from 'src/app/services/bd-servicio.service';
   standalone: false,
 })
 export class CambiarPasswordPage implements OnInit {
-  nickname: string = '';
-  idPreguntaSeguridad: number = 0; // Ahora es un número
+  nickname: string = '';  // Asumimos que nickname es un string
+  idUsuario: number = 0;  // idUsuario debe ser un número
+  idPreguntaSeguridad: number = 0; // idPreguntaSeguridad debe ser un número
   respuestaSeguridad: string = '';
   nuevaClave: string = '';
   confirmarClave: string = '';
@@ -38,6 +39,12 @@ export class CambiarPasswordPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Recuperar el idUsuario desde el localStorage
+    const storedIdUsuario = localStorage.getItem('id_usuario');
+    if (storedIdUsuario) {
+      this.idUsuario = parseInt(storedIdUsuario, 10);  // Asegúrate de convertirlo a número
+    }
+
     // Obtener preguntas de seguridad desde la base de datos
     this.bdServicio.obtenerPreguntasSeguridad().subscribe(
       (preguntas) => {
@@ -94,9 +101,16 @@ export class CambiarPasswordPage implements OnInit {
   
   actualizarContrasena() {
     console.log('Botón Ingresar presionado');  // Verificar si la función se llama
+
+    // Verificar si se obtuvo el idUsuario antes de continuar
+    if (!this.idUsuario) {
+      console.error('Error: idUsuario no está definido.');
+      return;
+    }
+
     if (this.validarCampos()) {
       // Verificar pregunta y respuesta de seguridad
-      this.bdServicio.verificarPreguntaRespuesta(this.nickname, this.idPreguntaSeguridad, this.respuestaSeguridad)
+      this.bdServicio.verificarPreguntaRespuesta(this.idUsuario, this.idPreguntaSeguridad, this.respuestaSeguridad)
         .toPromise()  // Convierte el Observable a Promesa
         .then((valido: boolean | undefined) => {
           if (valido === undefined) {
@@ -107,7 +121,7 @@ export class CambiarPasswordPage implements OnInit {
           console.log('Respuesta de seguridad válida:', valido);  // Verificar si la verificación pasa
           if (valido) {
             // Actualizar la contraseña del usuario
-            this.bdServicio.actualizarContrasena(this.nickname, this.nuevaClave)
+            this.bdServicio.actualizarContrasena(this.idUsuario, this.nuevaClave, this.confirmarClave)
               .toPromise()  // Convierte el Observable a Promesa
               .then(() => {
                 console.log('Contraseña actualizada correctamente.');
@@ -127,8 +141,7 @@ export class CambiarPasswordPage implements OnInit {
     }
   }
   
-
   cancelar() {
-    this.router.navigate(['/configuraciones']);
+    this.router.navigate(['/recuperar-password']);
   }
 }

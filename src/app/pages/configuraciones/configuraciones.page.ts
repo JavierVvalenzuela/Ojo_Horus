@@ -14,11 +14,6 @@ export class ConfiguracionesPage implements OnInit {
   ngOnInit() {
   }
 
-  // Método para redirigir a la página de cambiar contraseña
-  goToCambiarContrasena() {
-    this.router.navigate(['/cambiar-password']);
-  }
-
   // Método para redirigir a la página de seguridad
   goToSeguridad() {
     this.router.navigate(['/seguridad']);

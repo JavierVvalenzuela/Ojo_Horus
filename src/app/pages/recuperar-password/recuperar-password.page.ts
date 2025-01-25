@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';  // Importa AlertController
 
 @Component({
   selector: 'app-recuperar-password',
@@ -15,15 +16,11 @@ export class RecuperarPasswordPage implements OnInit {
   clave: string = '';
   confirmarClave: string = '';
 
-  errores: { nickname: string | null; preguntaSeguridad: string | null; respuestaSeguridad: string | null; clave: string | null; confirmarClave: string | null } = {
+  errores: { nickname: string | null} = {
     nickname: null,
-    preguntaSeguridad: null,
-    respuestaSeguridad: null,
-    clave: null,
-    confirmarClave: null
   };
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private alertController: AlertController) {}
 
   validarCampos() {
     let correcto = true;
@@ -36,43 +33,36 @@ export class RecuperarPasswordPage implements OnInit {
       this.errores.nickname = null;
     }
 
-    // Validación de pregunta de seguridad
-    if (!this.preguntaSeguridad) {
-      this.errores.preguntaSeguridad = 'Debe seleccionar una pregunta de seguridad.';
-      correcto = false;
-    } else {
-      this.errores.preguntaSeguridad = null;
+    return correcto;
+  }
+
+  // Función que muestra la alerta si el nickname no es encontrado
+  async mostrarAlerta(mensaje: string) {
+    const alert = await this.alertController.create({
+      header: 'Error',
+      message: mensaje,
+      buttons: ['OK']
+    });
+
+    await alert.present();
+  }
+
+  // Función que valida si el nickname existe
+  async ingresar() {
+    const nick = this.nickname.trim(); // Eliminamos posibles espacios en blanco
+    const storedNick = localStorage.getItem('nick_usuario'); // Obtenemos el nickname del localStorage
+
+    if (!nick) {
+      this.errores.nickname = 'El campo Nickname es obligatorio.';
+      return;
     }
 
-    // Validación de respuesta de seguridad
-    if (!this.respuestaSeguridad.trim()) {
-      this.errores.respuestaSeguridad = 'Debe ingresar la respuesta a la pregunta de seguridad.';
-      correcto = false;
+    if (nick !== storedNick) {
+      // Si el nick no coincide con el almacenado, mostramos la alerta
+      await this.mostrarAlerta('El Nickname ingresado no existe.');
     } else {
-      this.errores.respuestaSeguridad = null;
-    }
-
-    // Validación de clave
-    if (
-      this.clave.length < 8 || !/[A-Z]/.test(this.clave) || !/\d/.test(this.clave) || !/[-!@#$%^&*.]/.test(this.clave)
-    ) {
-      this.errores.clave = 'La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, un número y un carácter especial.';
-      correcto = false;
-    } else {
-      this.errores.clave = null;
-    }
-
-    // Validación de confirmación de clave
-    if (this.clave !== this.confirmarClave) {
-      this.errores.confirmarClave = 'Las contraseñas no coinciden.';
-      correcto = false;
-    } else {
-      this.errores.confirmarClave = null;
-    }
-
-    // Si todo es correcto
-    if (correcto) {
-      this.router.navigate(['/login']);
+      // Si el nick es correcto, redirigimos al formulario de cambiar contraseña
+      this.router.navigate(['/cambiar-password']);
     }
   }
 

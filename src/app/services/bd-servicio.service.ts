@@ -9,7 +9,7 @@ import { Comentarios } from './comentarios';
 import { Report} from './report';
 import { Motivo } from './motivo';
 import { ImgdefaultService } from './imgdefault.service';
-import { from } from 'rxjs';
+import { from, throwError } from 'rxjs';
 
 
 @Injectable({
@@ -472,7 +472,7 @@ export class BdServicioService {
     return new Promise((resolve, reject) => {
       const query = `
         UPDATE usuario 
-        SET imagen_usuario = ? 
+        SET img_perfil = ? 
         WHERE nick_usuario = ?
       `;
   
@@ -549,23 +549,6 @@ export class BdServicioService {
     });
   }
 
-
-  // Función para actualizar un usuario
-  actualizarUsuario(usuario: Usuarios): Observable<any> {
-    return new Observable(observer => {
-      this.database.executeSql(`UPDATE usuario SET nombre_usuario = ?, correo_usuario = ?, contrasena_usuario = ? WHERE id_usuario = ?`,
-        [usuario.nombre_usuario, usuario.correo_usuario, usuario.contrasena_usuario, usuario.id_usuario])
-        .then((res: any) => {
-          observer.next(res);
-          observer.complete();
-        })
-        .catch((error: any) => {
-          this.presentAlert('Error', `Error al actualizar usuario: ${JSON.stringify(error)}`);
-          observer.error(error);
-        });
-    });
-  }
-
   //alertas
   async presentAlert(titulo: string, msj: string) {
     const alert = await this.alertcontroller.create({
@@ -632,33 +615,30 @@ export class BdServicioService {
     });
   }
 
-  verificarPreguntaRespuesta(nickname: string, idPregunta: number, respuesta: string): Observable<boolean> {
-    const query = `SELECT * FROM usuario u 
-                   INNER JOIN respuestas_pregunta_seguridad r ON u.id_usuario = r.id_usuario 
-                   INNER JOIN preguntas p ON r.id_pregunta_seguridad = p.id_pregunta_seguridad
-                   WHERE u.nick_usuario = ? AND r.id_pregunta_seguridad = ? AND r.respuesta = ?`;
-  
-    console.log('Ejecutando consulta:', query, nickname, idPregunta, respuesta); // Agregar log para depuración
-  
+  verificarPreguntaRespuesta(idUsuario: number, idPregunta: number, respuesta: string): Observable<boolean> {
+    const query = `SELECT * FROM respuestas_pregunta_seguridad 
+                   WHERE id_usuario = ? AND id_pregunta_seguridad = ? AND respuesta = ?`;
+    
     return from(
-      this.database.executeSql(query, [nickname, idPregunta, respuesta])
-        .then((res) => {
-          console.log('Resultado de la consulta:', res.rows.length); // Verificar la longitud de los resultados
-          return res.rows.length > 0;
-        })
+      this.database.executeSql(query, [idUsuario, idPregunta, respuesta])
+        .then((res) => res.rows.length > 0) // Retorna `true` si hay coincidencia
         .catch((error) => {
-          console.error('Error al ejecutar consulta:', error);
+          console.error('Error al verificar pregunta y respuesta:', error);
           throw error;
         })
     );
   }
   
 
-  actualizarContrasena(nickname: string, nuevaClave: string): Observable<void> {
-    const query = `UPDATE usuarios SET contrasena_usuario = ? WHERE nickname = ?`;
-
+  actualizarContrasena(idUsuario: number, nuevaClave: string, confirmarClave: string): Observable<void> {
+    if (nuevaClave !== confirmarClave) {
+      return throwError(() => new Error('Las contraseñas no coinciden'));
+    }
+  
+    const query = `UPDATE usuario SET contrasena_usuario = ? WHERE id_usuario = ?`;
+  
     return from(
-      this.database.executeSql(query, [nuevaClave, nickname])
+      this.database.executeSql(query, [nuevaClave, idUsuario])
         .then(() => {
           console.log('Contraseña actualizada correctamente');
         })
@@ -668,6 +648,7 @@ export class BdServicioService {
         })
     );
   }
+  
 
   //funcion para guardar un comentario
   guardarComentario(comentario: any): Observable<any> {
