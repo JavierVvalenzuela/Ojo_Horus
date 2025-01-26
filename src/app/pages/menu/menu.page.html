@@ -9,20 +9,26 @@
 </ion-header>
 
 <ion-content class="content">
-  <!-- Input de publicación y botones -->
   <ion-card class="post-item">
-      <ion-input placeholder="¿En qué estás pensando hoy?"></ion-input>
-
+    <div class="postear">
+      <ion-input [(ngModel)]="contenido_post" placeholder="¿En qué estás pensando hoy?" rows="6"></ion-input>
+    </div>
+  
     <div class="btnpub">
-      <ion-button fill="outline" color="warning">Publicar</ion-button>
-      <ion-button class="cam" fill="outline" color="warning" (click)="takePhoto()">
-        <ion-icon name="camera"></ion-icon></ion-button>
-
-        <div class="fotocom-container">
-          <img [src]="fotografia" alt="Sin Foto" *ngIf="fotografia" class="foto-preview" />
-        </div>
+      <!-- Botón para publicar el post -->
+      <ion-button slot="end" fill="outline" color="warning" (click)="publicarPost()">Publicar</ion-button>
+      <!-- Botón para tomar una foto -->
+      <ion-button slot="end" class="cam" fill="outline" color="warning" (click)="takePhoto()">
+        <ion-icon name="camera"></ion-icon>
+      </ion-button>
+  
+      <!-- Contenedor para mostrar la imagen capturada -->
+      <div class="fotocom-container">
+        <img [src]="fotografia" alt="Sin Foto" *ngIf="fotografia" class="foto-preview" />
+      </div>
     </div>
   </ion-card>
+  
 
   <!-- Mostrando los posts obtenidos de la base de datos -->
   <ion-card class="card-custom" *ngFor="let post of arreglopost" (click)="irAComentarios(post)">

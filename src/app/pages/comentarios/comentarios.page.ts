@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
 import { ActivatedRoute } from '@angular/router';
-import { AlertController } from '@ionic/angular';  
+import { AlertController } from '@ionic/angular';
+import { ShareService } from 'src/app/services/share.service';
 
 @Component({
   selector: 'app-comentarios',
@@ -18,8 +19,9 @@ export class ComentariosPage implements OnInit {
   constructor(
     private bd: BdServicioService,
     private router: ActivatedRoute,
-    private alertController: AlertController  
-  ) {}
+    private alertController: AlertController,
+    private share: ShareService
+  ) { }
 
   //cambira por metodo de suscribe
   ngOnInit() {
@@ -63,9 +65,21 @@ export class ComentariosPage implements OnInit {
       return;
     }
 
+    // Obtener el ID del usuario desde el localStorage
+    const idUsuario = localStorage.getItem('id_usuario');
+    if (!idUsuario) {
+      const alert = await this.alertController.create({
+        header: 'Error',
+        message: 'No se pudo obtener el ID del usuario',
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+
     // Crear el objeto del comentario
     const comentario = {
-      id_usuario: this.idUsuario,  // ID del usuario logueado
+      id_usuario: parseInt(idUsuario, 10),  // ID del usuario logueado
       contenido_comentario: this.nuevoComentario,
       id_post: this.postSeleccionado.id_post  // ID del post al que corresponde el comentario
     };
@@ -73,10 +87,8 @@ export class ComentariosPage implements OnInit {
     // Llamar al servicio para guardar el comentario
     this.bd.guardarComentario(comentario).subscribe({
       next: () => {
-        // Después de guardar el comentario, buscar y actualizar los comentarios asociados
-        this.bd.fetchComentarios().subscribe((comentarios: any) => {
-          this.arregloComentarios = comentarios;
-        });
+        // Inmediatamente después de guardar el comentario, agregarlo al arreglo local
+        this.arregloComentarios.push(comentario);
       },
       error: (error: any) => {
         console.error('Error al enviar comentario:', error);
@@ -86,5 +98,13 @@ export class ComentariosPage implements OnInit {
     // Limpiar el campo de texto del comentario
     this.nuevoComentario = '';
   }
-  
+
+  public async shareContent(title: string, message: string, url: string) {
+    try {
+      await this.share.shareContent(title, message, url || '');  // Usar una URL válida o vacía si no hay URL
+    } catch (error) {
+      console.error('Error al compartir el contenido:', error);
+    }
+  }
+
 }

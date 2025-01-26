@@ -20,7 +20,7 @@ export class BdServicioService {
   //variable para almacenar la conexion a la base de datos
   public database!: SQLiteObject;
 
-  //droptablausuario: string = `DROP TABLE IF EXISTS post;`;
+  droptablausuario: string = `DROP TABLE IF EXISTS post;`;
 
 
   //Tablas del foro
@@ -241,7 +241,7 @@ export class BdServicioService {
   }
   async crearTablas() {
     try {
-      //await this.database.executeSql(this.droptablausuario, []);
+      await this.database.executeSql(this.droptablausuario, []);
 
       await this.database.executeSql(this.tablaRol, []);
       await this.database.executeSql(this.registroRoles, []);
@@ -488,12 +488,15 @@ export class BdServicioService {
   
   
   //funcion para agregar un post
-  agregarPost(titulo_post: string, contenido_post: string, img_post: any, id_usuario: number) {
-    this.database.executeSql('INSERT INTO post(titulo_post, contenido_post, img_post, id_usuario, id_estado) VALUES(?,?,?,?,?)', [titulo_post, contenido_post, img_post, id_usuario, 1]).then(res => {
-      this.presentAlert('Registro', 'Post registrado correctamente');
-      this.buscarPost(); // Actualiza la lista de posts
-    }).catch((e: any) => {
-      this.presentAlert('Error al agregar post', JSON.stringify(e));
+  agregarPost(titulo_post: string, contenido_post: string, img_post: any, id_usuario: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.database.executeSql('INSERT INTO post(titulo_post, contenido_post, img_post, id_usuario, id_estado) VALUES(?,?,?,?,?)', [titulo_post, contenido_post, img_post, id_usuario, 1])
+        .then(res => {
+          resolve(res); // Resolvemos la promesa si todo va bien
+        })
+        .catch(e => {
+          reject(e); // Rechazamos la promesa en caso de error
+        });
     });
   }
 
@@ -664,5 +667,4 @@ export class BdServicioService {
       });
     });
   } 
-
 }

@@ -21,13 +21,13 @@ ion-header {
   .content {
     background-color: black;
     --background: transparent;
-  }
-  
-  h1 {
-    font-size: 20px;
-    padding-left: 3%;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-  }
+
+    .nicku {
+      color: #d4af37;
+      margin-right: 20%;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      margin-right: 50%;
+    }
   
   ion-title {
     font-family: Georgia, 'Times New Roman', Times, serif;
@@ -87,26 +87,31 @@ ion-header {
     --background: none;
     padding-left: 2%;
     padding-right: 2%;
+    position: fixed;
+    bottom: 0;       
+    width: 100%;     
+    z-index: 10;      
   }
   
   .com {
-    display: flex; /* Activa el diseño flexbox */
-    align-items: center; /* Alinea verticalmente el input y el botón */
-    justify-content: space-between; /* Distribuye el espacio: input a la izquierda, botón a la derecha */
-    gap: 10px; /* Espacio entre el input y el botón */
+    display: flex;
+    align-items: center; 
+    justify-content: space-between; 
+    gap: 10px; 
   }
   
   .tucom {
-    flex: 1; /* El input ocupará todo el espacio disponible */
+    flex: 1; 
     font-family: Georgia, 'Times New Roman', Times, serif;
     color: white;
     background-color: black;
-    border: 2px solid #d4af37; /* Borde dorado */
-    border-radius: 5px; /* Bordes redondeados */
+    border: 2px solid #d4af37; 
+    border-radius: 5px; 
     padding: 10px;
   }
   
   .btn-enviar {
-    border-radius: 5px; /* Bordes redondeados */
-    padding: 8px 16px; /* Tamaño del botón */
+    border-radius: 5px;
+    padding: 8px 16px; 
   }
+}

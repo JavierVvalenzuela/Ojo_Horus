@@ -38,16 +38,18 @@ ion-header {
     margin-right: 3%;
   }
   
-  ion-input {
+  .postear {
     color: white;
     font-family: Georgia, 'Times New Roman', Times, serif;
     border: 2px solid #d4af37;
-    /* Borde dorado */
     border-radius: 10px;
-    /* Bordes redondeados */
-    margin-top: 5%;
+    margin: 5%;
     border-left: 2%;
-    margin-bottom: 2%;
+
+
+    .btnpub{
+      text-align: end;
+    }
   }
   
   .card-custom {

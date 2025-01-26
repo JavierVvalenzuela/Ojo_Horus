@@ -16,17 +16,15 @@
         <img src="assets/icon/3puntos.png" alt="Reportar contenido" />
       </ion-button>
     </div>
-    <ion-card-title>
-      <h1 [routerLink]="['/perfiles', postSeleccionado.id_usuario]">{{ postSeleccionado.titulo_post }}</h1>
-    </ion-card-title>
-    <p>{{ postSeleccionado.contenido_post }}</p>
-
-    <ion-card-content>
+      <h1 class="nicku" [routerLink]="['/perfiles']">{{ postSeleccionado.titulo_post }}</h1>
+      <p class="conten">{{ postSeleccionado.contenido_post }}</p>
       <img *ngIf="postSeleccionado.img_post" [src]="postSeleccionado.img_post" alt="Publicación de usuario" style="width: 100%; margin-bottom: 8px;">
+    
+
       <div class="btnpost">
         <ion-button fill="outline" color="warning">Me Gusta</ion-button>
+        <ion-button fill="outline" color="warning" (click)="shareContent(postSeleccionado.titulo_post, postSeleccionado.contenido_post, postSeleccionado.img_post)">Compartir</ion-button>
       </div>
-    </ion-card-content>
   </ion-card>
 
   <h1>Comentarios</h1>
