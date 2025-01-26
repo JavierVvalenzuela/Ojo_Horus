@@ -31,7 +31,7 @@
   
 
   <!-- Mostrando los posts obtenidos de la base de datos -->
-  <ion-card class="card-custom" *ngFor="let post of arreglopost" (click)="irAComentarios(post)">
+  <ion-card class="card-custom" *ngFor="let post of arreglopost">
 
     <div>
       <ion-button fill="clear" [routerLink]="['/reportar-contenido']" class="btn-3puntos">
@@ -45,7 +45,7 @@
       
       <div class="btnpost">
         <ion-button fill="outline" color="warning">Me Gusta</ion-button>
-        <ion-button fill="outline" color="warning" routerLink="/comentarios">Comentar</ion-button>
+        <ion-button fill="outline" color="warning" (click)="irAComentarios(post)">Comentar</ion-button>
         <ion-button fill="outline" color="warning" (click)="shareContent(post.titulo_post, post.contenido_post, post.img_post)">Compartir</ion-button>
       </div>
   </ion-card>
