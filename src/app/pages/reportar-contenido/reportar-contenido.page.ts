@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { AlertController, NavController } from '@ionic/angular';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
-import { Usuarios } from 'src/app/services/usuarios';
+import { Motivo } from 'src/app/services/motivo';
 
 @Component({
   selector: 'app-reportar-contenido',
@@ -11,71 +10,93 @@ import { Usuarios } from 'src/app/services/usuarios';
   standalone: false,
 })
 export class ReportarContenidoPage implements OnInit {
-
-  aregloReporte: any[] = [];//arreglo de reportes
-  selectedMotivo: string = '';//motivo seleccionado
-  idUsuario!: number;//id del usuario
-  idContenido: number = 0;//id del contenido
-  idPost: number = 0;//id del post
-  motivos: any[] = []; // Lista de motivos
+  motivos: Motivo[] = [];
+  selectedMotivo: string = '';
+  id_usuario: number = 0;
+  id_post: number = 0;
+  id_comentario: number = 0;
+  descripcion_motivo: string = '';
 
   constructor(
-    private alertController: AlertController,
-    private router: Router,
-    private navCtrl: NavController,
     private bd: BdServicioService,
-    private user: Usuarios,
-  ) { }
+    private alertController: AlertController,
+    private navCtrl: NavController
+  ) {}
 
   ngOnInit() {
-    // Cargar todos los motivos desde la base de datos
-    this.bd.buscarMotivos();  // Llamamos al método que obtiene los motivos
-    this.bd.listaMotivos.asObservable().subscribe((motivos) => {
+    // Obtener el id_usuario desde el localStorage
+    const id_usuario_str = localStorage.getItem('id_usuario');
+    this.id_usuario = id_usuario_str ? parseInt(id_usuario_str) : 0;
+    // Cargar lista de motivos
+    this.bd.fetchMotivos().subscribe((motivos) => {
       this.motivos = motivos;
+      console.log('Motivos cargados:', this.motivos);
     });
-
-    // Obtener los reportes
-    this.bd.buscarReportes();  
-    this.bd.fetchReportes().subscribe((reportes: any[]) => {
-      this.aregloReporte = reportes;
-    });
-
-    // Verificar si el usuario está logueado
-    this.idUsuario = this.user.id_usuario;
-    if (this.idUsuario === 0) {
-      this.router.navigate(['/login']);
-    }
   }
-  async enviarReporte() {
-    // Verificar si se ha seleccionado un motivo
-    if (!this.selectedMotivo) {
-      await this.presentAlert('Error', 'Por favor selecciona un motivo para el reporte.');
+
+  // Función para manejar el envío del reporte
+  enviarReporte() {
+    if (this.selectedMotivo === '') {
+      this.presentAlert('Error', 'Por favor, selecciona un motivo.');
       return;
     }
-  
-    // Verificar si el usuario está logueado
-    if (this.idUsuario === null || this.idUsuario === 0) {
-      await this.presentAlert('Error', 'No estás logueado. Por favor inicia sesión.');
+
+    // Verificar si el motivo seleccionado es "Otro"
+    let motivoSeleccionado = this.selectedMotivo;
+    if (
+      this.selectedMotivo === 'otro' &&
+      this.descripcion_motivo.trim() !== ''
+    ) {
+      motivoSeleccionado = this.descripcion_motivo;
+    }
+
+    // Buscar el ID del motivo seleccionado
+    let id_motivo =
+      this.motivos.find(
+        (motivo) => motivo.descripcion_motivo === motivoSeleccionado
+      )?.id_motivo || 0;
+
+    if (id_motivo === 0) {
+      this.presentAlert('Error', 'El motivo seleccionado no es válido.');
       return;
     }
-  
+
+    // Determinar si se va a reportar un post o comentario
+    let id_post = this.id_post;
+    let id_comentario = this.id_comentario;
+
+    // Si el motivo es "Otro", también se guarda la descripción personalizada
+    if (this.selectedMotivo === 'otro') {
+      this.descripcion_motivo = motivoSeleccionado; // Asignamos la descripción personalizada si es otro
+    }
     // Insertar el reporte en la base de datos
-    const estadoReporte = 'pendiente'; 
-    const idComunidad = 0; 
-    const idComentario = 0;  
-    const idMotivo = this.motivos.find(motivo => motivo.descripcion_motivo === this.selectedMotivo)?.id_motivo || 0;
-  
-    // Agregar el reporte a la base de datos
-    this.bd.agregarReporte(estadoReporte, this.idUsuario,this.idContenido,idComunidad, idComentario, idMotivo);
-  
-    // Mostrar alerta de confirmación
-    await this.presentAlert('Reporte enviado', 'El contenido ha sido reportado.');
+    this.bd.insertarReporte('pendiente', this.id_usuario, id_post, id_comentario, id_motivo)
+    .subscribe({
+      next: () => {
+        this.presentAlert('Éxito', 'El reporte ha sido enviado correctamente.');
+        this.selectedMotivo = '';
+        this.descripcion_motivo = '';
+        this.id_post = 0;
+        this.id_comentario = 0;
+      },
+      error: (e) => {
+        // Si el error es un objeto, asegurémonos de convertirlo a texto
+        const errorMessage = (typeof e === 'object' && e !== null && e.message) ? e.message : e;
+        this.presentAlert('Error', errorMessage); // Muestra el mensaje de error
+      }
+    });
   }
-
+    
+  // Función para cancelar el reporte
   cancelarReporte() {
-    this.navCtrl.back();
+    this.selectedMotivo = ''; // Limpiar la selección de motivo
+    console.log('Reporte cancelado');
+
+     // Redirigir a la página de inicio
+  this.navCtrl.navigateRoot('/inicio');
   }
 
+  // Función para mostrar alertas utilizando AlertController de Ionic
   async presentAlert(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
       header: titulo,
@@ -86,3 +107,4 @@ export class ReportarContenidoPage implements OnInit {
     await alert.present();
   }
 }
+

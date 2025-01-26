@@ -687,4 +687,27 @@ export class BdServicioService {
     });
   }
 
+  insertarReporte(
+    estado_reporte: string, // estado_reporte corresponde a la columna en la base de datos
+    id_usuario: number, 
+    id_post: number, 
+    id_comentario: number, 
+    id_motivo: number
+  ): Observable<void> {
+    return new Observable((observer) => {
+      this.database.executeSql(
+        `INSERT INTO reporte (estado_reporte, id_usuario, id_post, id_comentario, id_motivo) 
+         VALUES (?, ?, ?, ?, ?)`,  // Elimina id_categoria ya que no es parte de la tabla
+        [estado_reporte, id_usuario, id_post, id_comentario, id_motivo]
+      ).then(() => {
+        observer.next();
+        observer.complete();
+      }).catch((error) => {
+        // Verificar si el error tiene un mensaje
+        const errorMessage = error.message ? error.message : 'Hubo un error desconocido';
+        observer.error(errorMessage); // Enviar el mensaje de error
+      });
+    });
+  }
+
 }
