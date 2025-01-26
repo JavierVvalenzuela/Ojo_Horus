@@ -20,7 +20,7 @@ export class BdServicioService {
   //variable para almacenar la conexion a la base de datos
   public database!: SQLiteObject;
 
-  droptablausuario: string = `DROP TABLE IF EXISTS post;`;
+  //droptablausuario: string = `DROP TABLE IF EXISTS post;`;
 
 
   //Tablas del foro
@@ -241,7 +241,7 @@ export class BdServicioService {
   }
   async crearTablas() {
     try {
-      await this.database.executeSql(this.droptablausuario, []);
+      //await this.database.executeSql(this.droptablausuario, []);
 
       await this.database.executeSql(this.tablaRol, []);
       await this.database.executeSql(this.registroRoles, []);
@@ -667,4 +667,24 @@ export class BdServicioService {
       });
     });
   } 
+
+  // Verifica si el usuario tiene una pregunta de seguridad
+  async verificarPreguntaSeguridad(id_usuario: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.database.executeSql(
+        'SELECT * FROM respuestas_pregunta_seguridad WHERE id_usuario = ?',
+        [id_usuario]
+      ).then(res => {
+        if (res.rows.length > 0) {
+          resolve(true); // Si existe una respuesta, el usuario tiene una pregunta de seguridad
+        } else {
+          resolve(false); // Si no existe una respuesta, el usuario no tiene una pregunta de seguridad
+        }
+      }).catch(e => {
+        console.error('Error al verificar pregunta de seguridad', e);
+        reject(false); // Si hay un error, devolvemos false
+      });
+    });
+  }
+
 }
