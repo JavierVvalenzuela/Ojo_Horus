@@ -111,6 +111,12 @@ export class MenuPage implements OnInit {
     });
   }
 
+  // Método que se ejecuta cuando se reporta un post
+  reportarPost(idPost: number) {
+    localStorage.setItem('id_post_reportado', idPost.toString());
+    this.router.navigate(['/reportar-contenido']);
+  }
+
   // Método para ir a los comentarios del post
   irAComentarios(post: any) {
     // Obtener el id_usuario del almacenamiento local

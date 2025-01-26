@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
 import { Comentarios } from 'src/app/services/comentarios';
 import { ShareService } from 'src/app/services/share.service';
@@ -15,8 +16,9 @@ export class ComentariosPage implements OnInit {
   nuevoComentario: string = '';
   titulo_Comentario: string = '';
   nick_usuario: string | null = '';
+  comID: number | null = null;
 
-  constructor(private bd: BdServicioService, private share: ShareService) {}
+  constructor(private bd: BdServicioService, private share: ShareService, private router: Router) {}
 
   // Método para compartir el contenido
   public async shareContent(title: string, message: string, url: string) {
@@ -89,6 +91,12 @@ export class ComentariosPage implements OnInit {
           alert('Error al agregar el comentario. Intenta nuevamente más tarde.');
         },
       });
+  }
+
+  irAReportarComentario(comID: number, postID: number): void {
+    this.router.navigate(['/reportar-contenido'], {
+      state: { comID, postID }
+    });
   }
 
   ngOnInit(): void {

@@ -31,8 +31,8 @@
   <h1>Comentarios</h1>
   <section>
     <ion-card *ngFor="let comentario of arregloComentarios">
-      <ion-button fill="clear" [routerLink]="['/reportar-contenido']" class="btn-3puntos">
-        <img src="assets/icon/3puntos.png" alt="Opciones para el comentario" />
+      <ion-button fill="clear" (click)="irAReportarComentario(comentario.id_comentario, postSeleccionado.id_post)" class="btn-3puntos">
+        <img src="assets/icon/3puntos.png" alt="Opciones para el contenido" />
       </ion-button>
       <ion-card-title [routerLink]="['/perfiles', comentario.id_usuario]">
         {{ comentario.nick_usuario || 'Usuario desconocido' }}

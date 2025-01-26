@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AlertController, NavController } from '@ionic/angular';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
 import { Motivo } from 'src/app/services/motivo';
@@ -20,13 +21,19 @@ export class ReportarContenidoPage implements OnInit {
   constructor(
     private bd: BdServicioService,
     private alertController: AlertController,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    // Obtener el id_usuario desde el localStorage
+    // Obtener el id_post desde localStorage
+    const id_post_str = localStorage.getItem('id_post_reportado');
+    this.id_post = id_post_str ? parseInt(id_post_str) : 0;
+
+    // Obtener el id_usuario desde localStorage
     const id_usuario_str = localStorage.getItem('id_usuario');
     this.id_usuario = id_usuario_str ? parseInt(id_usuario_str) : 0;
+
     // Cargar lista de motivos
     this.bd.fetchMotivos().subscribe((motivos) => {
       this.motivos = motivos;
@@ -34,7 +41,6 @@ export class ReportarContenidoPage implements OnInit {
     });
   }
 
-  // Función para manejar el envío del reporte
   enviarReporte() {
     if (this.selectedMotivo === '') {
       this.presentAlert('Error', 'Por favor, selecciona un motivo.');
@@ -62,38 +68,48 @@ export class ReportarContenidoPage implements OnInit {
     }
 
     // Determinar si se va a reportar un post o comentario
-    let id_post = this.id_post;
-    let id_comentario = this.id_comentario;
+    const id_post = this.id_post !== 0 ? this.id_post : 0;
+    const id_comentario = this.id_comentario !== 0 ? this.id_comentario : 0;
 
-    // Si el motivo es "Otro", también se guarda la descripción personalizada
-    if (this.selectedMotivo === 'otro') {
-      this.descripcion_motivo = motivoSeleccionado; // Asignamos la descripción personalizada si es otro
-    }
     // Insertar el reporte en la base de datos
-    this.bd.insertarReporte('pendiente', this.id_usuario, id_post, id_comentario, id_motivo)
-    .subscribe({
-      next: () => {
-        this.presentAlert('Éxito', 'El reporte ha sido enviado correctamente.');
-        this.selectedMotivo = '';
-        this.descripcion_motivo = '';
-        this.id_post = 0;
-        this.id_comentario = 0;
-      },
-      error: (e) => {
-        // Si el error es un objeto, asegurémonos de convertirlo a texto
-        const errorMessage = (typeof e === 'object' && e !== null && e.message) ? e.message : e;
-        this.presentAlert('Error', errorMessage); // Muestra el mensaje de error
-      }
-    });
+    this.bd
+      .insertarReporte(
+        'pendiente',
+        this.id_usuario,
+        id_post,
+        id_comentario,
+        id_motivo
+      )
+      .subscribe({
+        next: () => {
+          this.presentAlert(
+            'Éxito',
+            'El reporte ha sido enviado correctamente.'
+          );
+          this.selectedMotivo = '';
+          this.descripcion_motivo = '';
+          this.id_post = this.id_post;
+          this.id_comentario = this.id_comentario;
+        },
+        error: (e) => {
+          // Si el error es un objeto, asegurémonos de convertirlo a texto
+          const errorMessage =
+            typeof e === 'object' && e !== null && e.message ? e.message : e;
+          this.presentAlert(
+            'Error',
+            `Hubo un problema al enviar el reporte: ${errorMessage}`
+          );
+        },
+      });
   }
-    
+
   // Función para cancelar el reporte
   cancelarReporte() {
     this.selectedMotivo = ''; // Limpiar la selección de motivo
     console.log('Reporte cancelado');
 
-     // Redirigir a la página de inicio
-  this.navCtrl.navigateRoot('/inicio');
+    // Redirigir a la página de inicio
+    this.navCtrl.navigateRoot('/inicio');
   }
 
   // Función para mostrar alertas utilizando AlertController de Ionic
@@ -107,4 +123,3 @@ export class ReportarContenidoPage implements OnInit {
     await alert.present();
   }
 }
-
