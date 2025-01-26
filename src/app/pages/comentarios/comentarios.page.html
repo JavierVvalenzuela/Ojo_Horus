@@ -2,56 +2,54 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
-      <ion-back-button></ion-back-button> <!-- Botón para retroceder -->
+      <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title>Comentarios</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="content" [fullscreen]="true">
-  <!-- Mostrar el post seleccionado -->
-  <ion-card class="card-custom" *ngIf="postSeleccionado">
-    <div>
+  <section *ngIf="postSeleccionado">
+    <ion-card class="card-custom">
       <ion-button fill="clear" [routerLink]="['/reportar-contenido']" class="btn-3puntos">
-        <img src="assets/icon/3puntos.png" alt="Reportar contenido" />
+        <img src="assets/icon/3puntos.png" alt="Opciones para el contenido" />
       </ion-button>
-    </div>
       <h1 class="nicku" [routerLink]="['/perfiles']">{{ postSeleccionado.titulo_post }}</h1>
       <p class="conten">{{ postSeleccionado.contenido_post }}</p>
-      <img *ngIf="postSeleccionado.img_post" [src]="postSeleccionado.img_post" alt="Publicación de usuario" style="width: 100%; margin-bottom: 8px;">
-    
-
+      <ng-container *ngIf="postSeleccionado.img_post">
+        <img [src]="postSeleccionado.img_post" alt="Imagen del post" style="width: 100%; margin-bottom: 8px;">
+      </ng-container>
       <div class="btnpost">
-        <ion-button fill="outline" color="warning">Me Gusta</ion-button>
-        <ion-button fill="outline" color="warning" (click)="shareContent(postSeleccionado.titulo_post, postSeleccionado.contenido_post, postSeleccionado.img_post)">Compartir</ion-button>
+        <ion-button fill="outline" color="warning" (click)="darLike()">Me Gusta</ion-button>
+        <ion-button fill="outline" color="warning" (click)="shareContent(postSeleccionado.titulo_post, postSeleccionado.contenido_post, postSeleccionado.img_post)">
+          Compartir
+        </ion-button>
       </div>
-  </ion-card>
+    </ion-card>
+  </section>
 
   <h1>Comentarios</h1>
-
-  <!-- Mostrar los comentarios asociados al post -->
-  <ion-card *ngFor="let comentario of arregloComentarios">
-    <!-- Botón para reportar contenido -->
-    <ion-button fill="clear" [routerLink]="['/reportar-contenido']" class="btn-3puntos">
-      <img src="assets/icon/3puntos.png" alt="Reportar contenido" />
-    </ion-button>
-    
-    <!-- Usuario y contenido del comentario -->
-    <ion-card-title [routerLink]="['/perfiles', comentario.id_usuario]">
-      {{ comentario.usuario_nombre }}
-    </ion-card-title>
-    <p>{{ comentario.contenido_comentario }}</p>
-
-    <!-- Imagen del comentario, si existe -->
-    <div *ngIf="comentario.img_comentario">
-      <img [src]="comentario.img_comentario" alt="Imagen del comentario" style="width: 100%; margin-bottom: 8px;">
-    </div>
-  </ion-card>
+  <section>
+    <ion-card *ngFor="let comentario of arregloComentarios">
+      <ion-button fill="clear" [routerLink]="['/reportar-contenido']" class="btn-3puntos">
+        <img src="assets/icon/3puntos.png" alt="Opciones para el comentario" />
+      </ion-button>
+      <ion-card-title [routerLink]="['/perfiles', comentario.id_usuario]">
+        {{ comentario.nick_usuario || 'Usuario desconocido' }}
+      </ion-card-title>
+      <p>{{ comentario.contenido_comentario }}</p>
+      <ng-container *ngIf="comentario.img_comentario">
+        <img [src]="comentario.img_comentario" alt="Imagen del comentario" style="width: 100%; margin-bottom: 8px;">
+      </ng-container>
+    </ion-card>
+  </section>
 
   <ion-footer class="foot">
     <div class="com">
       <ion-input [(ngModel)]="nuevoComentario" class="tucom" placeholder="Escribe tu comentario"></ion-input>
-      <ion-button fill="outline" color="warning" class="btn-enviar" (click)="enviarComentario()">Enviar</ion-button>
+      <ion-button fill="outline" color="warning" class="btn-enviar" [disabled]="!nuevoComentario.trim()" (click)="agregarComentario()">
+        Enviar
+      </ion-button>
     </div>
   </ion-footer>
 </ion-content>

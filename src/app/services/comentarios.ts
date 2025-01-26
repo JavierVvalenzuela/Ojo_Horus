@@ -6,4 +6,5 @@ export class Comentarios {
  id_estado!: number;
  id_post!: number;
  id_usuario!: number;
+ nick_usuario!: string;
 }

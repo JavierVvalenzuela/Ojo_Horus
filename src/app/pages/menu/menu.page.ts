@@ -31,7 +31,7 @@ export class MenuPage implements OnInit {
 
   public async takePhoto() {
     try {
-      this.fotografia = await this.cameraService.capturePhoto();  // Llamamos al servicio para capturar la foto
+      this.fotografia = await this.cameraService.capturePhoto(); // Llamamos al servicio para capturar la foto
     } catch (error) {
       console.error('Error al tomar la foto:', error);
     }
@@ -39,7 +39,7 @@ export class MenuPage implements OnInit {
 
   public async shareContent(title: string, message: string, url: string) {
     try {
-      await this.share.shareContent(title, message, url || '');  // Usar una URL válida o vacía si no hay URL
+      await this.share.shareContent(title, message, url || ''); // Usar una URL válida o vacía si no hay URL
     } catch (error) {
       console.error('Error al compartir el contenido:', error);
     }
@@ -80,13 +80,18 @@ export class MenuPage implements OnInit {
     };
 
     // Llamar al servicio para guardar el nuevo post en la base de datos
-    this.bd.agregarPost(nuevoPost.titulo_post, nuevoPost.contenido_post, nuevoPost.img_post, nuevoPost.id_usuario)
+    this.bd
+      .agregarPost(
+        nuevoPost.titulo_post,
+        nuevoPost.contenido_post,
+        nuevoPost.img_post,
+        nuevoPost.id_usuario
+      )
       .then(() => {
-        
         // Limpiar los campos después de publicar el post
         this.contenido_post = '';
         this.fotografia = null;
-        
+
         // Actualizar la lista de posts en la pantalla
         this.bd.buscarPost();
         this.bd.fetchPost().subscribe((posts: any) => {
@@ -111,13 +116,16 @@ export class MenuPage implements OnInit {
     // Obtener el id_usuario del almacenamiento local
     const idUsuario = localStorage.getItem('id_usuario');
 
-    // Almacenar tanto el post seleccionado como el id_usuario en localStorage.
-    localStorage.setItem('postSeleccionado', JSON.stringify(post));
+    // Almacenar el post completo y el id_usuario en localStorage.
+    localStorage.setItem('postSeleccionado', JSON.stringify(post)); // Almacenar el post completo
     if (idUsuario !== null) {
-      localStorage.setItem('id_usuario', idUsuario);
+      localStorage.setItem('id_usuario', idUsuario); // Asegurarnos que el id_usuario está también guardado
     }
 
-    // Navegar a la página de comentarios con el ID del post.
-    this.router.navigate(['/comentarios', post.id_post]);
+    // Almacenar solo el id_post en localStorage.
+    localStorage.setItem('id_post', post.id_post.toString());
+
+    // Navegar a la página de comentarios sin pasar el id por la URL.
+    this.router.navigate(['/comentarios']);
   }
 }

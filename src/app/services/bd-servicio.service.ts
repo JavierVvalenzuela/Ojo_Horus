@@ -331,10 +331,17 @@ export class BdServicioService {
   }
   //funcion para buscar los comentarios
   buscarComentarios() {
-    this.database.executeSql('SELECT * FROM comentario', []).then(res =>{
+    const query = `
+      SELECT c.*, u.nick_usuario
+      FROM comentario c
+      JOIN usuario u ON c.id_usuario = u.id_usuario
+    `;
+    
+    this.database.executeSql(query, []).then(res => {
       let items: Comentarios[] = [];
-      if (res.rows.length > 0){
-        for (var i = 0; i < res.rows.length; i++){
+      
+      if (res.rows.length > 0) {
+        for (let i = 0; i < res.rows.length; i++) {
           items.push({
             id_comentario: res.rows.item(i).id_comentario,
             contenido_comentario: res.rows.item(i).contenido_comentario,
@@ -342,41 +349,53 @@ export class BdServicioService {
             img_comentario: res.rows.item(i).img_comentario,
             id_estado: res.rows.item(i).id_estado,
             id_post: res.rows.item(i).id_post,
-            id_usuario: res.rows.item(i).id_usuario
+            id_usuario: res.rows.item(i).id_usuario,
+            nick_usuario: res.rows.item(i).nick_usuario // Agregar el nick del usuario
           });
         }
       }
+      
       this.Comentarios = items;
       this.listaComentarios.next(items as any);
-    }).catch(e =>{
+    }).catch(e => {
       this.presentAlert('Error al buscar comentarios', `Error: ${JSON.stringify(e)}`);
-    })
+    });
   }
-
-  //funcion que busca un comenatrio por su id
-  BuscarComentarioID( id_post: number){
-    this.database.executeSql('SELECT * FROM comentario WHERE id_post = ? ',[id_post]).then(res=>{
-      let items: Comentarios[] = [];
-      if (res.rows.length > 0){
-        for (var i= 0; i < res.rows.length; i++){
-          items.push({
-            id_comentario: res.rows.item(i).id_comentario,
-            contenido_comentario: res.rows.item(i).contenido_comentario,
-            likes_comentario: res.rows.item(i).likes_comentario,
-            img_comentario: res.rows.item(i).img_comentario,
-            id_estado: res.rows.item(i).id_estado,
-            id_post: res.rows.item(i).id_post,
-            id_usuario: res.rows.item(i).id_usuario
-          })
-        }
-      }
-      this.Comentarios = items;
-      this.listaComentarios.next(items as any);
-    }).catch(e =>{
-      this.presentAlert('Error al buscar comentario por id', `Error: ${JSON.stringify(e)}`);
-    })
+//funcion para buscar el comentario por id
+  BuscarComentarioID(id_post: number): Observable<Comentarios[]> {
+    return new Observable<Comentarios[]>((observer) => {
+      const query = `
+        SELECT c.*, u.nick_usuario
+        FROM comentario c
+        JOIN usuario u ON c.id_usuario = u.id_usuario
+        WHERE c.id_post = ?
+      `;
+      
+      this.database
+        .executeSql(query, [id_post])
+        .then((res) => {
+          let items: Comentarios[] = [];
+          for (let i = 0; i < res.rows.length; i++) {
+            items.push({
+              id_comentario: res.rows.item(i).id_comentario,
+              contenido_comentario: res.rows.item(i).contenido_comentario,
+              likes_comentario: res.rows.item(i).likes_comentario,
+              img_comentario: res.rows.item(i).img_comentario,
+              id_estado: res.rows.item(i).id_estado,
+              id_post: res.rows.item(i).id_post,
+              id_usuario: res.rows.item(i).id_usuario,
+              nick_usuario: res.rows.item(i).nick_usuario // Agregar el nick del usuario
+            });
+          }
+          observer.next(items);
+          observer.complete();
+        })
+        .catch((error) => {
+          observer.error(error);
+        });
+    });
   }
-
+  //funcion para buscar reprotes
   buscarReportes() {
     this.database.executeSql(`SELECT reporte.*, motivo.descripcion_motivo FROM reporte LEFT JOIN motivo ON reporte.id_motivo = motivo.id_motivo  WHERE reporte.estado_reporte = 'Pendiente' ORDER BY reporte.id_reporte ASC`, []).then(res => {
       let items: Report[] = [];
@@ -499,17 +518,30 @@ export class BdServicioService {
         });
     });
   }
-
-  //funcion para agregar un comentario
-  agregarComentario(contenido_comentario: string, img_comentario: any , id_estado: number, id_post: number, id_usuario: number){
-    this.database.executeSql('INSERT INTO comentario(contenido_comentario, img_comentario, id_estado, id_post, id_usuario) VALUES(?,?,?,?,?)', [contenido_comentario, img_comentario, id_estado, id_post, id_usuario]).then(res=>{
-      this.presentAlert('Registro', 'Comentario registrado correctamente');
-      this.buscarComentarios(); // Actualiza la lista de comentarios
-    }).catch((e: any)=>{
-      this.presentAlert('Error al agregar comentario', JSON.stringify(e));
-    })
+//funcion para agregar comentario 
+  agregarComentario(
+    contenido_comentario: string,
+    img_comentario: any,
+    id_estado: number,
+    id_post: number,
+    id_usuario: number
+  ): Observable<any> {
+    return new Observable((observer) => {
+      this.database
+        .executeSql(
+          'INSERT INTO comentario (contenido_comentario, img_comentario, id_estado, id_post, id_usuario) VALUES (?, ?, ?, ?, ?)',
+          [contenido_comentario, img_comentario, id_estado, id_post, id_usuario]
+        )
+        .then((res) => {
+          observer.next(res);
+          observer.complete();
+        })
+        .catch((error) => {
+          observer.error(error);
+        });
+    });
   }
-
+  //funcion para agregar reporte
   agregarReporte(estado_reporte: string, id_usuario: number, id_post: number, id_comunidad: number, id_comentario: number, id_motivo: number) {
     // Verifica que el motivo existe en la tabla motivo antes de insertar
     this.database.executeSql('SELECT * FROM motivo WHERE id_motivo = ?', [id_motivo]).then(res => {
@@ -651,23 +683,33 @@ export class BdServicioService {
         })
     );
   }
-  
 
-  //funcion para guardar un comentario
-  guardarComentario(comentario: any): Observable<any> {
-    return new Observable(observer => {
-      this.database.executeSql(
-        'INSERT INTO comentario (id_usuario, contenido_comentario, id_post) VALUES (?, ?, ?)',
-        [comentario.id_usuario, comentario.contenido_comentario, comentario.id_post]
-      ).then((res) => {
-        observer.next(res);
-        observer.complete();
-      }).catch((error) => {
-        observer.error(error);
-      });
+  //metodo para guradar comentarios 
+  GuardarComentario(
+    contenido_comentario: string,
+    img_comentario: any,
+    id_estado: number,
+    id_post: number,
+    id_usuario: number
+  ): Observable<any> {
+    if (!contenido_comentario.trim()) {
+      return throwError(() => new Error('El contenido del comentario no puede estar vacío.'));
+    }
+    return new Observable((observer) => {
+      this.database
+        .executeSql(
+          'INSERT INTO comentario (contenido_comentario, img_comentario, id_estado, id_post, id_usuario) VALUES (?, ?, ?, ?, ?)',
+          [contenido_comentario, img_comentario, id_estado, id_post, id_usuario]
+        )
+        .then((res) => {
+          observer.next(res);
+          observer.complete();
+        })
+        .catch((error) => {
+          observer.error(error);
+        });
     });
-  } 
-
+  }
   // Verifica si el usuario tiene una pregunta de seguridad
   async verificarPreguntaSeguridad(id_usuario: number): Promise<boolean> {
     return new Promise((resolve, reject) => {

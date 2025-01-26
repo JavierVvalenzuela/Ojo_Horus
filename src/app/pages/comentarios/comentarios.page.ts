@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
-import { ActivatedRoute } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { Comentarios } from 'src/app/services/comentarios';
 import { ShareService } from 'src/app/services/share.service';
 
 @Component({
@@ -11,100 +10,100 @@ import { ShareService } from 'src/app/services/share.service';
   standalone: false,
 })
 export class ComentariosPage implements OnInit {
-  arregloComentarios: any;
+  arregloComentarios: Comentarios[] = [];
   postSeleccionado: any;
-  idUsuario: number | null = null;
-  nuevoComentario: any;
+  nuevoComentario: string = '';
+  titulo_Comentario: string = '';
+  nick_usuario: string | null = '';
 
-  constructor(
-    private bd: BdServicioService,
-    private router: ActivatedRoute,
-    private alertController: AlertController,
-    private share: ShareService
-  ) { }
+  constructor(private bd: BdServicioService, private share: ShareService) {}
 
-  //cambira por metodo de suscribe
-  ngOnInit() {
-    // Obtener el id del post seleccionado desde la URL
-    this.router.params.subscribe(params => {
-      this.postSeleccionado = params['id'];
-    });
-
-    // Obtener el ID del usuario logueado desde localStorage
-    const idUsuario = localStorage.getItem('id_usuario');
-    if (idUsuario) {
-      this.idUsuario = parseInt(idUsuario, 10);
-    }
-
-    // Si el post seleccionado está en localStorage, lo recuperamos
-    const postData: string | null = localStorage.getItem('postSeleccionado');
-    if (postData) {
-      this.postSeleccionado = JSON.parse(postData);
-    }
-
-    // Obtener los comentarios asociados a este post desde la base de datos
-    // Llamar a BuscarComentarioID con el id_post del post seleccionado
-    this.bd.BuscarComentarioID(this.postSeleccionado.id_post);
-
-    // Escuchar los comentarios desde el servicio
-    this.bd.fetchComentarios().subscribe((comentarios: any) => {
-      this.arregloComentarios = comentarios;
-    });
-  }
-
-  // Función para enviar el comentario
-  async enviarComentario(): Promise<void> {
-    if (!this.nuevoComentario) {
-      const alert = await this.alertController.create({
-        header: 'Error',
-        message: 'Por favor, ingresa un comentario',
-        buttons: ['OK']
-      });
-
-      await alert.present();
-      return;
-    }
-
-    // Obtener el ID del usuario desde el localStorage
-    const idUsuario = localStorage.getItem('id_usuario');
-    if (!idUsuario) {
-      const alert = await this.alertController.create({
-        header: 'Error',
-        message: 'No se pudo obtener el ID del usuario',
-        buttons: ['OK']
-      });
-      await alert.present();
-      return;
-    }
-
-    // Crear el objeto del comentario
-    const comentario = {
-      id_usuario: parseInt(idUsuario, 10),  // ID del usuario logueado
-      contenido_comentario: this.nuevoComentario,
-      id_post: this.postSeleccionado.id_post  // ID del post al que corresponde el comentario
-    };
-
-    // Llamar al servicio para guardar el comentario
-    this.bd.guardarComentario(comentario).subscribe({
-      next: () => {
-        // Inmediatamente después de guardar el comentario, agregarlo al arreglo local
-        this.arregloComentarios.push(comentario);
-      },
-      error: (error: any) => {
-        console.error('Error al enviar comentario:', error);
-      }
-    });
-
-    // Limpiar el campo de texto del comentario
-    this.nuevoComentario = '';
-  }
-
+  // Método para compartir el contenido
   public async shareContent(title: string, message: string, url: string) {
     try {
-      await this.share.shareContent(title, message, url || '');  // Usar una URL válida o vacía si no hay URL
+      await this.share.shareContent(title, message, url || ''); // Usar una URL válida o vacía si no hay URL
     } catch (error) {
       console.error('Error al compartir el contenido:', error);
     }
   }
 
+  cargarComentarios(): void {
+    if (this.postSeleccionado && this.postSeleccionado.id_post) {
+      this.bd.BuscarComentarioID(this.postSeleccionado.id_post).subscribe({
+        next: (comentarios: Comentarios[]) => {
+          console.log('Comentarios cargados:', comentarios);
+          this.arregloComentarios = comentarios.filter(comentario => comentario.id_post === this.postSeleccionado.id_post);
+        },
+        error: (error) => {
+          console.error('Error al cargar comentarios:', error);
+        },
+      });
+    } else {
+      console.error('El id_post no está disponible');
+    }
+  }
+
+  // Agregar un nuevo comentario
+  agregarComentario(): void {
+    if (!this.nuevoComentario.trim()) {
+      alert('Por favor, ingresa un comentario válido.');
+      return;
+    }
+
+    // Obtener el nick del usuario desde localStorage
+    this.nick_usuario = localStorage.getItem('nick_usuario');
+    const id_usuario = localStorage.getItem('id_usuario');
+
+    if (!this.nick_usuario || !id_usuario) {
+      alert('No se ha encontrado el usuario o el id del usuario.');
+      return;
+    }
+
+    const comentario: Comentarios = {
+      id_comentario: 0,
+      contenido_comentario: this.nuevoComentario,
+      likes_comentario: 0,
+      img_comentario: null,
+      id_estado: 1,
+      id_post: this.postSeleccionado.id_post,
+      id_usuario: parseInt(id_usuario), // Convertir el id_usuario a número
+      nick_usuario: this.nick_usuario, // Guardar el nick del usuario
+    };
+
+    // Agregar el comentario a la base de datos
+    this.bd
+      .agregarComentario(
+        comentario.contenido_comentario,
+        comentario.img_comentario,
+        comentario.id_estado,
+        comentario.id_post,
+        comentario.id_usuario
+      )
+      .subscribe({
+        next: () => {
+          this.nuevoComentario = '';
+          this.cargarComentarios(); // Actualizar la lista de comentarios
+        },
+        error: (error) => {
+          console.error('Error al agregar comentario:', error);
+          alert('Error al agregar el comentario. Intenta nuevamente más tarde.');
+        },
+      });
+  }
+
+  ngOnInit(): void {
+    // Recuperar el id_post desde localStorage
+    const storedPost = localStorage.getItem('postSeleccionado');
+    if (storedPost) {
+      this.postSeleccionado = JSON.parse(storedPost);
+      this.cargarComentarios(); // Cargar los comentarios con el post seleccionado
+    } else {
+      console.error('No se encontró el post seleccionado en localStorage');
+    }
+  }
+
+  darLike(): void {
+    console.log('¡Le diste Me Gusta a esta publicación!');
+    // Lógica para manejar los likes
+  }
 }
