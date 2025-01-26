@@ -21,21 +21,19 @@ export class PerfilusuarioPage implements OnInit {
     this.nick_usuario = localStorage.getItem('nick_usuario') || '';
 
     if (this.nick_usuario) {
-      // Obtener imagen de perfil
-      this.api.obtenerImg(this.nick_usuario).subscribe(
-        (response: any) => {
-          this.imgSrc = URL.createObjectURL(response); // Asignar la imagen
-        },
-        (error) => {
-          console.log('Error al obtener la imagen: ', error);
-        }
-      );
-
       // Obtener datos del usuario logueado
       this.bd.buscarUsuarios(); // Llamar para actualizar los usuarios en el BehaviorSubject
       this.bd.fetchUsuarios().subscribe((usuarios) => {
         // Filtrar el usuario que coincide con el nick_usuario
         this.Pusuario = usuarios.find((u: any) => u.nick_usuario === this.nick_usuario);
+        
+        // Asignar la imagen de perfil desde los datos del usuario
+        if (this.Pusuario?.img_perfil) {
+          this.imgSrc = this.Pusuario.img_perfil; // Asignar la imagen desde la base de datos
+        } else {
+          // Imagen predeterminada si no hay imagen en la base de datos
+          this.imgSrc = 'assets/default-image.png'; // Puedes ajustar esta ruta según sea necesario
+        }
       });
     }
   }
@@ -57,6 +55,10 @@ export class PerfilusuarioPage implements OnInit {
       // Llamar a la función para actualizar la imagen en la base de datos
       this.bd.actualizarImagenPerfil(this.nick_usuario, imageUrl).then(() => {
         console.log('Imagen de perfil actualizada');
+        
+        // Emitir el cambio de imagen a través del BehaviorSubject
+        this.bd.img$.next(imageUrl); // Emitir la nueva imagen para otros componentes
+
       }).catch((error) => {
         console.error('Error al actualizar la imagen de perfil:', error);
       });

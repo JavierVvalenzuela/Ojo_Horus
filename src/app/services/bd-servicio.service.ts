@@ -17,8 +17,12 @@ import { from, throwError } from 'rxjs';
 })
 export class BdServicioService {
   [x: string]: any;
+
+// Este BehaviorSubject almacena la imagen actual
+img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen predeterminada o vacía
   //variable para almacenar la conexion a la base de datos
   public database!: SQLiteObject;
+
 
   //droptablausuario: string = `DROP TABLE IF EXISTS post;`;
 
@@ -494,12 +498,15 @@ export class BdServicioService {
         SET img_perfil = ? 
         WHERE nick_usuario = ?
       `;
-  
+   
       this.database.executeSql(query, [imagen, nick_usuario]).then(() => {
         console.log('Imagen de perfil actualizada');
+        
+        // Emitir el cambio de imagen
+        this.img$.next(imagen); // Emitir la nueva imagen a los suscriptores
         resolve();
       }).catch((error) => {
-        console.error('Error al actualizar imagen de perfil:', error);
+        console.error('Error al actualizar la imagen de perfil:', error);
         reject(error);
       });
     });

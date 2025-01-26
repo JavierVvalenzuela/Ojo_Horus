@@ -48,11 +48,20 @@ export class EditarperfilPage implements OnInit {
     if (this.nick_usuario) {
       // Obtener imagen de perfil
       this.api.obtenerImg(this.nick_usuario).subscribe(
-        (response: any) => {
-          this.imgSrc = URL.createObjectURL(response); // Asignar la imagen
+        (response: Blob) => {
+          if (response) {
+            const reader = new FileReader();
+            reader.onload = () => {
+              this.imgSrc = reader.result as string; // Asignar la imagen como base64 para asegurar la visualización
+            };
+            reader.readAsDataURL(response);
+          } else {
+            console.log('La respuesta no contiene datos de imagen.');
+          }
         },
         (error) => {
           console.log('Error al obtener la imagen: ', error);
+          this.imgSrc = 'assets/placeholder.png'; // Imagen por defecto en caso de error
         }
       );
 
@@ -141,9 +150,9 @@ export class EditarperfilPage implements OnInit {
       allowEditing: false,
       resultType: CameraResultType.Uri,
     });
-  
+
     const imageUrl = image.webPath;
-  
+
     // Verificar si image.webPath tiene un valor definido
     if (imageUrl) {
       // Asignar la imagen solo si imageUrl no es undefined
