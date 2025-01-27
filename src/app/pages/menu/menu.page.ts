@@ -111,12 +111,13 @@ export class MenuPage implements OnInit {
     });
   }
 
-  // Método que se ejecuta cuando se reporta un post
-  reportarPost(idPost: number) {
+  reportarPost(idPost: number, idUsuarioDelPost: number) {
     localStorage.setItem('id_post_reportado', idPost.toString());
+    localStorage.setItem('id_usuario_del_post', idUsuarioDelPost.toString()); 
+  
+    // Navegar a la página de reportar contenido
     this.router.navigate(['/reportar-contenido']);
   }
-
   // Método para ir a los comentarios del post
   irAComentarios(post: any) {
     // Obtener el id_usuario del almacenamiento local

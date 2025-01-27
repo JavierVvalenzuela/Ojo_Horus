@@ -4,60 +4,25 @@
       <ion-menu-button></ion-menu-button>
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title>usuariosbaneados</ion-title>
+    <ion-title>Usuarios Reportados</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <h1>Lista de usuarios Reportados</h1>
+  <h1>Lista de Reportes Pendientes</h1>
 
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">Juan666</ion-title>
-    <p>motivo: Contenido ofensivo</p>
-    <ion-button fill="outline" color="warning">Ignorar</ion-button>
-    <ion-button fill="outline" color="danger">Banear</ion-button>
+  <ion-card *ngFor="let reporte of listaRepPost">
+    <ion-title>{{ reporte.nick_usuario }}</ion-title>
+    <p>Motivo: {{ reporte.descripcion_motivo }}</p>
+    <p *ngIf="reporte.titulo_post">Post: {{ reporte.titulo_post }}</p>
+    <p *ngIf="reporte.contenido_post">Contenido: {{ reporte.contenido_post }}</p>
+    <p *ngIf="reporte.contenido_comentario">Comentario: {{ reporte.contenido_comentario }}</p>
+    
+    <ion-button fill="outline" color="warning" (click)="ignorarReporte(reporte)">
+      Ignorar
+    </ion-button>
+    <ion-button fill="outline" color="danger" (click)="banearReporte(reporte)">
+      Banear
+    </ion-button>
   </ion-card>
-
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">PAPIGUILLE</ion-title>
-    <p>motivo: Acoso o intimidación</p>
-    <ion-button fill="outline" color="warning">Ignorar</ion-button>
-    <ion-button fill="outline" color="danger">Banear</ion-button>
-  </ion-card>
-
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">Red</ion-title>
-    <p>motivo: Infracción de normas de la comunidad</p>
-    <ion-button fill="outline" color="warning">Ignorar</ion-button>
-    <ion-button fill="outline" color="danger">Banear</ion-button>
-  </ion-card>
-
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">Scorpion16</ion-title>
-    <p>motivo: Violación de derechos de autor</p>
-    <ion-button fill="outline" color="warning">Ignorar</ion-button>
-    <ion-button fill="outline" color="danger">Banear</ion-button>
-  </ion-card>
-
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">ElThunas</ion-title>
-    <p>motivo: Incitación al odio</p>
-    <ion-button fill="outline" color="warning">Ignorar</ion-button>
-    <ion-button fill="outline" color="danger">Banear</ion-button>
-  </ion-card>
-
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">Marcelo -u-</ion-title>
-    <p>motivo: Contenido ilegal</p>
-    <ion-button fill="outline" color="warning">Ignorar</ion-button>
-    <ion-button fill="outline" color="danger">Banear</ion-button>
-  </ion-card>
-
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">Gabriel Boric</ion-title>
-    <p>motivo: Contenido sexual explícito</p>
-    <ion-button fill="outline" color="warning">Ignorar</ion-button>
-    <ion-button fill="outline" color="danger">Banear</ion-button>
-  </ion-card>
-
 </ion-content>

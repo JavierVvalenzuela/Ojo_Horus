@@ -6,10 +6,11 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Usuarios } from './usuarios';
 import { Post } from './post';
 import { Comentarios } from './comentarios';
-import { Report} from './report';
+import { Report } from './report';
 import { Motivo } from './motivo';
 import { ImgdefaultService } from './imgdefault.service';
 import { from, throwError } from 'rxjs';
+import { Cargarreporte } from './cargarreporte';
 
 
 @Injectable({
@@ -18,13 +19,15 @@ import { from, throwError } from 'rxjs';
 export class BdServicioService {
   [x: string]: any;
 
-// Este BehaviorSubject almacena la imagen actual
-img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen predeterminada o vacía
+  // Este BehaviorSubject almacena la imagen actual
+  img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen predeterminada o vacía
   //variable para almacenar la conexion a la base de datos
   public database!: SQLiteObject;
 
 
   //droptablausuario: string = `DROP TABLE IF EXISTS reporte;`;
+
+  //droptablausuario: string = `DROP TABLE IF EXISTS post;`;
 
 
   //Tablas del foro
@@ -171,8 +174,8 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
     (2, 'Este es el segundo comentario', 200, 1, 2, 2),
     (3, 'Este es el tercer comentario', 300, 1, 3, 3);`;
 
-   //tabla de reportes
-   registroReporte: string = `INSERT or IGNORE INTO reporte (id_reporte, estado_reporte, id_usuario, id_motivo) VALUES (1,'Pendiente',4,2);`; 
+  //tabla de reportes
+  registroReporte: string = `INSERT or IGNORE INTO reporte (id_reporte, estado_reporte, id_usuario, id_motivo) VALUES (1,'Pendiente',4,2);`;
 
   //observable para manipular los select de mi BD
   listaUsuarios = new BehaviorSubject<Usuarios[]>([]);
@@ -180,6 +183,7 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
   listaComentarios = new BehaviorSubject<Comentarios[]>([]);
   listaReportes = new BehaviorSubject<Report[]>([]);
   listaMotivos = new BehaviorSubject<Motivo[]>([]);
+  listaCargarReporte = new BehaviorSubject<Cargarreporte[]>([]);
 
   //observable del status de la BD
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -187,9 +191,10 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
   // Variables para almacenar los datos de la BD
   public Post: Post[] = [];
   public Usuarios: Usuarios[] = [];
-  public Comentarios: Comentarios [] = [];
-  public Report: Report [] = [];
-  public Motivo: Motivo [] = [];
+  public Comentarios: Comentarios[] = [];
+  public Report: Report[] = [];
+  public Motivo: Motivo[] = [];
+  public cargar : Cargarreporte[] = [];
 
   constructor(
     private sqlite: SQLite,
@@ -215,10 +220,9 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
 
   fetchComentarios(): Observable<Comentarios[]> {
     return this.listaComentarios.asObservable();
-  
   }
 
-  fetchReportes():Observable<Report[]>{
+  fetchReportes(): Observable<Report[]> {
     return this.listaReportes.asObservable();
   }
 
@@ -226,21 +230,28 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
     return this.listaMotivos.asObservable();
   }
 
+  fetchCargarReporte(): Observable<Motivo[]> {
+    return this. listaCargarReporte.asObservable();
+  }
+
   //funcion para crear la base de datos (en sqldeveloper seria crear nueva conexion)
   crearBD() {
     //Verificar si la plataforma esta lista
     this.platform.ready().then(() => {
       //crear una base de datos o abrirla
-      this.sqlite.create({
-        name: 'foro.db',
-        location: 'default',
-      }).then((db: SQLiteObject) => {
-        this.database = db;
-        //crear tablas
-        this.crearTablas();
-      }).catch(e => {
-        this.presentAlert('error crear BD', JSON.stringify(e));
-      });
+      this.sqlite
+        .create({
+          name: 'foro.db',
+          location: 'default',
+        })
+        .then((db: SQLiteObject) => {
+          this.database = db;
+          //crear tablas
+          this.crearTablas();
+        })
+        .catch((e) => {
+          this.presentAlert('error crear BD', JSON.stringify(e));
+        });
     });
   }
   async crearTablas() {
@@ -277,61 +288,77 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
       this.buscarComentarios(); // Actualizar lista
       this.buscarReportes(); // Actualizar lista
       this.buscarMotivos(); // Actualizar lista
+      this.cargarReporte();// Actualizar lista
       this.isDBReady.next(true); // Notificar que la BD está lista
     } catch (e) {
-      this.presentAlert('Error', `Error al crear las tablas: ${JSON.stringify(e)}`);
+      this.presentAlert(
+        'Error',
+        `Error al crear las tablas: ${JSON.stringify(e)}`
+      );
     }
   }
 
   buscarUsuarios() {
-    this.database.executeSql('SELECT * FROM usuario', []).then(res => {
-      let items: Usuarios[] = [];
-      if (res.rows.length > 0) {
-        for (var i = 0; i < res.rows.length; i++) {
-          items.push({
-            id_usuario: res.rows.item(i).id_usuario,
-            nombre_usuario: res.rows.item(i).nombre_usuario,
-            nick_usuario: res.rows.item(i).nick_usuario,
-            correo_usuario: res.rows.item(i).correo_usuario,
-            telefono_usuario: res.rows.item(i).telefono_usuario,
-            contrasena_usuario: res.rows.item(i).contrasena_usuario,
-            img_perfil: res.rows.item(i).img_perfil,
-            id_estado: res.rows.item(i).id_estado,
-            razon_ban: res.rows.item(i).razon_ban,
-            id_rol: res.rows.item(i).id_rol
-          });
+    this.database
+      .executeSql('SELECT * FROM usuario', [])
+      .then((res) => {
+        let items: Usuarios[] = [];
+        if (res.rows.length > 0) {
+          for (var i = 0; i < res.rows.length; i++) {
+            items.push({
+              id_usuario: res.rows.item(i).id_usuario,
+              nombre_usuario: res.rows.item(i).nombre_usuario,
+              nick_usuario: res.rows.item(i).nick_usuario,
+              correo_usuario: res.rows.item(i).correo_usuario,
+              telefono_usuario: res.rows.item(i).telefono_usuario,
+              contrasena_usuario: res.rows.item(i).contrasena_usuario,
+              img_perfil: res.rows.item(i).img_perfil,
+              id_estado: res.rows.item(i).id_estado,
+              razon_ban: res.rows.item(i).razon_ban,
+              id_rol: res.rows.item(i).id_rol,
+            });
+          }
         }
-      }
-      // Actualizar lista en el BehaviorSubject
-      this.listaUsuarios.next(items as any);
-      this.Usuarios = items;
-    }).catch(e => {
-      this.presentAlert('Error', `Error al buscar usuarios: ${JSON.stringify(e)}`);
-    })
+        // Actualizar lista en el BehaviorSubject
+        this.listaUsuarios.next(items as any);
+        this.Usuarios = items;
+      })
+      .catch((e) => {
+        this.presentAlert(
+          'Error',
+          `Error al buscar usuarios: ${JSON.stringify(e)}`
+        );
+      });
   }
 
   //funcion para buscar los post
   buscarPost() {
-    this.database.executeSql('SELECT * FROM post', []).then(res => {
-      let items: Post[] = [];
-      if (res.rows.length > 0) {
-        for (var i = 0; i < res.rows.length; i++) {
-          items.push({
-            id_post: res.rows.item(i).id_post,
-            titulo_post: res.rows.item(i).titulo_post,
-            contenido_post: res.rows.item(i).contenido_post,
-            likes_post: res.rows.item(i).likes_post,
-            img_post: res.rows.item(i).img_post,
-            id_usuario: res.rows.item(i).id_usuario,
-            id_estado: res.rows.item(i).id_estado
-          });
+    this.database
+      .executeSql('SELECT * FROM post', [])
+      .then((res) => {
+        let items: Post[] = [];
+        if (res.rows.length > 0) {
+          for (var i = 0; i < res.rows.length; i++) {
+            items.push({
+              id_post: res.rows.item(i).id_post,
+              titulo_post: res.rows.item(i).titulo_post,
+              contenido_post: res.rows.item(i).contenido_post,
+              likes_post: res.rows.item(i).likes_post,
+              img_post: res.rows.item(i).img_post,
+              id_usuario: res.rows.item(i).id_usuario,
+              id_estado: res.rows.item(i).id_estado,
+            });
+          }
         }
-      }
-      this.Post = items;
-      this.listaPost.next(items as any);
-    }).catch(e => {
-      this.presentAlert('Error al buscar posts', `Error: ${JSON.stringify(e)}`);
-    });
+        this.Post = items;
+        this.listaPost.next(items as any);
+      })
+      .catch((e) => {
+        this.presentAlert(
+          'Error al buscar posts',
+          `Error: ${JSON.stringify(e)}`
+        );
+      });
   }
   //funcion para buscar los comentarios
   buscarComentarios() {
@@ -340,32 +367,38 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
       FROM comentario c
       JOIN usuario u ON c.id_usuario = u.id_usuario
     `;
-    
-    this.database.executeSql(query, []).then(res => {
-      let items: Comentarios[] = [];
-      
-      if (res.rows.length > 0) {
-        for (let i = 0; i < res.rows.length; i++) {
-          items.push({
-            id_comentario: res.rows.item(i).id_comentario,
-            contenido_comentario: res.rows.item(i).contenido_comentario,
-            likes_comentario: res.rows.item(i).likes_comentario,
-            img_comentario: res.rows.item(i).img_comentario,
-            id_estado: res.rows.item(i).id_estado,
-            id_post: res.rows.item(i).id_post,
-            id_usuario: res.rows.item(i).id_usuario,
-            nick_usuario: res.rows.item(i).nick_usuario // Agregar el nick del usuario
-          });
+
+    this.database
+      .executeSql(query, [])
+      .then((res) => {
+        let items: Comentarios[] = [];
+
+        if (res.rows.length > 0) {
+          for (let i = 0; i < res.rows.length; i++) {
+            items.push({
+              id_comentario: res.rows.item(i).id_comentario,
+              contenido_comentario: res.rows.item(i).contenido_comentario,
+              likes_comentario: res.rows.item(i).likes_comentario,
+              img_comentario: res.rows.item(i).img_comentario,
+              id_estado: res.rows.item(i).id_estado,
+              id_post: res.rows.item(i).id_post,
+              id_usuario: res.rows.item(i).id_usuario,
+              nick_usuario: res.rows.item(i).nick_usuario, // Agregar el nick del usuario
+            });
+          }
         }
-      }
-      
-      this.Comentarios = items;
-      this.listaComentarios.next(items as any);
-    }).catch(e => {
-      this.presentAlert('Error al buscar comentarios', `Error: ${JSON.stringify(e)}`);
-    });
+
+        this.Comentarios = items;
+        this.listaComentarios.next(items as any);
+      })
+      .catch((e) => {
+        this.presentAlert(
+          'Error al buscar comentarios',
+          `Error: ${JSON.stringify(e)}`
+        );
+      });
   }
-//funcion para buscar el comentario por id
+  //funcion para buscar el comentario por id
   BuscarComentarioID(id_post: number): Observable<Comentarios[]> {
     return new Observable<Comentarios[]>((observer) => {
       const query = `
@@ -374,7 +407,7 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
         JOIN usuario u ON c.id_usuario = u.id_usuario
         WHERE c.id_post = ?
       `;
-      
+
       this.database
         .executeSql(query, [id_post])
         .then((res) => {
@@ -388,7 +421,7 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
               id_estado: res.rows.item(i).id_estado,
               id_post: res.rows.item(i).id_post,
               id_usuario: res.rows.item(i).id_usuario,
-              nick_usuario: res.rows.item(i).nick_usuario // Agregar el nick del usuario
+              nick_usuario: res.rows.item(i).nick_usuario, // Agregar el nick del usuario
             });
           }
           observer.next(items);
@@ -401,93 +434,188 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
   }
   //funcion para buscar reprotes
   buscarReportes() {
-    this.database.executeSql(`SELECT reporte.*, motivo.descripcion_motivo FROM reporte LEFT JOIN motivo ON reporte.id_motivo = motivo.id_motivo  WHERE reporte.estado_reporte = 'Pendiente' ORDER BY reporte.id_reporte ASC`, []).then(res => {
-      let items: Report[] = [];
+    this.database
+      .executeSql(
+        `SELECT reporte.*, motivo.descripcion_motivo FROM reporte LEFT JOIN motivo ON reporte.id_motivo = motivo.id_motivo  WHERE reporte.estado_reporte = 'Pendiente' ORDER BY reporte.id_reporte ASC`,
+        []
+      )
+      .then((res) => {
+        let items: Report[] = [];
+        if (res.rows.length > 0) {
+          for (var i = 0; i < res.rows.length; i++) {
+            items.push({
+              id_reporte: res.rows.item(i).id_reporte,
+              estado_reporte: res.rows.item(i).estado_reporte,
+              id_usuario: res.rows.item(i).id_usuario,
+              id_post: res.rows.item(i).id_post,
+              id_comunidad: res.rows.item(i).id_comunidad,
+              id_comentario: res.rows.item(i).id_comentario,
+              id_motivo: res.rows.item(i).id_motivo,
+              descripcion_motivo: res.rows.item(i).descripcion_motivo,
+            });
+          }
+        }
+        this.listaReportes.next(items as any);
+      })
+      .catch((e: any) => {
+        this.presentAlert(
+          'Error al buscar reportes',
+          `Error: ${JSON.stringify(e)}`
+        );
+      });
+  }
+
+  cargarReporte() {
+    this.database.executeSql(`
+      SELECT reporte.*, 
+             motivo.descripcion_motivo, 
+             usuario.nick_usuario, 
+             post.titulo_post, post.contenido_post, 
+             comentario.contenido_comentario, comentario.likes_comentario 
+      FROM reporte
+      LEFT JOIN motivo ON reporte.id_motivo = motivo.id_motivo
+      LEFT JOIN usuario ON reporte.id_usuario = usuario.id_usuario
+      LEFT JOIN post ON reporte.id_post = post.id_post
+      LEFT JOIN comentario ON reporte.id_comentario = comentario.id_comentario
+      WHERE reporte.estado_reporte = 'Pendiente'
+      ORDER BY reporte.id_reporte ASC
+    `, []).then((res) => {
+      let items: Cargarreporte[] = [];
       if (res.rows.length > 0) {
-        for (var i = 0; i < res.rows.length; i++) {
+        for (let i = 0; i < res.rows.length; i++) {
           items.push({
             id_reporte: res.rows.item(i).id_reporte,
             estado_reporte: res.rows.item(i).estado_reporte,
             id_usuario: res.rows.item(i).id_usuario,
+            nick_usuario: res.rows.item(i).nick_usuario,
             id_post: res.rows.item(i).id_post,
+            titulo_post: res.rows.item(i).titulo_post,  
+            contenido_post: res.rows.item(i).contenido_post,  
             id_comunidad: res.rows.item(i).id_comunidad,
             id_comentario: res.rows.item(i).id_comentario,
+            contenido_comentario: res.rows.item(i).contenido_comentario,  
+            likes_comentario: res.rows.item(i).likes_comentario,  
             id_motivo: res.rows.item(i).id_motivo,
-            descripcion_motivo: res.rows.item(i).descripcion_motivo 
+            descripcion_motivo: res.rows.item(i).descripcion_motivo,
           });
         }
       }
-      this.listaReportes.next(items as any);
-    }).catch((e: any) => {
-      this.presentAlert('Error al buscar reportes', `Error: ${JSON.stringify(e)}`);
+      this.listaCargarReporte.next(items as any);
+    })
+    .catch((e: any) => {
+      this.presentAlert(
+        'Error al buscar reportes',
+        `Error: ${JSON.stringify(e)}`
+      );
     });
   }
   //buscar motivo para llamrlo en reportar_conteido
   buscarMotivos() {
-    this.database.executeSql('SELECT * FROM motivo', []).then(res => {
-      let items: Motivo[] = [];
-      if (res.rows.length > 0) {
-        for (var i = 0; i < res.rows.length; i++) {
-          items.push({
-          id_motivo: res.rows.item(i).id_motivo,
-          descripcion_motivo: res.rows.item(i).descripcion_motivo
-          });
+    this.database
+      .executeSql('SELECT * FROM motivo', [])
+      .then((res) => {
+        let items: Motivo[] = [];
+        if (res.rows.length > 0) {
+          for (var i = 0; i < res.rows.length; i++) {
+            items.push({
+              id_motivo: res.rows.item(i).id_motivo,
+              descripcion_motivo: res.rows.item(i).descripcion_motivo,
+            });
+          }
         }
-      }
-      this.listaMotivos.next(items as any);
-    }).catch(e => {
-      this.presentAlert('Error al cargar motivos', `Error: ${JSON.stringify(e)}`);
-      return [];
-    });
+        this.listaMotivos.next(items as any);
+      })
+      .catch((e) => {
+        this.presentAlert(
+          'Error al cargar motivos',
+          `Error: ${JSON.stringify(e)}`
+        );
+        return [];
+      });
   }
 
   // Función para agregar un usuario (registrar)
-  agregarUsuario(nick_usuario: string, correo_usuario: string, contrasena_usuario: string) {
+  agregarUsuario(
+    nick_usuario: string,
+    correo_usuario: string,
+    contrasena_usuario: string
+  ) {
     // Primero, comprobar si el usuario ya existe
-    this.database.executeSql('SELECT * FROM usuario WHERE nick_usuario = ? OR correo_usuario = ?', [nick_usuario, correo_usuario]).then(res => {
-      if (res.rows.length > 0) {
-        // Si el usuario ya existe, mostrar un mensaje de error
-        this.presentAlert('Error', 'Error al crear usuario, este usuario ya existe');
-      } else {
-        // Si no existe, agregar el nuevo usuario
-        this.database.executeSql('INSERT INTO usuario(nick_usuario, correo_usuario, contrasena_usuario, id_rol, id_estado, img_perfil) VALUES(?,?,?,?,?,?)', [nick_usuario, correo_usuario, contrasena_usuario, 2, 1, this.api.obtenerImg(nick_usuario)]).then(res => {
-          this.presentAlert('Registro', 'Usuario registrado correctamente');
-          this.buscarUsuarios();
-          this.router.navigate(['/login']);
-        }).catch(e => {
-          this.presentAlert('Error agregarUsuario', JSON.stringify(e));
-        });
-      }
-    }).catch(e => {
-      this.presentAlert('Error al comprobar usuario', JSON.stringify(e));
-    });
+    this.database
+      .executeSql(
+        'SELECT * FROM usuario WHERE nick_usuario = ? OR correo_usuario = ?',
+        [nick_usuario, correo_usuario]
+      )
+      .then((res) => {
+        if (res.rows.length > 0) {
+          // Si el usuario ya existe, mostrar un mensaje de error
+          this.presentAlert(
+            'Error',
+            'Error al crear usuario, este usuario ya existe'
+          );
+        } else {
+          // Si no existe, agregar el nuevo usuario
+          this.database
+            .executeSql(
+              'INSERT INTO usuario(nick_usuario, correo_usuario, contrasena_usuario, id_rol, id_estado, img_perfil) VALUES(?,?,?,?,?,?)',
+              [
+                nick_usuario,
+                correo_usuario,
+                contrasena_usuario,
+                2,
+                1,
+                this.api.obtenerImg(nick_usuario),
+              ]
+            )
+            .then((res) => {
+              this.presentAlert('Registro', 'Usuario registrado correctamente');
+              this.buscarUsuarios();
+              this.router.navigate(['/login']);
+            })
+            .catch((e) => {
+              this.presentAlert('Error agregarUsuario', JSON.stringify(e));
+            });
+        }
+      })
+      .catch((e) => {
+        this.presentAlert('Error al comprobar usuario', JSON.stringify(e));
+      });
   }
 
-  modificarUsuario(id_usuario: number, nombre: string, email: string, telefono: string, imagen: string | null): Promise<void> {
+  modificarUsuario(
+    id_usuario: number,
+    nombre: string,
+    email: string,
+    telefono: string,
+    imagen: string | null
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       let query = `
         UPDATE usuario 
         SET nombre_usuario = ?, correo_usuario = ?, telefono_usuario = ?
       `;
-      
+
       const params = [nombre, email, telefono];
-  
+
       // Si la imagen no es null, también la actualizamos
       if (imagen) {
         query += `, img_perfil = ?`; // Suponiendo que la columna para la imagen en la base de datos es 'img_perfil'
         params.push(imagen);
       }
-  
+
       query += ` WHERE id_usuario = ?`;
       params.push(id_usuario.toString()); // Convertimos el id_usuario a string
-  
-      this.database.executeSql(query, params).then(() => {
-        console.log('Usuario modificado exitosamente');
-        resolve(); // Operación completada
-      }).catch((error) => {
-        console.error('Error al modificar usuario:', error);
-        reject(error); // Error en la operación
-      });
+
+      this.database
+        .executeSql(query, params)
+        .then(() => {
+          console.log('Usuario modificado exitosamente');
+          resolve(); // Operación completada
+        })
+        .catch((error) => {
+          console.error('Error al modificar usuario:', error);
+          reject(error); // Error en la operación
+        });
     });
   }
 
@@ -498,34 +626,45 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
         SET img_perfil = ? 
         WHERE nick_usuario = ?
       `;
-   
-      this.database.executeSql(query, [imagen, nick_usuario]).then(() => {
-        console.log('Imagen de perfil actualizada');
-        
-        // Emitir el cambio de imagen
-        this.img$.next(imagen); // Emitir la nueva imagen a los suscriptores
-        resolve();
-      }).catch((error) => {
-        console.error('Error al actualizar la imagen de perfil:', error);
-        reject(error);
-      });
+
+      this.database
+        .executeSql(query, [imagen, nick_usuario])
+        .then(() => {
+          console.log('Imagen de perfil actualizada');
+
+          // Emitir el cambio de imagen
+          this.img$.next(imagen); // Emitir la nueva imagen a los suscriptores
+          resolve();
+        })
+        .catch((error) => {
+          console.error('Error al actualizar la imagen de perfil:', error);
+          reject(error);
+        });
     });
   }
-  
-  
+
   //funcion para agregar un post
-  agregarPost(titulo_post: string, contenido_post: string, img_post: any, id_usuario: number): Promise<any> {
+  agregarPost(
+    titulo_post: string,
+    contenido_post: string,
+    img_post: any,
+    id_usuario: number
+  ): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.database.executeSql('INSERT INTO post(titulo_post, contenido_post, img_post, id_usuario, id_estado) VALUES(?,?,?,?,?)', [titulo_post, contenido_post, img_post, id_usuario, 1])
-        .then(res => {
+      this.database
+        .executeSql(
+          'INSERT INTO post(titulo_post, contenido_post, img_post, id_usuario, id_estado) VALUES(?,?,?,?,?)',
+          [titulo_post, contenido_post, img_post, id_usuario, 1]
+        )
+        .then((res) => {
           resolve(res); // Resolvemos la promesa si todo va bien
         })
-        .catch(e => {
+        .catch((e) => {
           reject(e); // Rechazamos la promesa en caso de error
         });
     });
   }
-//funcion para agregar comentario 
+  //funcion para agregar comentario
   agregarComentario(
     contenido_comentario: string,
     img_comentario: any,
@@ -549,46 +688,71 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
     });
   }
   //funcion para agregar reporte
-  agregarReporte(estado_reporte: string, id_usuario: number, id_post: number, id_comunidad: number, id_comentario: number, id_motivo: number) {
+  agregarReporte(
+    estado_reporte: string,
+    id_usuario: number,
+    id_post: number,
+    id_comunidad: number,
+    id_comentario: number,
+    id_motivo: number
+  ) {
     // Verifica que el motivo existe en la tabla motivo antes de insertar
-    this.database.executeSql('SELECT * FROM motivo WHERE id_motivo = ?', [id_motivo]).then(res => {
-      if (res.rows.length > 0) {
-        // El motivo existe, procede con el INSERT
-        this.database.executeSql('INSERT INTO reporte(estado_reporte, id_usuario, id_post, id_comunidad, id_comentario, id_motivo) VALUES(?,?,?,?,?,?)', 
-          [estado_reporte, id_usuario, id_post, id_comunidad, id_comentario, id_motivo]
-        ).then(() => {
-          this.presentAlert('Registro', 'Reporte registrado correctamente');
-          this.buscarReportes(); // Actualiza la lista de reportes
-        }).catch((e: any) => {
-          this.presentAlert('Error al agregar reporte', JSON.stringify(e));
-        });
-      } else {
-        // El motivo no existe
-        this.presentAlert('Error', 'El motivo especificado no existe');
-      }
-    }).catch((e: any) => {
-      this.presentAlert('Error al verificar motivo', JSON.stringify(e));
-    });
+    this.database
+      .executeSql('SELECT * FROM motivo WHERE id_motivo = ?', [id_motivo])
+      .then((res) => {
+        if (res.rows.length > 0) {
+          // El motivo existe, procede con el INSERT
+          this.database
+            .executeSql(
+              'INSERT INTO reporte(estado_reporte, id_usuario, id_post, id_comunidad, id_comentario, id_motivo) VALUES(?,?,?,?,?,?)',
+              [
+                estado_reporte,
+                id_usuario,
+                id_post,
+                id_comunidad,
+                id_comentario,
+                id_motivo,
+              ]
+            )
+            .then(() => {
+              this.presentAlert('Registro', 'Reporte registrado correctamente');
+              this.buscarReportes(); // Actualiza la lista de reportes
+            })
+            .catch((e: any) => {
+              this.presentAlert('Error al agregar reporte', JSON.stringify(e));
+            });
+        } else {
+          // El motivo no existe
+          this.presentAlert('Error', 'El motivo especificado no existe');
+        }
+      })
+      .catch((e: any) => {
+        this.presentAlert('Error al verificar motivo', JSON.stringify(e));
+      });
   }
-
-  
 
   //funcion para loguear usuario
   loginUsuario(nick_usuario: string, contrasena_usuario: string) {
     // Realiza la consulta para buscar al usuario por el nick y la contraseña
-    this.database.executeSql('SELECT * FROM usuario WHERE nick_usuario = ? AND contrasena_usuario = ?', [nick_usuario, contrasena_usuario]).then(res => {
-      if (res.rows.length > 0) {
-        // Si el usuario existe, mostramos un mensaje de éxito
-        this.presentAlert('Login', 'Usuario logueado correctamente');
-        // Aquí podrías guardar la información del usuario en un servicio global o en el almacenamiento local
-        this.router.navigate(['/inicio']); // Redirigir al usuario a la página principal
-      } else {
-        // Si no se encuentra al usuario, mostramos un mensaje de error
-        this.presentAlert('Error', 'Usuario o contraseña incorrectos');
-      }
-    }).catch(e => {
-      this.presentAlert('Error loginUsuario', JSON.stringify(e));
-    });
+    this.database
+      .executeSql(
+        'SELECT * FROM usuario WHERE nick_usuario = ? AND contrasena_usuario = ?',
+        [nick_usuario, contrasena_usuario]
+      )
+      .then((res) => {
+        if (res.rows.length > 0) {
+          // Si el usuario existe, mostramos un mensaje de éxito
+          this.presentAlert('Login', 'Usuario logueado correctamente');
+          // Aquí podrías guardar la información del usuario en un servicio global o en el almacenamiento local
+          this.router.navigate(['/inicio']); // Redirigir al usuario a la página principal
+        } else {
+          // Si no se encuentra al usuario, mostramos un mensaje de error
+          this.presentAlert('Error', 'Usuario o contraseña incorrectos');
+        }
+      })
+      .catch((e) => {
+        this.presentAlert('Error loginUsuario', JSON.stringify(e));
+      });
   }
 
   //alertas
@@ -603,66 +767,98 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
   }
 
   // Función para guardar la respuesta de la pregunta de seguridad en la base de datos
-  guardarRespuestaSeguridad(id_usuario: number, id_pregunta_seguridad: number, respuesta: string): Observable<any> {
+  guardarRespuestaSeguridad(
+    id_usuario: number,
+    id_pregunta_seguridad: number,
+    respuesta: string
+  ): Observable<any> {
     return new Observable((observer) => {
       // Verificar si el usuario ya tiene una respuesta registrada
-      this.database.executeSql(
-        'SELECT id_respuesta FROM respuestas_pregunta_seguridad WHERE id_usuario = ?',
-        [id_usuario]
-      ).then((res) => {
-        // Si la consulta devuelve un resultado, significa que ya hay una respuesta registrada
-        if (res.rows.length > 0) {
-          const id_respuesta = res.rows.item(0).id_respuesta;
-          // Actualizar la respuesta y la pregunta de seguridad
-          this.database.executeSql(
-            'UPDATE respuestas_pregunta_seguridad SET id_pregunta_seguridad = ?, respuesta = ? WHERE id_respuesta = ?',
-            [id_pregunta_seguridad, respuesta, id_respuesta]
-          ).then(() => {
-            observer.next({ mensaje: 'Pregunta de seguridad y respuesta actualizadas correctamente' });
-            observer.complete();
-          }).catch((error) => {
-            observer.error({ error: 'Error al actualizar la respuesta: ' + error });
+      this.database
+        .executeSql(
+          'SELECT id_respuesta FROM respuestas_pregunta_seguridad WHERE id_usuario = ?',
+          [id_usuario]
+        )
+        .then((res) => {
+          // Si la consulta devuelve un resultado, significa que ya hay una respuesta registrada
+          if (res.rows.length > 0) {
+            const id_respuesta = res.rows.item(0).id_respuesta;
+            // Actualizar la respuesta y la pregunta de seguridad
+            this.database
+              .executeSql(
+                'UPDATE respuestas_pregunta_seguridad SET id_pregunta_seguridad = ?, respuesta = ? WHERE id_respuesta = ?',
+                [id_pregunta_seguridad, respuesta, id_respuesta]
+              )
+              .then(() => {
+                observer.next({
+                  mensaje:
+                    'Pregunta de seguridad y respuesta actualizadas correctamente',
+                });
+                observer.complete();
+              })
+              .catch((error) => {
+                observer.error({
+                  error: 'Error al actualizar la respuesta: ' + error,
+                });
+              });
+          } else {
+            // Si no existe la respuesta, insertamos una nueva
+            this.database
+              .executeSql(
+                'INSERT INTO respuestas_pregunta_seguridad (id_usuario, id_pregunta_seguridad, respuesta) VALUES (?, ?, ?)',
+                [id_usuario, id_pregunta_seguridad, respuesta]
+              )
+              .then(() => {
+                observer.next({ mensaje: 'Respuesta guardada correctamente' });
+                observer.complete();
+              })
+              .catch((error) => {
+                observer.error({
+                  error: 'Error al guardar la respuesta: ' + error,
+                });
+              });
+          }
+        })
+        .catch((error) => {
+          observer.error({
+            error: 'Error al verificar la respuesta: ' + error,
           });
-        } else {
-          // Si no existe la respuesta, insertamos una nueva
-          this.database.executeSql(
-            'INSERT INTO respuestas_pregunta_seguridad (id_usuario, id_pregunta_seguridad, respuesta) VALUES (?, ?, ?)',
-            [id_usuario, id_pregunta_seguridad, respuesta]
-          ).then(() => {
-            observer.next({ mensaje: 'Respuesta guardada correctamente' });
-            observer.complete();
-          }).catch((error) => {
-            observer.error({ error: 'Error al guardar la respuesta: ' + error });
-          });
-        }
-      }).catch((error) => {
-        observer.error({ error: 'Error al verificar la respuesta: ' + error });
-      });
+        });
     });
   }
 
   // Función para obtener las preguntas de seguridad disponibles
   obtenerPreguntasSeguridad(): Observable<any> {
-    return new Observable(observer => {
-      this.database.executeSql('SELECT * FROM preguntas', []).then(res => {
-        let preguntas = [];
-        for (let i = 0; i < res.rows.length; i++) {
-          preguntas.push(res.rows.item(i));
-        }
-        observer.next(preguntas);
-        observer.complete();
-      }).catch(e => {
-        observer.error('Error al obtener las preguntas: ' + JSON.stringify(e));
-      });
+    return new Observable((observer) => {
+      this.database
+        .executeSql('SELECT * FROM preguntas', [])
+        .then((res) => {
+          let preguntas = [];
+          for (let i = 0; i < res.rows.length; i++) {
+            preguntas.push(res.rows.item(i));
+          }
+          observer.next(preguntas);
+          observer.complete();
+        })
+        .catch((e) => {
+          observer.error(
+            'Error al obtener las preguntas: ' + JSON.stringify(e)
+          );
+        });
     });
   }
 
-  verificarPreguntaRespuesta(idUsuario: number, idPregunta: number, respuesta: string): Observable<boolean> {
+  verificarPreguntaRespuesta(
+    idUsuario: number,
+    idPregunta: number,
+    respuesta: string
+  ): Observable<boolean> {
     const query = `SELECT * FROM respuestas_pregunta_seguridad 
                    WHERE id_usuario = ? AND id_pregunta_seguridad = ? AND respuesta = ?`;
-    
+
     return from(
-      this.database.executeSql(query, [idUsuario, idPregunta, respuesta])
+      this.database
+        .executeSql(query, [idUsuario, idPregunta, respuesta])
         .then((res) => res.rows.length > 0) // Retorna `true` si hay coincidencia
         .catch((error) => {
           console.error('Error al verificar pregunta y respuesta:', error);
@@ -670,17 +866,21 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
         })
     );
   }
-  
 
-  actualizarContrasena(idUsuario: number, nuevaClave: string, confirmarClave: string): Observable<void> {
+  actualizarContrasena(
+    idUsuario: number,
+    nuevaClave: string,
+    confirmarClave: string
+  ): Observable<void> {
     if (nuevaClave !== confirmarClave) {
       return throwError(() => new Error('Las contraseñas no coinciden'));
     }
-  
+
     const query = `UPDATE usuario SET contrasena_usuario = ? WHERE id_usuario = ?`;
-  
+
     return from(
-      this.database.executeSql(query, [nuevaClave, idUsuario])
+      this.database
+        .executeSql(query, [nuevaClave, idUsuario])
         .then(() => {
           console.log('Contraseña actualizada correctamente');
         })
@@ -691,7 +891,7 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
     );
   }
 
-  //metodo para guradar comentarios 
+  //metodo para guradar comentarios
   GuardarComentario(
     contenido_comentario: string,
     img_comentario: any,
@@ -700,7 +900,9 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
     id_usuario: number
   ): Observable<any> {
     if (!contenido_comentario.trim()) {
-      return throwError(() => new Error('El contenido del comentario no puede estar vacío.'));
+      return throwError(
+        () => new Error('El contenido del comentario no puede estar vacío.')
+      );
     }
     return new Observable((observer) => {
       this.database
@@ -720,43 +922,51 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
   // Verifica si el usuario tiene una pregunta de seguridad
   async verificarPreguntaSeguridad(id_usuario: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.database.executeSql(
-        'SELECT * FROM respuestas_pregunta_seguridad WHERE id_usuario = ?',
-        [id_usuario]
-      ).then(res => {
-        if (res.rows.length > 0) {
-          resolve(true); // Si existe una respuesta, el usuario tiene una pregunta de seguridad
-        } else {
-          resolve(false); // Si no existe una respuesta, el usuario no tiene una pregunta de seguridad
-        }
-      }).catch(e => {
-        console.error('Error al verificar pregunta de seguridad', e);
-        reject(false); // Si hay un error, devolvemos false
-      });
+      this.database
+        .executeSql(
+          'SELECT * FROM respuestas_pregunta_seguridad WHERE id_usuario = ?',
+          [id_usuario]
+        )
+        .then((res) => {
+          if (res.rows.length > 0) {
+            resolve(true); // Si existe una respuesta, el usuario tiene una pregunta de seguridad
+          } else {
+            resolve(false); // Si no existe una respuesta, el usuario no tiene una pregunta de seguridad
+          }
+        })
+        .catch((e) => {
+          console.error('Error al verificar pregunta de seguridad', e);
+          reject(false); // Si hay un error, devolvemos false
+        });
     });
   }
 
   insertarReporte(
     estado_reporte: string, // estado_reporte corresponde a la columna en la base de datos
-    id_usuario: number, 
-    id_post: number, 
-    id_comentario: number, 
+    id_usuario: number, // El id_usuario aquí debe ser el del autor del post
+    id_post: number,
+    id_comentario: number,
     id_motivo: number
   ): Observable<void> {
     return new Observable((observer) => {
-      this.database.executeSql(
-        `INSERT INTO reporte (estado_reporte, id_usuario, id_post, id_comentario, id_motivo) 
-         VALUES (?, ?, ?, ?, ?)`,  // Elimina id_categoria ya que no es parte de la tabla
-        [estado_reporte, id_usuario, id_post, id_comentario, id_motivo]
-      ).then(() => {
-        observer.next();
-        observer.complete();
-      }).catch((error) => {
-        // Verificar si el error tiene un mensaje
-        const errorMessage = error.message ? error.message : 'Hubo un error desconocido';
-        observer.error(errorMessage); // Enviar el mensaje de error
-      });
+      // Asegúrate de que estamos usando el id_usuario correcto (el del autor del post)
+      this.database
+        .executeSql(
+          `INSERT INTO reporte (estado_reporte, id_usuario, id_post, id_comentario, id_motivo) 
+       VALUES (?, ?, ?, ?, ?)`,
+          [estado_reporte, id_usuario, id_post, id_comentario, id_motivo]
+        )
+        .then(() => {
+          observer.next();
+          observer.complete();
+        })
+        .catch((error) => {
+          // Verificar si el error tiene un mensaje
+          const errorMessage = error.message
+            ? error.message
+            : 'Hubo un error desconocido';
+          observer.error(errorMessage); // Enviar el mensaje de error
+        });
     });
   }
-
 }

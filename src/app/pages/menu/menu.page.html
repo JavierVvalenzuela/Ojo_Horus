@@ -34,7 +34,7 @@
   <ion-card class="card-custom" *ngFor="let post of arreglopost">
 
     <div>
-      <ion-button fill="clear" (click)="reportarPost(post.id_post)" class="btn-3puntos">
+      <ion-button fill="clear" (click)="reportarPost(post.id_post, post.id_usuario)" class="btn-3puntos">
         <img src="assets/icon/3puntos.png" alt="Reportar contenido" />
       </ion-button>
     </div>
