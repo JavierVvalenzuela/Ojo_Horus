@@ -24,7 +24,7 @@ img$ = new BehaviorSubject<string>(''); // Valor inicial puede ser una imagen pr
   public database!: SQLiteObject;
 
 
-  //droptablausuario: string = `DROP TABLE IF EXISTS post;`;
+  //droptablausuario: string = `DROP TABLE IF EXISTS reporte;`;
 
 
   //Tablas del foro

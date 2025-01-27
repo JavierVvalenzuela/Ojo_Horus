@@ -124,7 +124,10 @@ export class CambiarPasswordPage implements OnInit {
             this.bdServicio.actualizarContrasena(this.idUsuario, this.nuevaClave, this.confirmarClave)
               .toPromise()  // Convierte el Observable a Promesa
               .then(() => {
-                console.log('Contraseña actualizada correctamente.');
+                // Mostrar el mensaje de éxito
+                window.alert('Contraseña actualizada correctamente.');
+          
+                // Redirigir al login
                 this.router.navigate(['/login']);
                 console.log('Redirigiendo a login');
               })

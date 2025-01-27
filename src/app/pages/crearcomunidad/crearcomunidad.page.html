@@ -8,6 +8,11 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+
+  <div class="logo-container">
+    <img src="assets/img/ojo de horus.png" alt="Ojo de Horus" class="logo-img">
+  </div>
+
   <form (submit)="validarFormulario($event)">
     <!-- Campo para el nombre de la comunidad -->
     <ion-item class="ion-item">
@@ -71,25 +76,24 @@
     </p>
 
     <!-- Botón para subir una imagen -->
-    <div class="img">
-      <ion-item lines="none">
-        <label for="imagen">
-          <img src="assets/icon/camera.png" alt="Agregar imagen" />
-          <p>Subir Imagen</p>
-        </label>
-      </ion-item>
-    </div>
+    <ion-card class="card2">
+      <h2>Imagen de la Comunidad</h2>
+      <ion-item>
+      <div class="fotocom-container">
+        <ion-img class="fotocom" [src]="fotografia" alt="Sin Foto" *ngIf="fotografia"></ion-img>
+      </div>
+
+      <!-- Botón visual para cambiar la imagen -->
+       <div class="boton-container">
+      <ion-button class="camim" fill="outline" color="warning" (click)="takePicture()">Cambiar Imagen</ion-button>
+      </div>
+    </ion-item>
+  </ion-card>
 
     <!-- Botón para enviar el formulario y cancelar -->
-    <ion-button
-      fill="outline"
-      Color="warning"
-      type="submit"
-      [disabled]="!formValido()"
-      >Guardar</ion-button
-    >
-    <ion-button fill="outline" color="light" (click)="cancelar()"
-      >Cancelar</ion-button
-    >
+     <div class="btns">
+    <ion-button fill="outline" Color="warning" type="submit" [disabled]="!formValido()">Guardar</ion-button>
+    <ion-button fill="outline" color="light" (click)="cancelar()">Cancelar</ion-button>
+  </div>
   </form>
 </ion-content>

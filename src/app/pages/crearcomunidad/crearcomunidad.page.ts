@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Camera, CameraResultType } from '@capacitor/camera';
 
 @Component({
   selector: 'app-crearcomunidad',
@@ -12,6 +13,7 @@ export class CrearcomunidadPage implements OnInit {
   nombreComunidad: string = '';
   descripcionComunidad: string = '';
   categoriasSeleccionadas: string[] = [];
+  fotografia: any;
 
   // Objeto para almacenar errores de validación
   errores: {
@@ -105,5 +107,18 @@ export class CrearcomunidadPage implements OnInit {
       this.errores.categorias
     );
   }
+
+  takePicture = async () => {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: CameraResultType.Uri
+    });
+  
+    var imageUrl = image.webPath;
+  
+    // Can be set to the src of an image now
+    this.fotografia = imageUrl;
+  };
 }
 
