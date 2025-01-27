@@ -3,7 +3,6 @@ import { NavigationExtras, Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
 
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -38,7 +37,7 @@ export class LoginPage implements OnInit {
     if (this.nickname.length < 3 || this.nickname.length > 25) {
       correcto = false;
     }
-
+    
     // Validación de clave
     if (
       this.clave.length < 8 || this.clave.length > 20 || // Longitud de la clave
@@ -61,20 +60,28 @@ export class LoginPage implements OnInit {
 
   // Función para loguear al usuario
   loginUsuario(nick_usuario: string, contrasena_usuario: string) {
-    // Realiza la consulta para obtener el id_usuario, id_rol y nick_usuario
-    this.databaseService.database.executeSql('SELECT id_usuario, nick_usuario, id_rol FROM usuario WHERE nick_usuario = ? AND contrasena_usuario = ?', [nick_usuario, contrasena_usuario]).then(res => {
+    // Realiza la consulta para obtener el id_usuario, id_rol, id_estado y nick_usuario
+    this.databaseService.database.executeSql('SELECT id_usuario, nick_usuario, id_rol, id_estado FROM usuario WHERE nick_usuario = ? AND contrasena_usuario = ?', [nick_usuario, contrasena_usuario]).then(res => {
       if (res.rows.length > 0) {
         // Si el usuario existe, obtenemos los datos y los almacenamos
         let usuario = res.rows.item(0);
         let id_usuario = usuario.id_usuario;
         let nick = usuario.nick_usuario;
         let id_rol = usuario.id_rol;  // Obtener el id_rol
-  
-        // Almacenamos el id_usuario, nick_usuario y id_rol en el almacenamiento local
+        let id_estado = usuario.id_estado;
+
+        // Verifica si el estado del usuario es 2 (baneado)
+        if (id_estado === 2) {
+          this.presentAlert('Error', 'Esta cuenta está baneada.');
+          return;
+        }
+
+        // Almacenamos el id_usuario, nick_usuario, id_rol y id_estado en el almacenamiento local
         localStorage.setItem('id_usuario', id_usuario.toString());
         localStorage.setItem('nick_usuario', nick);
         localStorage.setItem('id_rol', id_rol.toString());
-  
+        localStorage.setItem('id_estado', id_estado.toString());
+
         this.presentAlert('Login', 'Usuario logueado correctamente');
         
         // Redirigir al perfil del usuario

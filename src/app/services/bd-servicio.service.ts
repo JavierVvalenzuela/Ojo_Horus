@@ -25,10 +25,7 @@ export class BdServicioService {
   public database!: SQLiteObject;
 
 
-  //droptablausuario: string = `DROP TABLE IF EXISTS reporte;`;
-
-  //droptablausuario: string = `DROP TABLE IF EXISTS post;`;
-
+  //droptablausuario: string = `DROP TABLE IF EXISTS usuario;`;
 
   //Tablas del foro
   //Tabla de roles admin o user
@@ -156,7 +153,7 @@ export class BdServicioService {
   (1, 'Administrador', 'Admin', 'Admin@gmail.com', 'Admin.01', 1, 1),
   (2, 'Diego Mellado', 'Goto', 'Goto@gmail.com', 'Diego.170', 1, 2),
   (3, 'Javier Valenzuela', 'Red', 'Red@gmail.com', 'Javier.170', 1, 2),
-  (4, 'Reportado Uno', 'Rep', 'Rep@gmail.com', 'Repor.170',1,2);`;
+  (4, 'Reportado Uno', 'Rep', 'Rep@gmail.com', 'Repor.170',2,2);`;
 
   //tablas post
   registroPost: string = `
@@ -194,7 +191,7 @@ export class BdServicioService {
   public Comentarios: Comentarios[] = [];
   public Report: Report[] = [];
   public Motivo: Motivo[] = [];
-  public cargar : Cargarreporte[] = [];
+  public cargar: Cargarreporte[] = [];
 
   constructor(
     private sqlite: SQLite,
@@ -231,7 +228,7 @@ export class BdServicioService {
   }
 
   fetchCargarReporte(): Observable<Motivo[]> {
-    return this. listaCargarReporte.asObservable();
+    return this.listaCargarReporte.asObservable();
   }
 
   //funcion para crear la base de datos (en sqldeveloper seria crear nueva conexion)
@@ -288,7 +285,7 @@ export class BdServicioService {
       this.buscarComentarios(); // Actualizar lista
       this.buscarReportes(); // Actualizar lista
       this.buscarMotivos(); // Actualizar lista
-      this.cargarReporte();// Actualizar lista
+      this.obtenerUsuariosReportados();// Actualizar lista
       this.isDBReady.next(true); // Notificar que la BD está lista
     } catch (e) {
       this.presentAlert(
@@ -465,50 +462,43 @@ export class BdServicioService {
       });
   }
 
-  cargarReporte() {
-    this.database.executeSql(`
-      SELECT reporte.*, 
-             motivo.descripcion_motivo, 
-             usuario.nick_usuario, 
-             post.titulo_post, post.contenido_post, 
-             comentario.contenido_comentario, comentario.likes_comentario 
-      FROM reporte
-      LEFT JOIN motivo ON reporte.id_motivo = motivo.id_motivo
-      LEFT JOIN usuario ON reporte.id_usuario = usuario.id_usuario
-      LEFT JOIN post ON reporte.id_post = post.id_post
-      LEFT JOIN comentario ON reporte.id_comentario = comentario.id_comentario
-      WHERE reporte.estado_reporte = 'Pendiente'
-      ORDER BY reporte.id_reporte ASC
-    `, []).then((res) => {
-      let items: Cargarreporte[] = [];
-      if (res.rows.length > 0) {
-        for (let i = 0; i < res.rows.length; i++) {
-          items.push({
-            id_reporte: res.rows.item(i).id_reporte,
-            estado_reporte: res.rows.item(i).estado_reporte,
-            id_usuario: res.rows.item(i).id_usuario,
-            nick_usuario: res.rows.item(i).nick_usuario,
-            id_post: res.rows.item(i).id_post,
-            titulo_post: res.rows.item(i).titulo_post,  
-            contenido_post: res.rows.item(i).contenido_post,  
-            id_comunidad: res.rows.item(i).id_comunidad,
-            id_comentario: res.rows.item(i).id_comentario,
-            contenido_comentario: res.rows.item(i).contenido_comentario,  
-            likes_comentario: res.rows.item(i).likes_comentario,  
-            id_motivo: res.rows.item(i).id_motivo,
-            descripcion_motivo: res.rows.item(i).descripcion_motivo,
-          });
-        }
-      }
-      this.listaCargarReporte.next(items as any);
-    })
-    .catch((e: any) => {
-      this.presentAlert(
-        'Error al buscar reportes',
-        `Error: ${JSON.stringify(e)}`
-      );
+  obtenerUsuariosReportados(): Observable<any[]> {
+    const query = `
+      SELECT r.id_reporte, 
+             u.nick_usuario AS nick_reportado,  -- Aquí tomamos el nick del usuario reportado
+             r.id_motivo, 
+             m.descripcion_motivo
+      FROM reporte r
+      JOIN post p ON r.id_post = p.id_post  -- Nos aseguramos de obtener el post
+      JOIN usuario u ON p.id_usuario = u.id_usuario  -- Obtenemos el usuario dueño del post
+      JOIN motivo m ON r.id_motivo = m.id_motivo
+      WHERE r.estado_reporte = 'pendiente'
+    `;
+
+    return new Observable<any[]>((observer) => {
+      this.database
+        .executeSql(query, [])
+        .then((res) => {
+          let items: any[] = [];
+          for (let i = 0; i < res.rows.length; i++) {
+            items.push({
+              id_reporte: res.rows.item(i).id_reporte,
+              nick_usuario: res.rows.item(i).nick_reportado,  // Usamos el nick del usuario reportado
+              id_motivo: res.rows.item(i).id_motivo,
+              descripcion_motivo: res.rows.item(i).descripcion_motivo,
+            });
+          }
+          observer.next(items);
+          observer.complete();
+        })
+        .catch((error) => {
+          observer.error(error);
+        });
     });
   }
+
+
+
   //buscar motivo para llamrlo en reportar_conteido
   buscarMotivos() {
     this.database
@@ -968,5 +958,45 @@ export class BdServicioService {
           observer.error(errorMessage); // Enviar el mensaje de error
         });
     });
+  }
+
+  banearUsuario(id_usuario: number, id_reporte: number) {
+    const queryUsuario = `UPDATE usuario SET id_estado = 2 WHERE id_usuario = ?`;
+    const queryReporte = `DELETE FROM reporte WHERE id_reporte = ?`;
+
+    this.database
+      .executeSql(queryUsuario, [id_usuario])
+      .then(() => {
+        return this.database.executeSql(queryReporte, [id_reporte]);
+      })
+      .then(() => {
+        this.presentAlert('Usuario Baneado', 'El usuario ha sido baneado correctamente');
+        this.buscarReportes(); // Actualizar lista de reportes
+      })
+      .catch((e) => {
+        this.presentAlert('Error al banear usuario', JSON.stringify(e));
+      });
+  }
+
+  ignorarReporte(id_reporte: number) {
+    const query = `DELETE FROM reporte WHERE id_reporte = ?`;
+
+    this.database
+      .executeSql(query, [id_reporte])
+      .then(() => {
+        this.presentAlert('Reporte Ignorado', 'El reporte ha sido eliminado correctamente');
+        this.buscarReportes(); // Actualizar lista de reportes
+      })
+      .catch((e) => {
+        this.presentAlert('Error al ignorar reporte', JSON.stringify(e));
+      });
+  }
+  actualizarEstadoUsuario(id_usuario: number, id_estado: number): Promise<void> {
+    return this.database.executeSql('UPDATE usuario SET id_estado = ? WHERE id_usuario = ?', [id_estado, id_usuario]);
+  }
+
+  // Servicio para eliminar un reporte
+  eliminarReporte(id_reporte: number): Promise<void> {
+    return this.database.executeSql('DELETE FROM reporte WHERE id_reporte = ?', [id_reporte]);
   }
 }
