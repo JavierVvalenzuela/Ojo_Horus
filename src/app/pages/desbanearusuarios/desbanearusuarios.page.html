@@ -9,48 +9,21 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <h1>Usuarios baneados</h1>
+  <h1>Usuarios Baneados</h1>
 
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">Juan666</ion-title>
-    <p>motivo: Contenido ofensivo</p>
-    <ion-button fill="outline" color="success">Desbanear</ion-button>
+  <ion-card *ngFor="let usuario of usuariosBaneados">
+    <ion-card-header>
+      <ion-card-title>{{ usuario.nick_usuario }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Motivo:</strong> {{ usuario.descripcion_motivo }}</p>
+
+      <ion-button fill="outline" color="success" (click)="desbanearUsuario(usuario.id_usuario)">
+        Desbanear
+      </ion-button>
+    </ion-card-content>
   </ion-card>
-
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">PAPIGUILLE</ion-title>
-    <p>motivo: Acoso o intimidación</p>
-    <ion-button fill="outline" color="success">Desbanear</ion-button>
-  </ion-card>
-
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">Red</ion-title>
-    <p>motivo: Infracción de normas de la comunidad</p>
-    <ion-button fill="outline" color="success">Desbanear</ion-button>
-  </ion-card>
-
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">Scorpion16</ion-title>
-    <p>motivo: Violación de derechos de autor</p>
-    <ion-button fill="outline" color="success">Desbanear</ion-button>
-  </ion-card>
-
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">ElThunas</ion-title>
-    <p>motivo: Incitación al odio</p>
-    <ion-button fill="outline" color="success">Desbanear</ion-button>
-  </ion-card>
-
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">Marcelo -u-</ion-title>
-    <p>motivo: Contenido ilegal</p>
-    <ion-button fill="outline" color="success">Desbanear</ion-button>
-  </ion-card>
-
-  <ion-card>
-    <ion-title [routerLink]="['/perfiles']">Gabriel Boric</ion-title>
-    <p>motivo: Contenido sexual explícito</p>
-    <ion-button fill="outline" color="success">Desbanear</ion-button>
-  </ion-card>
-
 </ion-content>
+
+
+

@@ -960,43 +960,50 @@ export class BdServicioService {
     });
   }
 
-  banearUsuario(id_usuario: number, id_reporte: number) {
+  banearUsuario(id_usuario_reportado: number, id_reporte: number) {
     const queryUsuario = `UPDATE usuario SET id_estado = 2 WHERE id_usuario = ?`;
     const queryReporte = `DELETE FROM reporte WHERE id_reporte = ?`;
-
+  
+    console.log(`Baneando usuario con id_usuario_reportado: ${id_usuario_reportado}`);
+    console.log(`Eliminando reporte con id_reporte: ${id_reporte}`);
+  
     this.database
-      .executeSql(queryUsuario, [id_usuario])
+      .executeSql(queryUsuario, [id_usuario_reportado]) // Cambiamos id_usuario por id_usuario_reportado
       .then(() => {
+        console.log(`Estado del usuario ${id_usuario_reportado} cambiado a baneado (id_estado = 2)`);
         return this.database.executeSql(queryReporte, [id_reporte]);
       })
       .then(() => {
+        console.log(`Reporte ${id_reporte} eliminado correctamente`);
         this.presentAlert('Usuario Baneado', 'El usuario ha sido baneado correctamente');
         this.buscarReportes(); // Actualizar lista de reportes
       })
       .catch((e) => {
+        console.error('Error al banear usuario:', e); // Mostrar el error en consola para depuración
         this.presentAlert('Error al banear usuario', JSON.stringify(e));
       });
   }
+  
 
-  ignorarReporte(id_reporte: number) {
-    const query = `DELETE FROM reporte WHERE id_reporte = ?`;
 
-    this.database
-      .executeSql(query, [id_reporte])
-      .then(() => {
-        this.presentAlert('Reporte Ignorado', 'El reporte ha sido eliminado correctamente');
-        this.buscarReportes(); // Actualizar lista de reportes
-      })
-      .catch((e) => {
-        this.presentAlert('Error al ignorar reporte', JSON.stringify(e));
-      });
-  }
-  actualizarEstadoUsuario(id_usuario: number, id_estado: number): Promise<void> {
-    return this.database.executeSql('UPDATE usuario SET id_estado = ? WHERE id_usuario = ?', [id_estado, id_usuario]);
-  }
+// Servicio para actualizar el estado de un usuario
+actualizarEstadoPorNick(nick_usuario: string, id_estado: number) {
+  const query = `UPDATE usuario SET id_estado = ? WHERE nick_usuario = ?`;
+  return this.database.executeSql(query, [id_estado, nick_usuario]);
+}
 
-  // Servicio para eliminar un reporte
-  eliminarReporte(id_reporte: number): Promise<void> {
-    return this.database.executeSql('DELETE FROM reporte WHERE id_reporte = ?', [id_reporte]);
-  }
+
+// Servicio para eliminar un reporte
+eliminarReporte(id_reporte: number): Promise<void> {
+  const query = 'DELETE FROM reporte WHERE id_reporte = ?';
+  return this.database.executeSql(query, [id_reporte])
+    .then(() => {
+      console.log(`Reporte ${id_reporte} eliminado correctamente`);
+    })
+    .catch((error) => {
+      console.error('Error al eliminar el reporte', error);
+      throw error;
+    });
+}
+
 }
