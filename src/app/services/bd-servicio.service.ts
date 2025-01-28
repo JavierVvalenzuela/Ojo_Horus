@@ -964,10 +964,10 @@ export class BdServicioService {
   banearUsuario(id_usuario_reportado: number, id_reporte: number) {
     const queryUsuario = `UPDATE usuario SET id_estado = 2 WHERE id_usuario = ?`;
     const queryReporte = `DELETE FROM reporte WHERE id_reporte = ?`;
-
+  
     console.log(`Baneando usuario con id_usuario_reportado: ${id_usuario_reportado}`);
     console.log(`Eliminando reporte con id_reporte: ${id_reporte}`);
-
+  
     this.database
       .executeSql(queryUsuario, [id_usuario_reportado]) // Cambiamos id_usuario por id_usuario_reportado
       .then(() => {
@@ -982,54 +982,32 @@ export class BdServicioService {
         this.presentAlert('Error al banear usuario', JSON.stringify(e));
       });
   }
+  
+
+
+// Servicio para actualizar el estado de un usuario
+actualizarEstadoPorId(id_usuario: number, id_estado: number): Promise<void> {
+  const query = `UPDATE usuario SET id_estado = ? WHERE id_usuario = ?`;
+  return new Promise((resolve, reject) => {
+    this.database.executeSql(query, [id_estado, id_usuario])
+      .then(() => resolve())
+      .catch((error) => reject(error));
+  });
+}
 
 
 
-  // Servicio para actualizar el estado de un usuario
-  actualizarEstadoPorId(id_usuario: number, id_estado: number): Promise<void> {
-    const query = `UPDATE usuario SET id_estado = ? WHERE id_usuario = ?`;
-    return new Promise((resolve, reject) => {
-      this.database.executeSql(query, [id_estado, id_usuario])
-        .then(() => resolve())
-        .catch((error) => reject(error));
+// Servicio para eliminar un reporte
+eliminarReporte(id_reporte: number): Promise<void> {
+  const query = 'DELETE FROM reporte WHERE id_reporte = ?';
+  return this.database.executeSql(query, [id_reporte])
+    .then(() => {
+      console.log(`Reporte ${id_reporte} eliminado correctamente`);
+    })
+    .catch((error) => {
+      console.error('Error al eliminar el reporte', error);
+      throw error;
     });
-  }
-
-  // Servicio para eliminar un reporte
-  eliminarReporte(id_reporte: number): Promise<void> {
-    const query = 'DELETE FROM reporte WHERE id_reporte = ?';
-    return this.database.executeSql(query, [id_reporte])
-      .then(() => {
-        console.log(`Reporte ${id_reporte} eliminado correctamente`);
-      })
-      .catch((error) => {
-        console.error('Error al eliminar el reporte', error);
-        throw error;
-      });
-  }
-
-async verificarContrasena(idUsuario: number, contrasena_usuario: string): Promise<boolean> {
-  const query = 'SELECT contrasena_usuario FROM usuario WHERE id_usuario = ?';
-  try {
-    const res = await this.database.executeSql(query, [idUsuario]);
-    if (res.rows.length > 0) {
-      const contrasenaActual = res.rows.item(0).contrasena_usuario;
-      return contrasenaActual === contrasena_usuario;  // Compara la contraseña ingresada con la de la base de datos
-    }
-    return false;
-  } catch (error) {
-    console.error('Error al verificar la contraseña:', error);
-    throw new Error('Error al verificar la contraseña.');
-  }
 }
 
-async modificarcontra(idUsuario: number, nuevaContrasena: string): Promise<void> {
-  const query = 'UPDATE usuario SET contrasena_usuario = ? WHERE id_usuario = ?';
-  try {
-    await this.database.executeSql(query, [nuevaContrasena, idUsuario]);
-  } catch (error) {
-    console.error('Error al actualizar la contraseña:', error);
-    throw new Error('Error al actualizar la contraseña.');
-  }
-}
 }

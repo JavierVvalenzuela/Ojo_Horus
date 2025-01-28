@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, NavController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
-import { Usuarios } from 'src/app/services/usuarios';
 
 @Component({
   selector: 'app-cambiar-password',
@@ -11,135 +10,141 @@ import { Usuarios } from 'src/app/services/usuarios';
   standalone: false,
 })
 export class CambiarPasswordPage implements OnInit {
-  contrasenaActual: string = '';
-  contrasena_usuario: string = '';
+  nickname: string = '';  // Asumimos que nickname es un string
+  idUsuario: number = 0;  // idUsuario debe ser un número
+  idPreguntaSeguridad: number = 0; // idPreguntaSeguridad debe ser un número
+  respuestaSeguridad: string = '';
   nuevaClave: string = '';
   confirmarClave: string = '';
-  idUsuario: number = 0;
-  usuarios: Usuarios[] = [];
 
   errores: {
-    contrasenaActual: string | null;
+    nickname: string | null;
+    idPreguntaSeguridad: string | null;
+    respuestaSeguridad: string | null;
     nuevaClave: string | null;
     confirmarClave: string | null;
   } = {
-    contrasenaActual: null,
+    nickname: null,
+    idPreguntaSeguridad: null,
+    respuestaSeguridad: null,
     nuevaClave: null,
     confirmarClave: null,
   };
 
+  preguntas: any[] = []; // Lista de preguntas de seguridad
+
   constructor(
     private router: Router,
-    private alertController: AlertController,
-    private bdServicio: BdServicioService,
-    private navCtrl: NavController
+    private bdServicio: BdServicioService // Servicio de la base de datos
   ) {}
 
-  cancelar(): void {
-    // Regresar a la página anterior al cancelar la operación
-    this.navCtrl.back();
-  }
-
   ngOnInit() {
-     // Obtener el idUsuario desde el localStorage
-     const storedIdUsuario = localStorage.getItem('id_usuario');
-     if (storedIdUsuario) {
-       this.idUsuario = parseInt(storedIdUsuario, 10);
-     }
- 
-     // Suscribirse a la lista de usuarios
-     this.bdServicio.fetchUsuarios().subscribe((usuarios) => {
-       this.usuarios = usuarios;  // Almacenar la lista de usuarios
-       console.log('Usuarios:', this.usuarios);  // Solo para verificar
-     });
- 
-     // Llamar a buscarUsuarios() para obtener los usuarios
-     this.bdServicio.buscarUsuarios();
-   }
-
-  validarCampos(): boolean {
-    let valido = true;
-
-    // Validar contraseña actual
-    if (!this.contrasenaActual.trim()) {
-      this.errores.contrasenaActual = 'Debe ingresar su contraseña actual.';
-      valido = false;
-    } else {
-      this.errores.contrasenaActual = null;
+    // Recuperar el idUsuario desde el localStorage
+    const storedIdUsuario = localStorage.getItem('id_usuario');
+    if (storedIdUsuario) {
+      this.idUsuario = parseInt(storedIdUsuario, 10);  // Asegúrate de convertirlo a número
     }
 
-    // Validar nueva contraseña
+    // Obtener preguntas de seguridad desde la base de datos
+    this.bdServicio.obtenerPreguntasSeguridad().subscribe(
+      (preguntas) => {
+        this.preguntas = preguntas;
+      },
+      (error) => {
+        console.error('Error al obtener las preguntas de seguridad:', error);
+      }
+    );
+  }
+
+  validarCampos() {
+    let correcto = true;
+  
+    // Validación de pregunta de seguridad
+    if (!this.idPreguntaSeguridad) {
+      this.errores.idPreguntaSeguridad = 'Debe seleccionar una pregunta de seguridad.';
+      correcto = false;
+    } else {
+      this.errores.idPreguntaSeguridad = null;
+    }
+  
+    // Validación de respuesta de seguridad
+    if (!this.respuestaSeguridad?.trim()) {
+      this.errores.respuestaSeguridad = 'Debe ingresar la respuesta a la pregunta de seguridad.';
+      correcto = false;
+    } else {
+      this.errores.respuestaSeguridad = null;
+    }
+  
+    // Validación de nueva contraseña
     if (
       this.nuevaClave.length < 8 ||
       !/[A-Z]/.test(this.nuevaClave) ||
       !/\d/.test(this.nuevaClave) ||
       !/[-!@#$%^&*.]/.test(this.nuevaClave)
     ) {
-      this.errores.nuevaClave =
-        'La nueva contraseña debe tener al menos 8 caracteres, incluir una mayúscula, un número y un carácter especial.';
-      valido = false;
+      this.errores.nuevaClave = 'La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, un número y un carácter especial.';
+      correcto = false;
     } else {
       this.errores.nuevaClave = null;
     }
-
-    // Validar confirmación de contraseña
+  
+    // Validación de confirmación de clave
     if (this.nuevaClave !== this.confirmarClave) {
       this.errores.confirmarClave = 'Las contraseñas no coinciden.';
-      valido = false;
+      correcto = false;
     } else {
       this.errores.confirmarClave = null;
     }
-
-    return valido;
+  
+    return correcto;
   }
+  
+  actualizarContrasena() {
+    console.log('Botón Ingresar presionado');  // Verificar si la función se llama
 
-  async cambiarContrasena() {
+    // Verificar si se obtuvo el idUsuario antes de continuar
     if (!this.idUsuario) {
-      console.error('Error: idUsuario no definido.');
+      console.error('Error: idUsuario no está definido.');
       return;
     }
-  
+
     if (this.validarCampos()) {
-      try {
-        const contrasenaExistente = await this.bdServicio.verificarContrasena(
-          this.idUsuario,  
-          this.contrasena_usuario  
-        );
-  
-        if (contrasenaExistente) {
-          // Si ya tiene una contraseña, validarla
-          const esValida = await this.bdServicio.verificarContrasena(
-            this.idUsuario,  
-            this.contrasena_usuario  
-          );
-  
-          if (esValida) {
-            await this.bdServicio.modificarcontra(this.idUsuario, this.nuevaClave);
-  
-            this.mostrarAlerta('Éxito', 'La contraseña se ha actualizado correctamente.');
-            this.router.navigate(['/login']);
-          } else {
-            this.errores.contrasenaActual = 'La contraseña actual no es correcta.';
+      // Verificar pregunta y respuesta de seguridad
+      this.bdServicio.verificarPreguntaRespuesta(this.idUsuario, this.idPreguntaSeguridad, this.respuestaSeguridad)
+        .toPromise()  // Convierte el Observable a Promesa
+        .then((valido: boolean | undefined) => {
+          if (valido === undefined) {
+            console.error('Error: la respuesta de seguridad no es válida');
+            return;
           }
-        } else {
-          await this.bdServicio.modificarcontra(this.idUsuario, this.nuevaClave);
   
-          this.mostrarAlerta('Éxito', 'La contraseña se ha establecido correctamente.');
-          this.router.navigate(['/login']);
-        }
-      } catch (error) {
-        console.error('Error al cambiar la contraseña:', error);
-        this.mostrarAlerta('Error', 'Ocurrió un problema al cambiar la contraseña.');
-      }
+          console.log('Respuesta de seguridad válida:', valido);  // Verificar si la verificación pasa
+          if (valido) {
+            // Actualizar la contraseña del usuario
+            this.bdServicio.actualizarContrasena(this.idUsuario, this.nuevaClave, this.confirmarClave)
+              .toPromise()  // Convierte el Observable a Promesa
+              .then(() => {
+                // Mostrar el mensaje de éxito
+                window.alert('Contraseña actualizada correctamente.');
+          
+                // Redirigir al login
+                this.router.navigate(['/login']);
+                console.log('Redirigiendo a login');
+              })
+              .catch((error) => {
+                console.error('Error al actualizar la contraseña:', error);
+              });
+          } else {
+            this.errores.respuestaSeguridad = 'La pregunta o respuesta de seguridad no coincide.';
+          }
+        })
+        .catch((error) => {
+          console.error('Error al verificar la pregunta y respuesta de seguridad:', error);
+        });
     }
   }
-
-  async mostrarAlerta(titulo: string, mensaje: string) {
-    const alert = await this.alertController.create({
-      header: titulo,
-      message: mensaje,
-      buttons: ['Aceptar'],
-    });
-    await alert.present();
+  
+  cancelar() {
+    this.router.navigate(['/recuperar-password']);
   }
 }
