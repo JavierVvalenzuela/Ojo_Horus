@@ -11,31 +11,22 @@
 <ion-content [fullscreen]="true">
   <h1>Lista de Reportes Pendientes</h1>
 
+  <!-- Mostrar los reportes -->
   <ion-card *ngFor="let reporte of usuariosReportados">
     <ion-card-header>
-      <ion-card-title>{{ reporte.nick_usuario }}</ion-card-title> <!-- Muestra el nick del usuario reportado -->
+      <ion-card-title>{{ reporte.nick_usuario }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <p><strong>Motivo:</strong> {{ reporte.descripcion_motivo }}</p>
-
-      <!-- Verificamos si el usuario es un administrador antes de mostrar los botones de acción -->
-      <ion-button
-        fill="outline"
-        color="danger"
-        *ngIf="!esAdmin(reporte.id_usuario)"
-        (click)="banearUsuario(reporte.id_usuario, reporte.id_reporte, reporte.id_usuario_reportado)"
-
-      >
-        Banear
-      </ion-button>
-      <ion-button
-        fill="outline"
-        color="warning"
-        (click)="ignorarReporte(reporte.id_reporte)"
-      >
-        Ignorar
-      </ion-button>
+      <div>
+        <ion-button fill="outline" color="danger" (click)="banearUsuario(reporte.id_reporte, reporte.id_usuario_reportado)">
+          Banear
+        </ion-button>
+        <ion-button fill="outline" color="warning" (click)="ignorarReporte(reporte.id_reporte)">
+          Ignorar
+        </ion-button>
+      </div>
     </ion-card-content>
   </ion-card>
-  
 </ion-content>
+

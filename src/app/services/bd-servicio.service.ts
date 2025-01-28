@@ -25,7 +25,7 @@ export class BdServicioService {
   public database!: SQLiteObject;
 
 
-  //droptablausuario: string = `DROP TABLE IF EXISTS usuario;`;
+  droptablausuario: string = `DROP TABLE IF EXISTS usuario;`;
 
   //Tablas del foro
   //Tabla de roles admin o user
@@ -151,9 +151,10 @@ export class BdServicioService {
   //tablas usuarios
   registroUsuario: string = `INSERT OR IGNORE INTO usuario (id_usuario, nombre_usuario, nick_usuario, correo_usuario, contrasena_usuario, id_estado, id_rol) VALUES 
   (1, 'Administrador', 'Admin', 'Admin@gmail.com', 'Admin.01', 1, 1),
-  (2, 'Diego Mellado', 'Goto', 'Goto@gmail.com', 'Diego.170', 1, 2),
-  (3, 'Javier Valenzuela', 'Red', 'Red@gmail.com', 'Javier.170', 1, 2),
-  (4, 'Reportado Uno', 'Rep', 'Rep@gmail.com', 'Repor.170',2,2);`;
+  (2, 'Administrador2', 'Admin2', 'Admin2@gmail.com', 'Admin.0', 1, 1),
+  (3, 'Diego Mellado', 'Goto', 'Goto@gmail.com', 'Diego.170', 1, 2),
+  (4, 'Javier Valenzuela', 'Red', 'Red@gmail.com', 'Javier.170', 1, 2),
+  (5, 'Reportado Uno', 'Rep', 'Rep@gmail.com', 'Repor.170',2,2);`;
 
   //tablas post
   registroPost: string = `
@@ -253,7 +254,7 @@ export class BdServicioService {
   }
   async crearTablas() {
     try {
-      //await this.database.executeSql(this.droptablausuario, []);
+      await this.database.executeSql(this.droptablausuario, []);
 
       await this.database.executeSql(this.tablaRol, []);
       await this.database.executeSql(this.registroRoles, []);
@@ -974,8 +975,6 @@ export class BdServicioService {
         return this.database.executeSql(queryReporte, [id_reporte]);
       })
       .then(() => {
-        console.log(`Reporte ${id_reporte} eliminado correctamente`);
-        this.presentAlert('Usuario Baneado', 'El usuario ha sido baneado correctamente');
         this.buscarReportes(); // Actualizar lista de reportes
       })
       .catch((e) => {
@@ -987,10 +986,15 @@ export class BdServicioService {
 
 
 // Servicio para actualizar el estado de un usuario
-actualizarEstadoPorNick(nick_usuario: string, id_estado: number) {
-  const query = `UPDATE usuario SET id_estado = ? WHERE nick_usuario = ?`;
-  return this.database.executeSql(query, [id_estado, nick_usuario]);
+actualizarEstadoPorId(id_usuario: number, id_estado: number): Promise<void> {
+  const query = `UPDATE usuario SET id_estado = ? WHERE id_usuario = ?`;
+  return new Promise((resolve, reject) => {
+    this.database.executeSql(query, [id_estado, id_usuario])
+      .then(() => resolve())
+      .catch((error) => reject(error));
+  });
 }
+
 
 
 // Servicio para eliminar un reporte
