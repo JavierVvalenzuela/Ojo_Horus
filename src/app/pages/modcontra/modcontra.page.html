@@ -1,0 +1,68 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Cambiar Contraseña</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Logo -->
+  <div class="logo-container">
+    <img src="assets/img/ojo de horus.png" alt="Ojo de Horus" class="logo-img">
+  </div>
+
+  <!-- Contraseña Actual -->
+  <ion-item class="i1">
+    <ion-label position="floating">Contraseña Actual</ion-label>
+    <ion-input 
+      type="password" 
+      [(ngModel)]="contrasenaActual" 
+      required>
+    </ion-input>
+  </ion-item>
+  <ion-text color="danger" *ngIf="errores.contrasenaActual">
+    <p class="error-message">{{ errores.contrasenaActual }}</p>
+  </ion-text>
+
+  <!-- Nueva Contraseña -->
+  <ion-item class="i2">
+    <ion-label position="floating">Nueva Contraseña</ion-label>
+    <ion-input 
+      type="password" 
+      [(ngModel)]="nuevaClave" 
+      required>
+    </ion-input>
+  </ion-item>
+  <ion-text color="danger" *ngIf="errores.nuevaClave">
+    <p class="error-message">{{ errores.nuevaClave }}</p>
+  </ion-text>
+
+  <!-- Confirmar Nueva Contraseña -->
+  <ion-item class="i3">
+    <ion-label position="floating">Confirmar Nueva Contraseña</ion-label>
+    <ion-input 
+      type="password" 
+      [(ngModel)]="confirmarClave" 
+      required>
+    </ion-input>
+  </ion-item>
+  <ion-text color="danger" *ngIf="errores.confirmarClave">
+    <p class="error-message">{{ errores.confirmarClave }}</p>
+  </ion-text>
+
+  <!-- Botones -->
+  <div class="btns">
+    <ion-button 
+      fill="outline" 
+      color="warning" 
+      [disabled]="!validarCampos()" 
+      (click)="cambiarContrasena()">
+      Cambiar Contraseña
+    </ion-button>
+    <ion-button 
+      fill="outline" 
+      color="light" 
+      (click)="cancelar()">
+      Cancelar
+    </ion-button>
+  </div>
+</ion-content>

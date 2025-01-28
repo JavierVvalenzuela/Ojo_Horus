@@ -112,10 +112,13 @@ const routes: Routes = [
     loadChildren: () => import('./pages/perfiles/perfiles.module').then( m => m.PerfilesPageModule)
   },
   {
+    path: 'modcontra',
+    loadChildren: () => import('./pages/modcontra/modcontra.module').then( m => m.ModcontraPageModule)
+  },
+  {
     path: 'not-found',
     loadChildren: () => import('./pages/not-found/not-found.module').then( m => m.NotFoundPageModule)
   },
-
 
 ];
 
