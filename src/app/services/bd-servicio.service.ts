@@ -559,7 +559,7 @@ export class BdServicioService {
               ]
             )
             .then((res) => {
-              this.presentAlert('Registro', 'Usuario registrado correctamente');
+              this.presentAlert('USUARIO REGISTRADO CORRECTAMENTE', 'Recuerda iniciar sesión y en configuraciones seleccionar tu pregunta de seguridad');
               this.buscarUsuarios();
               this.router.navigate(['/login']);
             })
