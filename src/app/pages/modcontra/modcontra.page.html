@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Cambiar Contraseña</ion-title>
+    <ion-title>Modificar contraseña</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -11,58 +11,41 @@
   </div>
 
   <!-- Contraseña Actual -->
-  <ion-item class="i1">
-    <ion-label position="floating">Contraseña Actual</ion-label>
-    <ion-input 
-      type="password" 
-      [(ngModel)]="contrasenaActual" 
-      required>
-    </ion-input>
-  </ion-item>
-  <ion-text color="danger" *ngIf="errores.contrasenaActual">
-    <p class="error-message">{{ errores.contrasenaActual }}</p>
-  </ion-text>
+  <div class="formcont">
+    <div class="i1">
+      <ion-input label-placement="floating" label="Contraseña Actual" type="password" [(ngModel)]="contrasenaActual" required>
+      </ion-input>
+    </div>
+    <ion-text color="danger" *ngIf="errores.contrasenaActual">
+      <p class="error-message">{{ errores.contrasenaActual }}</p>
+    </ion-text>
 
-  <!-- Nueva Contraseña -->
-  <ion-item class="i2">
-    <ion-label position="floating">Nueva Contraseña</ion-label>
-    <ion-input 
-      type="password" 
-      [(ngModel)]="nuevaClave" 
-      required>
-    </ion-input>
-  </ion-item>
-  <ion-text color="danger" *ngIf="errores.nuevaClave">
-    <p class="error-message">{{ errores.nuevaClave }}</p>
-  </ion-text>
+    <!-- Nueva Contraseña -->
+    <div class="i2">
+      <ion-input label-placement="floating" label="Nueva Contraseña" type="password" [(ngModel)]="nuevaClave" required>
+      </ion-input>
+    </div>
+    <ion-text color="danger" *ngIf="errores.nuevaClave">
+      <p class="error-message">{{ errores.nuevaClave }}</p>
+    </ion-text>
 
-  <!-- Confirmar Nueva Contraseña -->
-  <ion-item class="i3">
-    <ion-label position="floating">Confirmar Nueva Contraseña</ion-label>
-    <ion-input 
-      type="password" 
-      [(ngModel)]="confirmarClave" 
-      required>
-    </ion-input>
-  </ion-item>
-  <ion-text color="danger" *ngIf="errores.confirmarClave">
-    <p class="error-message">{{ errores.confirmarClave }}</p>
-  </ion-text>
+    <!-- Confirmar Nueva Contraseña -->
+    <div class="i3">
+      <ion-input label-placement="floating" label="Confirmar Nueva Contraseña" type="password" [(ngModel)]="confirmarClave" required>
+      </ion-input>
+    </div>
+    <ion-text color="danger" *ngIf="errores.confirmarClave">
+      <p class="error-message">{{ errores.confirmarClave }}</p>
+    </ion-text>
 
-  <!-- Botones -->
-  <div class="btns">
-    <ion-button 
-      fill="outline" 
-      color="warning" 
-      [disabled]="!validarCampos()" 
-      (click)="cambiarContrasena()">
-      Cambiar Contraseña
-    </ion-button>
-    <ion-button 
-      fill="outline" 
-      color="light" 
-      (click)="cancelar()">
-      Cancelar
-    </ion-button>
+    <!-- Botones -->
+    <div class="btns">
+      <ion-button fill="outline" color="warning" [disabled]="!validarCampos()" (click)="cambiarContrasena()">
+        Cambiar Contraseña
+      </ion-button>
+      <ion-button fill="outline" color="light" (click)="cancelar()">
+        Cancelar
+      </ion-button>
+    </div>
   </div>
 </ion-content>
