@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, NavController } from '@ionic/angular';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
@@ -32,7 +32,8 @@ export class ModcontraPage implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private bdServicio: BdServicioService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private cdRef: ChangeDetectorRef 
   ) {}
 
   cancelar(): void {
@@ -50,7 +51,8 @@ export class ModcontraPage implements OnInit {
      // Suscribirse a la lista de usuarios
      this.bdServicio.fetchUsuarios().subscribe((usuarios) => {
        this.usuarios = usuarios;  
-       console.log('Usuarios:', this.usuarios);  
+       console.log('Usuarios:', this.usuarios);
+       this.cdRef.detectChanges();  
      });
  
      // Llamar a buscarUsuarios() para obtener los usuarios

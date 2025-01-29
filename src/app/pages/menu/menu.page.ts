@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef,Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
 import { CameraService } from 'src/app/services/camera.service';
@@ -22,7 +22,8 @@ export class MenuPage implements OnInit {
     private bd: BdServicioService,
     private router: Router,
     private cameraService: CameraService,
-    private share: ShareService
+    private share: ShareService,
+    private cdRef: ChangeDetectorRef 
   ) {}
 
   logout() {
@@ -108,6 +109,7 @@ export class MenuPage implements OnInit {
     this.bd.buscarPost();
     this.bd.fetchPost().subscribe((posts: any) => {
       this.arreglopost = posts;
+      this.cdRef.detectChanges(); 
     });
   }
 

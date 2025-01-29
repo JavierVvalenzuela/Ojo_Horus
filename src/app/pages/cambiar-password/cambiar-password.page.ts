@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
@@ -8,6 +8,7 @@ import { BdServicioService } from 'src/app/services/bd-servicio.service';
   templateUrl: './cambiar-password.page.html',
   styleUrls: ['./cambiar-password.page.scss'],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CambiarPasswordPage implements OnInit {
   nickname: string = '';  // Asumimos que nickname es un string
@@ -35,20 +36,20 @@ export class CambiarPasswordPage implements OnInit {
 
   constructor(
     private router: Router,
-    private bdServicio: BdServicioService // Servicio de la base de datos
+    private bdServicio: BdServicioService,
+    private cdRef: ChangeDetectorRef 
   ) {}
 
   ngOnInit() {
-    // Recuperar el idUsuario desde el localStorage
     const storedIdUsuario = localStorage.getItem('id_usuario');
     if (storedIdUsuario) {
-      this.idUsuario = parseInt(storedIdUsuario, 10);  // Asegúrate de convertirlo a número
+      this.idUsuario = parseInt(storedIdUsuario, 10); 
     }
-
-    // Obtener preguntas de seguridad desde la base de datos
+  
     this.bdServicio.obtenerPreguntasSeguridad().subscribe(
       (preguntas) => {
         this.preguntas = preguntas;
+        this.cdRef.detectChanges(); 
       },
       (error) => {
         console.error('Error al obtener las preguntas de seguridad:', error);

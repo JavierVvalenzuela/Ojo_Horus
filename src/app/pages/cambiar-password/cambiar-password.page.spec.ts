@@ -19,7 +19,7 @@ class SQLiteMock {
 describe('CambiarPasswordPage', () => {
   let component: CambiarPasswordPage;
   let fixture: ComponentFixture<CambiarPasswordPage>;
-  let changeDetectorRef: ChangeDetectorRef;
+  let cdRef: ChangeDetectorRef;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -28,17 +28,15 @@ describe('CambiarPasswordPage', () => {
       providers: [
         BdServicioService,
         ImgdefaultService,
-        { provide: SQLite, useClass: SQLiteMock },
-        ChangeDetectorRef
+        { provide: SQLite, useClass: SQLiteMock }
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CambiarPasswordPage);
     component = fixture.componentInstance;
-    changeDetectorRef = TestBed.inject(ChangeDetectorRef);
-
+    cdRef = fixture.debugElement.injector.get(ChangeDetectorRef);
+  
     fixture.detectChanges(); 
-    changeDetectorRef.detectChanges(); 
   });
 
   it('should create', () => {

@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-
 import { AlertController, NavController } from '@ionic/angular';
 import { BdServicioService } from 'src/app/services/bd-servicio.service';
 import { Motivo } from 'src/app/services/motivo';
@@ -20,13 +18,11 @@ export class ReportarContenidoPage implements OnInit {
   constructor(
     private bd: BdServicioService,
     private alertController: AlertController,
-    private navCtrl: NavController,
-    private activatedRoute: ActivatedRoute
-  ) {}
+    private navCtrl: NavController  ) {}
 
   ngOnInit() {
    // Recuperamos el id_usuario del post desde localStorage
-   this.id_usuario_del_post = localStorage.getItem('id_usuario_del_post') || ''; // Aquí tomamos el id del usuario que hizo el post
+   this.id_usuario_del_post = localStorage.getItem('id_usuario_del_post') || ''; 
    this.id_post = parseInt(localStorage.getItem('id_post_reportado') || '0', 10);
 
    // Cargar lista de motivos
@@ -104,8 +100,8 @@ export class ReportarContenidoPage implements OnInit {
     await alert.present();
   }
   cancelarReporte() {
-    this.selectedMotivo = ''; // Limpiar la selección de motivo
+    this.selectedMotivo = ''; 
     console.log('Reporte cancelado');
-    this.navCtrl.navigateBack('/inicio'); // Asegúrate de usar la navegación correcta
+    this.navCtrl.navigateBack('/inicio');
   }
 }
