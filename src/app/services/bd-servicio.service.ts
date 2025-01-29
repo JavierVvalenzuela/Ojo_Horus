@@ -1009,29 +1009,28 @@ eliminarReporte(id_reporte: number): Promise<void> {
       throw error;
     });
 }
+async cambiarContrasenaUsuario(idUsuario: number, contrasenaActual: string, nuevaContrasena: string): Promise<boolean> {
+  const querySelect = 'SELECT contrasena_usuario FROM usuario WHERE id_usuario = ?';
+  const queryUpdate = 'UPDATE usuario SET contrasena_usuario = ? WHERE id_usuario = ?';
 
-async verificarContrasena(idUsuario: number, contrasena_usuario: string): Promise<boolean> {
-  const query = 'SELECT contrasena_usuario FROM usuario WHERE id_usuario = ?';
   try {
-    const res = await this.database.executeSql(query, [idUsuario]);
+    const res = await this.database.executeSql(querySelect, [idUsuario]);
+
     if (res.rows.length > 0) {
-      const contrasenaActual = res.rows.item(0).contrasena_usuario;
-      return contrasenaActual === contrasena_usuario;  // Compara la contraseña ingresada con la de la base de datos
-    }
-    return false;
-  } catch (error) {
-    console.error('Error al verificar la contraseña:', error);
-    throw new Error('Error al verificar la contraseña.');
-  }
-}
+      const contrasenaDB = res.rows.item(0).contrasena_usuario;
 
-async modificarcontra(idUsuario: number, nuevaContrasena: string): Promise<void> {
-  const query = 'UPDATE usuario SET contrasena_usuario = ? WHERE id_usuario = ?';
-  try {
-    await this.database.executeSql(query, [nuevaContrasena, idUsuario]);
+      if (contrasenaDB === contrasenaActual) {
+        await this.database.executeSql(queryUpdate, [nuevaContrasena, idUsuario]);
+        return true; // Éxito: contraseña actualizada
+      } else {
+        return false; // Error: contraseña actual incorrecta
+      }
+    }
+
+    return false; // Error: usuario no encontrado
   } catch (error) {
-    console.error('Error al actualizar la contraseña:', error);
-    throw new Error('Error al actualizar la contraseña.');
+    console.error('Error al cambiar la contraseña:', error);
+    throw new Error('Error al cambiar la contraseña.');
   }
 }
 }

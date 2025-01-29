@@ -49,8 +49,8 @@ export class ModcontraPage implements OnInit {
  
      // Suscribirse a la lista de usuarios
      this.bdServicio.fetchUsuarios().subscribe((usuarios) => {
-       this.usuarios = usuarios;  // Almacenar la lista de usuarios
-       console.log('Usuarios:', this.usuarios);  // Solo para verificar
+       this.usuarios = usuarios;  
+       console.log('Usuarios:', this.usuarios);  
      });
  
      // Llamar a buscarUsuarios() para obtener los usuarios
@@ -101,31 +101,17 @@ export class ModcontraPage implements OnInit {
   
     if (this.validarCampos()) {
       try {
-        const contrasenaExistente = await this.bdServicio.verificarContrasena(
-          this.idUsuario,  
-          this.contrasena_usuario  
+        const actualizada = await this.bdServicio.cambiarContrasenaUsuario(
+          this.idUsuario,
+          this.contrasenaActual,
+          this.nuevaClave
         );
   
-        if (contrasenaExistente) {
-          // Si ya tiene una contraseña, validarla
-          const esValida = await this.bdServicio.verificarContrasena(
-            this.idUsuario,  
-            this.contrasena_usuario  
-          );
-  
-          if (esValida) {
-            await this.bdServicio.modificarcontra(this.idUsuario, this.nuevaClave);
-  
-            this.mostrarAlerta('Éxito', 'La contraseña se ha actualizado correctamente.');
-            this.router.navigate(['/login']);
-          } else {
-            this.errores.contrasenaActual = 'La contraseña actual no es correcta.';
-          }
-        } else {
-          await this.bdServicio.modificarcontra(this.idUsuario, this.nuevaClave);
-  
-          this.mostrarAlerta('Éxito', 'La contraseña se ha establecido correctamente.');
+        if (actualizada) {
+          this.mostrarAlerta('Éxito', 'La contraseña se ha actualizado correctamente.');
           this.router.navigate(['/login']);
+        } else {
+          this.errores.contrasenaActual = 'La contraseña actual no es correcta.';
         }
       } catch (error) {
         console.error('Error al cambiar la contraseña:', error);
