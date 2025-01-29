@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
-
 import { CamaraComponent } from './camara.component';
 
 describe('CamaraComponent', () => {
@@ -9,8 +8,10 @@ describe('CamaraComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CamaraComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [
+        IonicModule.forRoot(),
+        CamaraComponent  // Importar el componente standalone directamente aquí
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CamaraComponent);
@@ -18,7 +19,7 @@ describe('CamaraComponent', () => {
     fixture.detectChanges();
   }));
 
-  xit('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 });

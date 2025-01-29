@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
-
 import { ComponenteComponent } from './componente.component';
 
 describe('ComponenteComponent', () => {
@@ -9,8 +8,7 @@ describe('ComponenteComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ComponenteComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), ComponenteComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ComponenteComponent);
@@ -18,7 +16,7 @@ describe('ComponenteComponent', () => {
     fixture.detectChanges();
   }));
 
-  xit('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 });

@@ -10,7 +10,7 @@ describe('CameraService', () => {
     service = TestBed.inject(CameraService);
   });
 
-  xit('should be created', () => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
   });
 });

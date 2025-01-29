@@ -9,8 +9,7 @@ describe('ShareComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ShareComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), ShareComponent], 
     }).compileComponents();
 
     fixture = TestBed.createComponent(ShareComponent);
@@ -18,7 +17,7 @@ describe('ShareComponent', () => {
     fixture.detectChanges();
   }));
 
-  xit('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 });

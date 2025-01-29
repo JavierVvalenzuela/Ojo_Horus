@@ -8,6 +8,7 @@ import { Usuarios } from 'src/app/services/usuarios';
   selector: 'app-modcontra',
   templateUrl: './modcontra.page.html',
   styleUrls: ['./modcontra.page.scss'],
+  standalone: false,
 })
 export class ModcontraPage implements OnInit {
   contrasenaActual: string = '';
