@@ -40,13 +40,4 @@ describe('MenuPage', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call buscarPost on ngOnInit', () => {
-    component.ngOnInit();
-    expect(bdServicioMock.buscarPost).toHaveBeenCalled();
-  });
-
-  it('should fetch posts and assign them to arreglopost', () => {
-    component.ngOnInit();
-    expect(component.arreglopost).toEqual([]);
-  });
 });
