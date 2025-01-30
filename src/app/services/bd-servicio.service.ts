@@ -1018,6 +1018,19 @@ async cambiarContrasenaUsuario(idUsuario: number, contrasenaActual: string, nuev
   }
 }
 
+  async eliminarPost(idPost: number): Promise<void> {
+  if (!this.database) {
+    return Promise.reject('Base de datos no inicializada.');
+  }
+
+  try {
+    await this.database.executeSql('DELETE FROM POST WHERE id_post = ?', [idPost]);
+    return console.log(`Post con ID ${idPost} eliminado correctamente`);
+  } catch (error) {
+    console.error('Error al eliminar el post:', error);
+    throw error;
+  }
+}
 
 
 }

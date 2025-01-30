@@ -34,10 +34,15 @@
   <ion-card class="card-custom" *ngFor="let post of arreglopost">
     
     <div>
-      <ion-button fill="clear" (click)="reportarPost(post.id_post, post.id_usuario)" class="btn-3puntos">
+      <ion-button fill="clear" *ngIf="idRolUsuario === 2" (click)="reportarPost(post.id_post, post.id_usuario)" class="btn-3puntos">
         <img src="assets/icon/3puntos.png" alt="Reportar contenido" />
       </ion-button>
+    
+      <ion-button fill="clear" *ngIf="idRolUsuario === 1" (click)="eliminarPost(post.id_post)" class="btn-3puntos">
+        <img src="assets/icon/eliminar.png" alt="Eliminar post" />
+      </ion-button>
     </div>
+    
 
       <h1 class="nicku" [routerLink]="['/perfiles']">{{ post.titulo_post }}</h1>
       <p class="conten">{{ post.contenido_post }}</p>
@@ -46,7 +51,10 @@
       <div class="btnpost">
         <ion-button fill="outline" color="warning">Me Gusta</ion-button>
         <ion-button fill="outline" color="warning" (click)="irAComentarios(post)">Comentar</ion-button>
-        <ion-button fill="outline" color="warning" (click)="shareContent(post.titulo_post, post.contenido_post, post.img_post)">Compartir</ion-button>
+        <ion-button fill="outline" color="warning" (click)="shareContent(post.titulo_post, post.contenido_post, post.img_post || '')">
+          Compartir
+        </ion-button>
+        
       </div>
   </ion-card>
 </ion-content>
