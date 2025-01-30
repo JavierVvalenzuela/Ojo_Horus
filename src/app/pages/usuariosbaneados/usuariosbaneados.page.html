@@ -19,9 +19,12 @@
     <ion-card-content>
       <p><strong>Motivo:</strong> {{ reporte.descripcion_motivo }}</p>
       <div>
-        <ion-button fill="outline" color="danger" (click)="banearUsuario(reporte.id_reporte, reporte.id_usuario_reportado)">
+        <!-- Botón para banear usuario -->
+        <ion-button fill="outline" color="danger" (click)="confirmarBaneo(reporte.id_reporte, reporte.id_usuario_reportado)">
           Banear
         </ion-button>
+        
+        <!-- Botón para ignorar reporte -->
         <ion-button fill="outline" color="warning" (click)="ignorarReporte(reporte.id_reporte)">
           Ignorar
         </ion-button>
@@ -29,4 +32,5 @@
     </ion-card-content>
   </ion-card>
 </ion-content>
+
 

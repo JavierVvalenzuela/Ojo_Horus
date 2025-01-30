@@ -466,16 +466,15 @@ export class BdServicioService {
   obtenerUsuariosReportados(): Observable<any[]> {
     const query = `
       SELECT r.id_reporte, 
-             u.nick_usuario AS nick_reportado,  -- Aquí tomamos el nick del usuario reportado
+             u.nick_usuario AS nick_reportado,  -- Aquí tomamos el nick del usuario reportado (usuario denunciado)
              r.id_motivo, 
              m.descripcion_motivo
       FROM reporte r
-      JOIN post p ON r.id_post = p.id_post  -- Nos aseguramos de obtener el post
-      JOIN usuario u ON p.id_usuario = u.id_usuario  -- Obtenemos el usuario dueño del post
+      JOIN usuario u ON r.id_usuario = u.id_usuario  -- Obtenemos el usuario reportado (no el dueño del post)
       JOIN motivo m ON r.id_motivo = m.id_motivo
-      WHERE r.estado_reporte = 'pendiente'
+      WHERE r.estado_reporte = 'pendiente'  -- Solo reportes pendientes
     `;
-
+  
     return new Observable<any[]>((observer) => {
       this.database
         .executeSql(query, [])
@@ -484,7 +483,7 @@ export class BdServicioService {
           for (let i = 0; i < res.rows.length; i++) {
             items.push({
               id_reporte: res.rows.item(i).id_reporte,
-              nick_usuario: res.rows.item(i).nick_reportado,  // Usamos el nick del usuario reportado
+              nick_usuario: res.rows.item(i).nick_reportado,  // Aquí tomamos el nick correcto del usuario reportado
               id_motivo: res.rows.item(i).id_motivo,
               descripcion_motivo: res.rows.item(i).descripcion_motivo,
             });
@@ -497,7 +496,7 @@ export class BdServicioService {
         });
     });
   }
-
+  
 
 
   //buscar motivo para llamrlo en reportar_conteido
@@ -962,38 +961,23 @@ export class BdServicioService {
   }
 
   banearUsuario(id_usuario_reportado: number, id_reporte: number) {
-    const queryUsuario = `UPDATE usuario SET id_estado = 2 WHERE id_usuario = ?`;
-    const queryReporte = `DELETE FROM reporte WHERE id_reporte = ?`;
-  
-    console.log(`Baneando usuario con id_usuario_reportado: ${id_usuario_reportado}`);
-    console.log(`Eliminando reporte con id_reporte: ${id_reporte}`);
+    const queryUsuario = `UPDATE usuario SET id_estado = 2 WHERE id_usuario = ?`;  // Cambiar el estado a 2 (baneado)
+    const queryReporte = `DELETE FROM reporte WHERE id_reporte = ?`;  // Eliminar el reporte
   
     this.database
-      .executeSql(queryUsuario, [id_usuario_reportado]) // Cambiamos id_usuario por id_usuario_reportado
+      .executeSql(queryUsuario, [id_usuario_reportado])  // Actualiza el estado del usuario a baneado
       .then(() => {
-        console.log(`Estado del usuario ${id_usuario_reportado} cambiado a baneado (id_estado = 2)`);
-        return this.database.executeSql(queryReporte, [id_reporte]);
+        return this.database.executeSql(queryReporte, [id_reporte]);  // Elimina el reporte
       })
       .then(() => {
-        this.buscarReportes(); // Actualizar lista de reportes
+        console.log(`Reporte con id_reporte ${id_reporte} eliminado.`);
+        this.buscarReportes();  // Actualiza la lista de reportes
       })
       .catch((e) => {
-        console.error('Error al banear usuario:', e); // Mostrar el error en consola para depuración
-        this.presentAlert('Error al banear usuario', JSON.stringify(e));
+        console.error('Error al banear usuario:', e);  // Muestra el error en consola
+        this.presentAlert('Error al banear usuario', JSON.stringify(e));  // Muestra alerta de error
       });
   }
-  
-
-
-// Servicio para actualizar el estado de un usuario
-actualizarEstadoPorId(id_usuario: number, id_estado: number): Promise<void> {
-  const query = `UPDATE usuario SET id_estado = ? WHERE id_usuario = ?`;
-  return new Promise((resolve, reject) => {
-    this.database.executeSql(query, [id_estado, id_usuario])
-      .then(() => resolve())
-      .catch((error) => reject(error));
-  });
-}
 
 
 
@@ -1033,4 +1017,7 @@ async cambiarContrasenaUsuario(idUsuario: number, contrasenaActual: string, nuev
     throw new Error('Error al cambiar la contraseña.');
   }
 }
+
+
+
 }

@@ -26,7 +26,7 @@ export class UsuariosbaneadosPage implements OnInit {
 
   // Función para verificar si el usuario es admin
   esAdmin(id_usuario: number): boolean {
-    const idAdmin = 1; // Asumiendo que el administrador tiene id_rol = 1
+    const idAdmin = 1;
     return id_usuario === idAdmin;
   }
 
@@ -46,13 +46,9 @@ export class UsuariosbaneadosPage implements OnInit {
     }
 
     try {
-      // Actualizar el estado del usuario reportado a 2 (baneado)
-      console.log(`Actualizando estado del usuario con ID: ${id_usuario_reportado} a baneado (id_estado = 2)...`);
-      await this.bd.actualizarEstadoPorId(id_usuario_reportado, 2);
-
-      // Eliminar el reporte de la lista
-      console.log(`Eliminando reporte con ID: ${id_reporte}...`);
-      await this.bd.eliminarReporte(id_reporte);
+      // Llamar a la función banearUsuario para banear al usuario
+      console.log(`Baneando al usuario con ID: ${id_usuario_reportado} y eliminando el reporte con ID: ${id_reporte}...`);
+      this.bd.banearUsuario(id_usuario_reportado, id_reporte);
 
       // Mostrar alerta de éxito
       const alert = await this.alertController.create({
@@ -86,5 +82,30 @@ export class UsuariosbaneadosPage implements OnInit {
       alert('Error al ignorar reporte: ' + JSON.stringify(e));
     });
   }
+
+  // Función para confirmar si se desea banear al usuario
+async confirmarBaneo(id_reporte: number, id_usuario_reportado: number) {
+  const alert = await this.alertController.create({
+    header: 'Confirmación',
+    message: '¿Estás seguro de que deseas banear a este usuario?',
+    buttons: [
+      {
+        text: 'Cancelar',
+        role: 'cancel',
+        handler: () => {
+          console.log('Baneo cancelado');
+        }
+      },
+      {
+        text: 'Confirmar',
+        handler: () => {
+          this.banearUsuario(id_reporte, id_usuario_reportado);
+        }
+      }
+    ]
+  });
+  await alert.present();
+}
+
 }
 
